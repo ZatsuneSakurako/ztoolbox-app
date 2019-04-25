@@ -8,8 +8,7 @@ function createWindow() {
 		height: 300,
 		webPreferences: {
 			nodeIntegration: true
-		},
-		darkTheme: true
+		}
 	});
 
 	// and load the index.html of the app.
