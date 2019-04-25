@@ -8,7 +8,8 @@ function createWindow() {
 		height: 300,
 		webPreferences: {
 			nodeIntegration: true
-		}
+		},
+		darkTheme: true
 	});
 
 	// and load the index.html of the app.
@@ -17,13 +18,19 @@ function createWindow() {
 	// Open the DevTools.
 	// mainWindow.webContents.openDevTools()
 
+	mainWindow.on('close', function (e) {
+		e.preventDefault();
+		mainWindow.hide();
+		e.returnValue = false;
+	});
+
 	// Emitted when the window is closed.
-	mainWindow.on('closed', function () {
+	/*mainWindow.on('closed', function (e) {
 		// Dereference the window object, usually you would store windows
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
 		mainWindow = null
-	})
+	})*/
 }
 
 // This method will be called when Electron has finished
