@@ -210,7 +210,7 @@ app.on('ready', () => {
 	;
 
 
-	tray = new Tray('images/icon_128.png');
+	tray = new Tray(path.resolve(__dirname, './icon_128.png'));
 	tray.setToolTip('Ceci est mon application.');
 
 	contextMenu = Menu.buildFromTemplate([
