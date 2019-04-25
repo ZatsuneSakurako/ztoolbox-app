@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Hello World!</title>
+</head>
+<body>
+<p>
+	<button id="streamlinkOpen">Ouvrir streamlink</button>
+</p>
+
+<p>
+	<!-- All of the Node.js APIs are available in this renderer process. -->
+	We are using Node.js
+	<script>document.write(process.versions.node)</script>
+	,
+	Chromium
+	<script>document.write(process.versions.chrome)</script>
+	,
+	and Electron
+	<script>document.write(process.versions.electron)</script>
+	.
+</p>
+
+<script>
+	// You can also require other files to run in this process
+	require('./renderer.js');
+
+	window.addEventListener("load", function () {
+		document.querySelector("#streamlinkOpen")
+			.addEventListener('click', function () {
+				const { ipcRenderer } = require('electron');
+				ipcRenderer.send('openStreamlink', 'ping');
+			})
+	})
+</script>
+
+</body>
+</html>
