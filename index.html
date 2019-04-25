@@ -24,13 +24,13 @@
 
 <script>
 	// You can also require other files to run in this process
-	require('./renderer.js');
+	// require('./renderer.js');
 
 	window.addEventListener("load", function () {
 		document.querySelector("#streamlinkOpen")
 			.addEventListener('click', function () {
 				const { ipcRenderer } = require('electron');
-				ipcRenderer.send('openStreamlink', 'ping');
+				ipcRenderer.send('openStreamlink');
 			})
 	})
 </script>
