@@ -269,21 +269,14 @@ app.on('ready', () => {
 
 		{type: 'separator'},
 
-		{label: 'Pire', type: 'radio', value: "worst"},
-		{label: 'Meilleure', type: 'radio', value: "best"},
-		{label: 'Source', type: 'radio', value: "source"},
+		{id: 'worst', label: 'Pire', type: 'radio'},
+		{id: 'best', label: 'Meilleure', type: 'radio'},
+		{id: 'source', label: 'Source', type: 'radio'},
 
 		{type: 'separator'},
 
 		{label: 'Exit', type: 'normal', role: 'quit'}
 	]);
-
-	contextMenu.items.forEach(menuItem => {
-		const value = menuItem.value || menuItem.label;
-		if (menuItem.type === "radio" && settings.get("quality") === value) {
-			menuItem.checked = true;
-		}
-	});
 
 	const getSelected = () => {
 		let checked = null;
@@ -294,11 +287,13 @@ app.on('ready', () => {
 			}
 		});
 
-		return checked.value || checked.label;
+		return checked.id || checked.label;
 	};
 
 	contextMenu.addListener("menu-will-close", function () {
-		settings.set("quality", getSelected())
+		setTimeout(() => {
+			settings.set("quality", getSelected())
+		})
 	});
 
 	tray.setContextMenu(contextMenu);
@@ -313,7 +308,7 @@ app.on('ready', () => {
 	tray.addListener("double-click", toggleWindow);
 
 	clipboard.toggle(settings.get('clipboardWatch'));
-	clipboard.on('text', (clipboardText) => {
+	clipboard.on('text', clipboardText => {
 		if (urlRegexp.test(clipboardText)) {
 			openStreamlink();
 		}
@@ -323,12 +318,24 @@ app.on('ready', () => {
 
 
 
+	const refreshQualityChecked = () => {
+		contextMenu.items.forEach(menuItem => {
+			const value = menuItem.id || menuItem.label;
+			if (menuItem.type === "radio" && settings.get("quality") === value) {
+				menuItem.checked = true;
+			}
+		});
+	};
 	settings.on('change', function (key) {
 		switch (key) {
+			case 'quality':
+				refreshQualityChecked();
+				break;
 			case 'clipboardWatch':
 				contextMenu.getMenuItemById('clipboardWatch').checked = settings.get('clipboardWatch');
 				clipboard.toggle(settings.get('clipboardWatch'));
 				break;
 		}
-	})
+	});
+	refreshQualityChecked();
 });
