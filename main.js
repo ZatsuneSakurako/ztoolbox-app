@@ -82,6 +82,7 @@ class Settings extends Map {
 		} else {
 			// Default settings
 			super.set("quality", "best");
+			super.set("clipboardWatch", false);
 			this._save();
 		}
 	}
@@ -138,7 +139,12 @@ class Settings extends Map {
 
 
 const { spawn } = require('child_process'),
-	{ clipboard, Menu, Tray, ipcMain } = require('electron')
+	{ Menu, Tray, ipcMain } = require('electron')
+;
+
+const {Clipboard} = require('./Clipboard'),
+	urlRegexp = /https?:\/\/*/,
+	clipboard = new Clipboard(5000, false)
 ;
 
 const getSelectedMenu = () => {
@@ -155,13 +161,13 @@ const getSelectedMenu = () => {
 
 function openStreamlink() {
 	const selected = getSelectedMenu().trim(),
-		clipboardText = clipboard.readText()
+		clipboardText = clipboard.text
 	;
 
 	let url = null;
-	if (/https?:\/\/*/.test(clipboardText)) {
+	if (urlRegexp.test(clipboardText)) {
 		try {
-			url = new URL(clipboard.readText());
+			url = new URL(clipboard.text);
 		} catch (e) {
 			console.error(e)
 		}
@@ -173,6 +179,7 @@ function openStreamlink() {
 			content: 'Pas d\'url dans le presse-papier'
 		})
 	} else {
+		// TODO Confirm notification
 		spawn('streamlink', [url.toString(), selected], {
 			detached: true,
 			stdio: 'ignore',
@@ -215,7 +222,9 @@ app.on('ready', () => {
 
 	contextMenu = Menu.buildFromTemplate([
 		{
-			label: 'Ouvrir la fenêtre', type: 'normal', click() {
+			label: 'Ouvrir la fenêtre',
+			type: 'normal',
+			click() {
 				toggleWindow()
 			}
 		},
@@ -223,6 +232,19 @@ app.on('ready', () => {
 		{
 			label: 'Ouvrir streamlink', type: 'normal', click() {
 				openStreamlink()
+			}
+		},
+
+		{type: 'separator'},
+
+		{
+			label: 'Observer presse-papier',
+			type: 'checkbox',
+			checked: settings.get('clipboardWatch'),
+			click() {
+				settings.set('clipboardWatch', !settings.get('clipboardWatch'));
+				this.checked = settings.get('clipboardWatch');
+				clipboard.toggle(settings.get('clipboardWatch'));
 			}
 		},
 
@@ -270,4 +292,11 @@ app.on('ready', () => {
 	});
 	tray.addListener("click", openStreamlink);
 	tray.addListener("double-click", toggleWindow);
+
+	clipboard.toggle(settings.get('clipboardWatch'));
+	clipboard.on('text', (clipboardText) => {
+		if (urlRegexp.test(clipboardText)) {
+			openStreamlink();
+		}
+	})
 });
