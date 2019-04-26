@@ -237,8 +237,6 @@ app.on('ready', () => {
 	;
 
 
-	tray = new Tray(path.resolve(__dirname, './icon_128.png'));
-	tray.setToolTip('Ceci est mon application.');
 
 	contextMenu = Menu.buildFromTemplate([
 		{
@@ -296,6 +294,10 @@ app.on('ready', () => {
 		})
 	});
 
+
+
+	tray = new Tray(path.resolve(__dirname, './icon_128.png'));
+	tray.setToolTip('Ceci est mon application.');
 	tray.setContextMenu(contextMenu);
 
 
@@ -319,7 +321,7 @@ app.on('ready', () => {
 
 
 	const refreshQualityChecked = () => {
-		contextMenu.items.forEach(menuItem => {
+		contextMenu.items.forEach(/** @type {Electron.MenuItem} */ menuItem => {
 			const value = menuItem.id || menuItem.label;
 			if (menuItem.type === "radio" && settings.get("quality") === value) {
 				menuItem.checked = true;
