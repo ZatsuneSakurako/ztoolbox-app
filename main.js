@@ -64,7 +64,7 @@ const Events = require('events'),
  * @implements NodeJS.Events
  * @inheritDoc
  */
-class Settings extends classUtils.extend(Map, Events) {
+class Settings extends Map {
 	/**
 	 * @inheritDoc
 	 */
@@ -143,6 +143,7 @@ class Settings extends classUtils.extend(Map, Events) {
 		return json
 	}
 }
+classUtils.inherit(Settings, Events, []);
 
 
 
