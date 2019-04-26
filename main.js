@@ -143,6 +143,7 @@ class Settings extends Map {
 		return json
 	}
 }
+// https://www.npmjs.com/package/class-utils
 classUtils.inherit(Settings, Events, []);
 
 

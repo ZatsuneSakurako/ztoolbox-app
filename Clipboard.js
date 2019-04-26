@@ -6,25 +6,25 @@ class Clipboard extends events {
 	/**
 	 * @type {Number}
 	 */
-	// watchDelay = 1000;
+	watchDelay = 1000;
 
 	/**
 	 * @type String
 	 */
-	// lastText;
+	lastText;
 
 	/**
 	 *
 	 * @type {Electron.NativeImage}
 	 */
-	// lastImage;
+	lastImage;
 
 	/**
 	 *
 	 * @type {Number}
 	 * @private
 	 */
-	// _interval = null;
+	_interval = null;
 
 	constructor(watchDelay, autoStart=true) {
 		super();
