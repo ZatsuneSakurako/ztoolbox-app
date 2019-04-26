@@ -54,10 +54,17 @@ app.on('activate', function () {
 
 
 
+const Events = require('events'),
+	classUtils = require('class-utils')
+;
+
 /**
+ *
+ * @extends Map
+ * @implements NodeJS.Events
  * @inheritDoc
  */
-class Settings extends Map {
+class Settings extends classUtils.extend(Map, Events) {
 	/**
 	 * @inheritDoc
 	 */
@@ -109,7 +116,9 @@ class Settings extends Map {
 	 * @inheritDoc
 	 */
 	set(key, value) {
+		const oldValue = this.get(key);
 		super.set(key, value);
+		this.emit('change', oldValue, value);
 		this._save();
 	}
 
@@ -118,6 +127,7 @@ class Settings extends Map {
 	 */
 	clear() {
 		super.clear();
+		this.emit('clear');
 		this._save();
 	}
 
