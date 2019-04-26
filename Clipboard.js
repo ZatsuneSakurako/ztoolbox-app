@@ -1,8 +1,8 @@
 const {clipboard} = require('electron'),
-	events = require('events')
+	{EventEmitter} = require('events')
 ;
 
-class Clipboard extends events {
+class Clipboard extends EventEmitter {
 	/**
 	 * @type {Number}
 	 */
@@ -158,7 +158,9 @@ class Clipboard extends events {
 			this.stop();
 		}
 
-		this._interval = setInterval(this._intervalCallback, this.watchDelay);
+		this._interval = setInterval(() => {
+			this._intervalCallback()
+		}, this.watchDelay);
 
 		return this;
 	}

@@ -54,7 +54,7 @@ app.on('activate', function () {
 
 
 
-const Events = require('events'),
+const {EventEmitter} = require('events'),
 	classUtils = require('class-utils')
 ;
 
@@ -118,7 +118,7 @@ class Settings extends Map {
 	set(key, value) {
 		const oldValue = this.get(key);
 		super.set(key, value);
-		this.emit('change', oldValue, value);
+		this.emit('change', key, oldValue, value);
 		this._save();
 	}
 
@@ -144,14 +144,14 @@ class Settings extends Map {
 	}
 }
 // https://www.npmjs.com/package/class-utils
-classUtils.inherit(Settings, Events, []);
+classUtils.inherit(Settings, EventEmitter, []);
 
 
 
 
 
 const { spawn } = require('child_process'),
-	{ Menu, Tray, ipcMain } = require('electron')
+	{ Notification, Menu, Tray, ipcMain } = require('electron')
 ;
 
 const {Clipboard} = require('./Clipboard'),
@@ -186,25 +186,33 @@ function openStreamlink() {
 	}
 
 	if (url == null) {
-		tray.displayBalloon({
-			title: 'Erreur',
-			content: 'Pas d\'url dans le presse-papier'
-		})
+		new Notification({
+			title: "Mon Appli - Erreur",
+			body: 'Pas d\'url dans le presse-papier'
+		}).show();
 	} else {
-		// TODO Confirm notification
-		spawn('streamlink', [url.toString(), selected], {
-			detached: true,
-			stdio: 'ignore',
-			env: process.env
+		new Notification({
+			title: "Mon Appli - Lien détecté",
+			body: 'Cliquer pour ouvrir le lien avec streamlink'
 		})
-			.on('error', function (e) {
-				console.error(e);
-				tray.displayBalloon({
-					title: 'Erreur',
-					content: 'Erreur lors du lancement de streamlink'
+			.addListener('click', function () {
+				spawn('streamlink', [url.toString(), selected], {
+					detached: true,
+					stdio: 'ignore',
+					env: process.env
 				})
+					.on('error', function (e) {
+						console.error(e);
+						tray.displayBalloon({
+							title: 'Erreur',
+							content: 'Erreur lors du lancement de streamlink'
+						})
+					})
+					.unref()
+				;
 			})
-			.unref();
+			.show()
+		;
 	}
 }
 
@@ -250,13 +258,12 @@ app.on('ready', () => {
 		{type: 'separator'},
 
 		{
+			id: 'clipboardWatch',
 			label: 'Observer presse-papier',
 			type: 'checkbox',
 			checked: settings.get('clipboardWatch'),
 			click() {
 				settings.set('clipboardWatch', !settings.get('clipboardWatch'));
-				this.checked = settings.get('clipboardWatch');
-				clipboard.toggle(settings.get('clipboardWatch'));
 			}
 		},
 
@@ -309,6 +316,19 @@ app.on('ready', () => {
 	clipboard.on('text', (clipboardText) => {
 		if (urlRegexp.test(clipboardText)) {
 			openStreamlink();
+		}
+	});
+
+
+
+
+
+	settings.on('change', function (key) {
+		switch (key) {
+			case 'clipboardWatch':
+				contextMenu.getMenuItemById('clipboardWatch').checked = settings.get('clipboardWatch');
+				clipboard.toggle(settings.get('clipboardWatch'));
+				break;
 		}
 	})
 });
