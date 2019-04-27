@@ -1,4 +1,10 @@
-const {app, BrowserWindow} = require('electron');
+const path = require('path'),
+	{app, BrowserWindow, nativeImage} = require('electron'),
+
+	appIconPath = path.resolve(__dirname, './icon.png'),
+	appIconPath_x3 = path.resolve(__dirname, './icon@3x.png'),
+	appIcon = nativeImage.createFromPath(appIconPath)
+;
 
 let mainWindow;
 function createWindow() {
@@ -6,6 +12,7 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 400,
 		height: 300,
+		icon: appIcon,
 		webPreferences: {
 			nodeIntegration: true
 		}
@@ -18,7 +25,7 @@ function createWindow() {
 	// mainWindow.webContents.openDevTools()
 
 	// Emitted when the window is closed.
-	mainWindow.on('closed', function (e) {
+	mainWindow.on('closed', function () {
 		// Dereference the window object, usually you would store windows
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
@@ -141,6 +148,7 @@ const notifier = require('node-notifier');
  * @param {Object} options
  * @param {String} options.title
  * @param {String} options.message
+ * @param {String} [options.icon]
  * @param {Boolean} [options.sound]
  * @return {Promise<*>}
  */
@@ -151,6 +159,9 @@ function notify(options) {
 			return;
 		}
 
+		if (options.hasOwnProperty('icon') === false || typeof options.icon !== 'string') {
+			options.icon = appIconPath_x3;
+		}
 		options.wait = true;
 		notifier.notify(options, function (error, response) {
 			if (!!error) {
@@ -241,9 +252,7 @@ let contextMenu = null;
 // This method will be called when Electron has finished initialization.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-	const path = require('path'),
-		settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'))
-	;
+	const settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'));
 
 
 
@@ -304,7 +313,7 @@ app.on('ready', () => {
 
 
 
-	tray = new Tray(path.resolve(__dirname, './icon_128.png'));
+	tray = new Tray(appIcon);
 	tray.setToolTip('Ceci est mon application.');
 	tray.setContextMenu(contextMenu);
 
