@@ -1,25 +1,32 @@
 {
-  "name": "electron-quick-start",
+  "name": "zelectron-streamlink",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
-  "scripts": {
-    "start": "electron ."
+  "build": {
+    "appId": "com.electron.zelectron-streamlink",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    }
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "repository": "git@gitlab.com:ZatsuneNoMokou/streamlink-electron.git",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "streamlink"
   ],
-  "author": "GitHub",
+  "author": "ZatsuneNoMokou",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^5.0.0"
+    "electron": "^5.0.0",
+    "electron-builder": "^20.39.0"
   },
   "dependencies": {
-    "class-utils": "^0.3.6"
+    "class-utils": "^0.3.6",
+    "node-notifier": "^5.4.0"
   }
 }

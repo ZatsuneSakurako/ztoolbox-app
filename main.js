@@ -17,31 +17,20 @@ function createWindow() {
 	// Open the DevTools.
 	// mainWindow.webContents.openDevTools()
 
-	mainWindow.on('close', function (e) {
-		e.preventDefault();
-		mainWindow.hide();
-		e.returnValue = false;
-	});
-
 	// Emitted when the window is closed.
-	/*mainWindow.on('closed', function (e) {
+	mainWindow.on('closed', function (e) {
 		// Dereference the window object, usually you would store windows
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
 		mainWindow = null
-	})*/
+	})
 }
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-// app.on('ready', createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
 	// On macOS it is common for applications and their menu bar
 	// to stay active until the user quits explicitly with Cmd + Q
-	if (process.platform !== 'darwin') app.quit()
+	// if (process.platform !== 'darwin') app.quit()
 });
 
 app.on('activate', function () {
@@ -146,12 +135,45 @@ class Settings extends Map {
 // https://www.npmjs.com/package/class-utils
 classUtils.inherit(Settings, EventEmitter, []);
 
+const notifier = require('node-notifier');
+/**
+ *
+ * @param {Object} options
+ * @param {String} options.title
+ * @param {String} options.message
+ * @param {Boolean} [options.sound]
+ * @return {Promise<*>}
+ */
+function notify(options) {
+	return new Promise((resolve, reject) => {
+		if (options === null || typeof options !== 'object') {
+			reject('WrongArgument');
+			return;
+		}
+
+		options.wait = true;
+		notifier.notify(options, function (error, response) {
+			if (!!error) {
+				reject(error);
+			} else if (!(typeof response === 'string' && response.indexOf('clicked'))) {
+				resolve(response);
+			}
+		})
+			.on('click', () => {
+				resolve('click');
+			})
+			.on('timeout', () => {
+				reject('timeout');
+			})
+	})
+}
 
 
 
 
-const { spawn } = require('child_process'),
-	{ Notification, Menu, Tray, ipcMain } = require('electron')
+
+const { exec } = require('child_process'),
+	{ Menu, Tray, ipcMain } = require('electron')
 ;
 
 const {Clipboard} = require('./Clipboard'),
@@ -168,7 +190,7 @@ const getSelectedMenu = () => {
 		}
 	});
 
-	return checked.value || checked.label;
+	return checked.id || checked.label;
 };
 
 function openStreamlink() {
@@ -186,51 +208,38 @@ function openStreamlink() {
 	}
 
 	if (url == null) {
-		new Notification({
-			title: "Mon Appli - Erreur",
-			body: 'Pas d\'url dans le presse-papier'
-		}).show();
-	} else {
-		new Notification({
-			title: "Mon Appli - Lien détecté",
-			body: 'Cliquer pour ouvrir le lien avec streamlink'
+		notify({
+			title: 'Mon Appli - Erreur',
+			message: 'Pas d\'url dans le presse-papier'
 		})
-			.addListener('click', function () {
-				spawn('streamlink', [url.toString(), selected], {
-					detached: true,
-					stdio: 'ignore',
-					env: process.env
-				})
-					.on('error', function (e) {
-						console.error(e);
-						tray.displayBalloon({
-							title: 'Erreur',
-							content: 'Erreur lors du lancement de streamlink'
-						})
-					})
-					.unref()
-				;
-			})
-			.show()
+			.catch(console.error)
 		;
+	} else {
+		try {
+			notify({
+				title: "Mon Appli - Lien détecté",
+				message: 'Cliquer pour ouvrir le lien avec streamlink'
+			})
+				.then(() => {
+					exec(`streamlink ${url.toString()} ${selected}`, function (err, stdout, stderr) {
+						console.dir(arguments)
+					});
+				})
+		} catch (e) {
+		}
 	}
 }
 
 function toggleWindow() {
 	if (mainWindow == null) {
 		createWindow();
-		return;
-	}
-
-	if (mainWindow.isVisible()) {
-		mainWindow.hide();
-	} else {
-		mainWindow.show();
 	}
 }
 
 let tray = null;
 let contextMenu = null;
+// This method will be called when Electron has finished initialization.
+// Some APIs can only be used after this event occurs.
 app.on('ready', () => {
 	const path = require('path'),
 		settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'))
@@ -269,7 +278,6 @@ app.on('ready', () => {
 
 		{id: 'worst', label: 'Pire', type: 'radio'},
 		{id: 'best', label: 'Meilleure', type: 'radio'},
-		{id: 'source', label: 'Source', type: 'radio'},
 
 		{type: 'separator'},
 
