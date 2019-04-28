@@ -1,10 +1,16 @@
 const path = require('path'),
 	{app, BrowserWindow, nativeImage} = require('electron'),
 
-	appIconPath = path.resolve(__dirname, './icon.png'),
-	appIconPath_x3 = path.resolve(__dirname, './icon@3x.png'),
+	resourcePath = (process.env.NODE_ENV === 'development')? __dirname : process.resourcesPath,
+
+	appIconPath = path.resolve(resourcePath, './images/icon.png'),
+	appIconPath_x3 = path.resolve(resourcePath, './images/icon@3x.png'),
 	appIcon = nativeImage.createFromPath(appIconPath)
 ;
+
+
+
+
 
 let mainWindow;
 function createWindow() {

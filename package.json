@@ -3,27 +3,27 @@
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
-  "build": {
-    "appId": "com.electron.zelectron-streamlink",
-    "mac": {
-      "category": "public.app-category.developer-tools"
-    }
-  },
   "scripts": {
-    "start": "electron .",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "start": "cross-env NODE_ENV=development electron .",
+    "pack": "node build.js --dir",
+    "dist": "node build.js"
   },
   "repository": "git@gitlab.com:ZatsuneNoMokou/streamlink-electron.git",
   "keywords": [
     "Electron",
     "streamlink"
   ],
-  "author": "ZatsuneNoMokou",
+  "author": {
+    "name": "ZatsuneNoMokou",
+    "email": "contact@zatsunenomokou.eu",
+    "url": "https://zatsunenomokou.eu/"
+  },
   "license": "CC0-1.0",
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "electron": "^5.0.0",
-    "electron-builder": "^20.39.0"
+    "electron-builder": "^20.39.0",
+    "yargs": "^13.2.2"
   },
   "dependencies": {
     "class-utils": "^0.3.6",
