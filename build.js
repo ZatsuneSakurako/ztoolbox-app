@@ -4,7 +4,7 @@ const yargs = require('yargs')
 
 	.option('d', {
 		"alias": ['dir'],
-		"description": 'Do stable release',
+		"description": 'electron builder --dir',
 		"type": "boolean"
 	})
 	.fail(function (msg, err, yargs) {
