@@ -1,3 +1,4 @@
+// noinspection JSUnresolvedFunction
 const yargs = require('yargs')
 	.usage('Usage: $0 [options]')
 
