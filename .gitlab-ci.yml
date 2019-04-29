@@ -1,0 +1,19 @@
+# This file is a template, and might need editing before it works on your project.
+# Official framework image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/node/tags/
+image: node:latest
+
+# This folder is cached between builds
+# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
+cache:
+  paths:
+  - node_modules/
+
+package:
+  stage: build
+  script:
+  - sed "s/1.0.0/1.0.${$CI_PIPELINE_ID}/g" package.json > _package.json && mv _package.json package.json
+  - npm i && npm run build
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/dist/*.*
