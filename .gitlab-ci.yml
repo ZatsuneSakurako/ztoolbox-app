@@ -1,7 +1,5 @@
 # This file is a template, and might need editing before it works on your project.
-# Official framework image. Look for the different tagged releases at:
-# https://hub.docker.com/r/library/node/tags/
-image: node:latest
+image: electronuserland/builder:wine
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
@@ -21,7 +19,7 @@ package:
         - yarn install
     script:
         - sed "s/1.0.0/${VERSION_ID}/g" package.json > _package.json && mv _package.json package.json
-        - npm run dist
+        - yarn dist
     artifacts:
         paths:
             - $CI_PROJECT_DIR/dist/*.*
