@@ -25,4 +25,6 @@ package:
     artifacts:
         paths:
             - $CI_PROJECT_DIR/dist/*.*
-    when: manual
+    only:
+        - tags
+        - web
