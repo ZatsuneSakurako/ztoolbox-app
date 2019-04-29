@@ -20,8 +20,8 @@ package:
         - curl -o- -L https://yarnpkg.com/install.sh | bash
         - yarn install
     script:
-    - sed "s/1.0.0/${VERSION_ID}/g" package.json > _package.json && mv _package.json package.json
-    - npm run build
+        - sed "s/1.0.0/${VERSION_ID}/g" package.json > _package.json && mv _package.json package.json
+        - npm run dist
     artifacts:
         paths:
             - $CI_PROJECT_DIR/dist/*.*
