@@ -13,7 +13,7 @@ cache:
 build:
     stage: build
     variables: 
-    VERSION_ID: '1.0.$CI_PIPELINE_ID'
+        VERSION_ID: '1.0.$CI_PIPELINE_ID'
     # https://yarnpkg.com/lang/en/docs/install-ci/
     before_script:
     # Install yarn as outlined in (https://yarnpkg.com/lang/en/docs/install/#alternatives-stable)
@@ -23,6 +23,6 @@ build:
     - sed "s/1.0.0/${VERSION_ID}/g" package.json > _package.json && mv _package.json package.json
     - npm run build
     artifacts:
-    paths:
-      - $CI_PROJECT_DIR/dist/*.*
-    when: manual
+        paths:
+          - $CI_PROJECT_DIR/dist/*.*
+        when: manual
