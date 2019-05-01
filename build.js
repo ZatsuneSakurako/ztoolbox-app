@@ -52,6 +52,13 @@ const yargs = require('yargs')
 					{
 						"from": "index.html",
 						"to": "resources/"
+					},
+					{
+						"from": "lib/",
+						"to": "resources/lib/",
+						"filter": [
+							"**/*.js"
+						]
 					}
 				]
 			}

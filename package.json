@@ -6,7 +6,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development electron .",
     "pack": "node build.js --dir",
-    "dist": "node build.js"
+    "dist": "node build.js",
+    "postinstall": "node scripts/postinstall.js"
   },
   "repository": "git@gitlab.com:ZatsuneNoMokou/streamlink-electron.git",
   "keywords": [

@@ -8,7 +8,8 @@
 		// You can also require other files to run in this process
 		// require('./renderer.js');
 
-		const Vue = require('vue/dist/vue.js'),
+		const path = require('path'),
+			Vue = require(path.resolve(__dirname, './lib/vue.js')),
 			{ ipcRenderer } = require('electron')
 		;
 
