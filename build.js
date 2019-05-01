@@ -50,11 +50,8 @@ const yargs = require('yargs')
 						]
 					},
 					{
-						"from": "/",
-						"to": "resources/",
-						"filter": [
-							"**/*.html"
-						]
+						"from": "index.html",
+						"to": "resources/"
 					}
 				]
 			}
