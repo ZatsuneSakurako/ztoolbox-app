@@ -80,7 +80,7 @@ const getSelectedMenu = () => {
 	return checked.id || checked.label;
 };
 
-async function openStreamlink() {
+async function openStreamlink(useConfirmNotification=true) {
 	const selected = getSelectedMenu().trim(),
 		clipboardText = clipboard.text
 	;
@@ -116,17 +116,23 @@ async function openStreamlink() {
 			return;
 		}
 
-		try {
-			notify({
-				title: 'Lien détecté',
-				message: 'Cliquer pour ouvrir le lien avec streamlink'
-			})
-				.then(() => {
-					Streamlink.open(url, selected)
-						.catch(console.error)
-					;
+		if (useConfirmNotification !== false) {
+			try {
+				notify({
+					title: 'Lien détecté',
+					message: 'Cliquer pour ouvrir le lien avec streamlink'
 				})
-		} catch (e) {}
+					.then(() => {
+						Streamlink.open(url, selected)
+							.catch(console.error)
+						;
+					})
+			} catch (e) {}
+		} else {
+			Streamlink.open(url, selected)
+				.catch(console.error)
+			;
+		}
 	}
 }
 
@@ -156,7 +162,9 @@ app.on('ready', () => {
 
 		{
 			label: 'Ouvrir streamlink', type: 'normal', click() {
-				openStreamlink()
+				openStreamlink(false)
+					.catch(console.error)
+				;
 			}
 		},
 
@@ -209,14 +217,18 @@ app.on('ready', () => {
 
 
 	ipcMain.on('openStreamlink', e => {
-		openStreamlink();
+		openStreamlink(false)
+			.catch(console.error)
+		;
 		e.returnValue = true
 	});
 	tray.addListener("click", () => {
 		if (clipboard.isEnabled === true) {
 			toggleWindow()
 		} else {
-			openStreamlink()
+			openStreamlink(false)
+				.catch(console.error)
+			;
 		}
 	});
 	tray.addListener("double-click", toggleWindow);
@@ -224,7 +236,9 @@ app.on('ready', () => {
 	clipboard.toggle(settings.get('clipboardWatch'));
 	clipboard.on('text', clipboardText => {
 		if (urlRegexp.test(clipboardText)) {
-			openStreamlink();
+			openStreamlink(true)
+				.catch(console.error)
+			;
 		}
 	});
 
