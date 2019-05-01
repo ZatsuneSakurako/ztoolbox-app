@@ -101,39 +101,49 @@ async function openStreamlink(useConfirmNotification=true) {
 		})
 			.catch(console.error)
 		;
-	} else {
-		const availableQualities = await Streamlink.getQualities(url)
+		return;
+	}
+
+
+
+	const availableQualities = await Streamlink.getQualities(url)
+		.catch(console.error)
+	;
+
+	if (availableQualities.length === 0) {
+		notify({
+			title: 'Information',
+			message: 'Vérifiez l\'url (flux en ligne, qualités, ...)'
+		})
 			.catch(console.error)
 		;
+		return;
+	}
 
-		if (availableQualities.length === 0) {
-			notify({
-				title: 'Information',
-				message: 'Vérifiez l\'url (flux en ligne, qualités, ...)'
-			})
-				.catch(console.error)
-			;
+	if (useConfirmNotification !== false) {
+		let notificationConfirmed = false;
+		try {
+			await notify({
+				title: 'Lien détecté',
+				message: 'Cliquer pour ouvrir le lien avec streamlink'
+			});
+
+			notificationConfirmed = true;
+		} catch (e) {
+			notificationConfirmed = false;
+		}
+
+		if (notificationConfirmed !== true) {
 			return;
 		}
-
-		if (useConfirmNotification !== false) {
-			try {
-				notify({
-					title: 'Lien détecté',
-					message: 'Cliquer pour ouvrir le lien avec streamlink'
-				})
-					.then(() => {
-						Streamlink.open(url, selected)
-							.catch(console.error)
-						;
-					})
-			} catch (e) {}
-		} else {
-			Streamlink.open(url, selected)
-				.catch(console.error)
-			;
-		}
 	}
+
+
+
+	Streamlink.open(url, selected)
+		.catch(console.error)
+	;
+
 }
 
 function toggleWindow() {

@@ -1,33 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:v-on="http://www.w3.org/1999/xhtml" lang="fr">
 <head>
 	<meta charset="UTF-8">
 	<title>Hello World!</title>
+
+	<script>
+		// You can also require other files to run in this process
+		// require('./renderer.js');
+
+		const Vue = require('vue/dist/vue.js'),
+			{ ipcRenderer } = require('electron')
+		;
+
+		const data = {
+			message: 'Hello Vue!',
+			versions: process.versions
+		};
+		let app;
+
+		window.addEventListener("load", function () {
+			app = new Vue({
+				el: 'main',
+				data: data,
+				methods: {
+					onStreamLink: function () {
+						ipcRenderer.send('openStreamlink');
+					}
+				}
+			});
+		});
+	</script>
 </head>
 <body>
-<p>
-	<button id="streamlinkOpen">Ouvrir streamlink</button>
-</p>
 
-<p>
-	<!-- All of the Node.js APIs are available in this renderer process. -->
-	We are using Node.js<script>document.write(process.versions.node)</script>
-	, Chromium <script>document.write(process.versions.chrome)</script>
-	, and Electron <script>document.write(process.versions.electron)</script>.
-</p>
+<main>
+	<p>
+		<button v-on:click="onStreamLink">Ouvrir streamlink</button>
+	</p>
 
-<script>
-	// You can also require other files to run in this process
-	// require('./renderer.js');
-
-	window.addEventListener("load", function () {
-		document.querySelector("#streamlinkOpen")
-			.addEventListener('click', function () {
-				const { ipcRenderer } = require('electron');
-				ipcRenderer.send('openStreamlink');
-			})
-	})
-</script>
+	<p>
+		<!-- All of the Node.js APIs are available in this renderer process. -->
+		We are using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}}.
+	</p>
+</main>
 
 </body>
 </html>

@@ -195,6 +195,7 @@ class Clipboard extends EventEmitter {
 	stop() {
 		if (this._interval !== null) {
 			clearInterval(this._interval);
+			this._interval = null;
 		}
 
 		return this;
