@@ -48,6 +48,13 @@ const yargs = require('yargs')
 							"**/*.jpg",
 							"**/*.png"
 						]
+					},
+					{
+						"from": "/",
+						"to": "resources/",
+						"filter": [
+							"**/*.html"
+						]
 					}
 				]
 			}

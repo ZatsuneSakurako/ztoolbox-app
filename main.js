@@ -25,7 +25,9 @@ function createWindow() {
 	});
 
 	// and load the index.html of the app.
-	mainWindow.loadFile('index.html');
+	mainWindow.loadFile(path.resolve(resourcePath, './index.html'))
+		.catch(console.error)
+	;
 
 	// Open the DevTools.
 	// mainWindow.webContents.openDevTools()
@@ -56,144 +58,12 @@ app.on('activate', function () {
 
 
 
-const {EventEmitter} = require('events'),
-	classUtils = require('class-utils')
-;
+const { Menu, Tray, ipcMain } = require('electron');
 
-/**
- *
- * @extends Map
- * @implements NodeJS.Events
- * @inheritDoc
- */
-class Settings extends Map {
-	/**
-	 * @inheritDoc
-	 */
-	constructor(storagePath) {
-		super();
-
-		this.storagePath = storagePath;
-
-		let settings = null;
-		try {
-			settings = JSON.parse(Settings._fs.readFileSync(storagePath, 'utf8'));
-		} catch (e) {
-			console.error(e)
-		}
-
-		if (settings !== null) {
-			for (let settingsKey in settings) {
-				if (settings.hasOwnProperty(settingsKey)) {
-					super.set(settingsKey, settings[settingsKey]);
-				}
-			}
-		} else {
-			// Default settings
-			super.set("quality", "best");
-			super.set("clipboardWatch", false);
-			this._save();
-		}
-	}
-
-	static get _fs() {
-		delete Settings._fs;
-		// noinspection JSUnresolvedVariable
-		return Settings._fs = require('fs');
-	}
-
-	/**
-	 *
-	 * @private
-	 */
-	_save() {
-		try {
-			Settings._fs.writeFileSync(this.storagePath, JSON.stringify(this.toJSON()), "utf8");
-		} catch (e) {
-			console.error(e)
-		}
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	set(key, value) {
-		const oldValue = this.get(key);
-		super.set(key, value);
-		this.emit('change', key, oldValue, value);
-		this._save();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	clear() {
-		super.clear();
-		this.emit('clear');
-		this._save();
-	}
-
-	/**
-	 *
-	 * @return {JSON}
-	 */
-	toJSON() {
-		const json = {};
-		this.forEach((value, key) => {
-			json[key] = value;
-		});
-		return json
-	}
-}
-// https://www.npmjs.com/package/class-utils
-classUtils.inherit(Settings, EventEmitter, []);
-
-const notifier = require('node-notifier');
-/**
- *
- * @param {Object} options
- * @param {String} options.title
- * @param {String} options.message
- * @param {String} [options.icon]
- * @param {Boolean} [options.sound]
- * @return {Promise<*>}
- */
-function notify(options) {
-	return new Promise((resolve, reject) => {
-		if (options === null || typeof options !== 'object') {
-			reject('WrongArgument');
-			return;
-		}
-
-		if (options.hasOwnProperty('icon') === false || typeof options.icon !== 'string') {
-			options.icon = appIconPath_x3;
-		}
-		options.wait = true;
-		notifier.notify(options, function (error, response) {
-			if (!!error) {
-				reject(error);
-			} else if (!(typeof response === 'string' && response.indexOf('clicked'))) {
-				resolve(response);
-			}
-		})
-			.on('click', () => {
-				resolve('click');
-			})
-			.on('timeout', () => {
-				reject('timeout');
-			})
-	})
-}
-
-
-
-
-
-const { exec } = require('child_process'),
-	{ Menu, Tray, ipcMain } = require('electron')
-;
-
-const {Clipboard} = require('./Clipboard'),
+const {Clipboard} = require('./classes/Clipboard'),
+	{notify} = require('./classes/notify')(appIconPath_x3),
+	{Settings} = require('./classes/Settings'),
+	{Streamlink} = require('./classes/Streamlink'),
 	urlRegexp = /https?:\/\/*/,
 	clipboard = new Clipboard(5000, false)
 ;
@@ -210,7 +80,7 @@ const getSelectedMenu = () => {
 	return checked.id || checked.label;
 };
 
-function openStreamlink() {
+async function openStreamlink() {
 	const selected = getSelectedMenu().trim(),
 		clipboardText = clipboard.text
 	;
@@ -226,24 +96,37 @@ function openStreamlink() {
 
 	if (url == null) {
 		notify({
-			title: 'Mon Appli - Erreur',
+			title: 'Erreur',
 			message: 'Pas d\'url dans le presse-papier'
 		})
 			.catch(console.error)
 		;
 	} else {
+		const availableQualities = await Streamlink.getQualities(url)
+			.catch(console.error)
+		;
+
+		if (availableQualities.length === 0) {
+			notify({
+				title: 'Information',
+				message: 'Vérifiez l\'url (flux en ligne, qualités, ...)'
+			})
+				.catch(console.error)
+			;
+			return;
+		}
+
 		try {
 			notify({
-				title: "Mon Appli - Lien détecté",
+				title: 'Lien détecté',
 				message: 'Cliquer pour ouvrir le lien avec streamlink'
 			})
 				.then(() => {
-					exec(`streamlink ${url.toString()} ${selected}`, function (err, stdout, stderr) {
-						console.dir(arguments)
-					});
+					Streamlink.open(url, selected)
+						.catch(console.error)
+					;
 				})
-		} catch (e) {
-		}
+		} catch (e) {}
 	}
 }
 
@@ -329,7 +212,13 @@ app.on('ready', () => {
 		openStreamlink();
 		e.returnValue = true
 	});
-	tray.addListener("click", openStreamlink);
+	tray.addListener("click", () => {
+		if (clipboard.isEnabled === true) {
+			toggleWindow()
+		} else {
+			openStreamlink()
+		}
+	});
 	tray.addListener("double-click", toggleWindow);
 
 	clipboard.toggle(settings.get('clipboardWatch'));

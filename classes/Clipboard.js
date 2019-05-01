@@ -167,6 +167,14 @@ class Clipboard extends EventEmitter {
 
 	/**
 	 *
+	 * @return {boolean}
+	 */
+	get isEnabled() {
+		return this._interval !== null;
+	}
+
+	/**
+	 *
 	 * @param {Boolean} newState
 	 * @return {this}
 	 */
