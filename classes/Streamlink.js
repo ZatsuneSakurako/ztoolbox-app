@@ -2,6 +2,11 @@ const { exec } = require('child_process');
 
 
 
+/**
+ *
+ * @param {String} command
+ * @return {Promise<*>}
+ */
 function promisedExec(command) {
 	return new Promise((resolve, reject) => {
 		/**
