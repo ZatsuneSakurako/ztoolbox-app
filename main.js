@@ -8,7 +8,13 @@ const path = require('path'),
 	appIcon = nativeImage.createFromPath(appIconPath)
 ;
 
+
+
+
+
 app.setName('Z-ToolBox');
+app.removeAsDefaultProtocolClient('ztoolbox');
+app.setAsDefaultProtocolClient('ztoolbox');
 
 
 
@@ -82,13 +88,18 @@ const getSelectedMenu = () => {
 	return checked.id || checked.label;
 };
 
-async function openStreamlink(useConfirmNotification=true) {
+/**
+ *
+ * @param {boolean=true} [useConfirmNotification]
+ * @param {?String} [url]
+ * @return {Promise<void>}
+ */
+async function openStreamlink(useConfirmNotification=true, url=null) {
 	const selected = getSelectedMenu().trim(),
 		clipboardText = clipboard.text
 	;
 
-	let url = null;
-	if (urlRegexp.test(clipboardText)) {
+	if (url === null && urlRegexp.test(clipboardText)) {
 		try {
 			url = new URL(clipboard.text);
 		} catch (e) {
@@ -158,9 +169,8 @@ let tray = null;
 let contextMenu = null;
 // This method will be called when Electron has finished initialization.
 // Some APIs can only be used after this event occurs.
-app.on('ready', () => {
+function onReady() {
 	const settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'));
-
 
 
 	contextMenu = Menu.buildFromTemplate([
@@ -259,7 +269,7 @@ app.on('ready', () => {
 
 
 	const refreshQualityChecked = () => {
-		contextMenu.items.forEach(/** @type {Electron.MenuItem} */ menuItem => {
+		contextMenu.items.forEach(/** @type {Electron.MenuItem} */menuItem => {
 			const value = menuItem.id || menuItem.label;
 			if (menuItem.type === "radio" && settings.get("quality") === value) {
 				menuItem.checked = true;
@@ -278,4 +288,89 @@ app.on('ready', () => {
 		}
 	});
 	refreshQualityChecked();
-});
+
+
+
+
+
+	// Check if currently opened for a ztoolbox://*
+	onOpen(process.argv);
+}
+
+
+
+
+
+/**
+ *
+ * @param {String[]} commandLine
+ */
+function onOpen(commandLine) {
+	const requests = commandLine.filter(value => {
+		return value.indexOf('ztoolbox://') !== -1
+	});
+	let unsupported = false;
+
+	requests.forEach(value => {
+		/**
+		 *
+		 * @type {?URL}
+		 */
+		let url = null;
+		try {
+			url = new URL(value)
+		} catch (e) {
+			console.error(e);
+		}
+
+		if (url === null) {
+			return;
+		}
+
+		if (url.host === 'live') {
+			const inputUrl = url.pathname.replace(/^\//, ''),
+				[siteType, liveId] = inputUrl.split('/')
+			;
+
+			switch (siteType) {
+				case 'youtube':
+					liveUrl = `https://www.youtube.com/watch?v=${liveId}`;
+					break;
+				case 'twitch':
+					liveUrl = `https://twitch.tv/${liveId}`;
+					break;
+				default:
+					liveUrl = `https://${inputUrl}`;
+			}
+
+			openStreamlink(false, liveUrl)
+				.catch(console.error)
+			;
+		} else {
+			unsupported = true;
+		}
+	});
+
+
+
+	if (unsupported === true) {
+		notify({
+			title: 'Erreur',
+			message: 'Lien non supporté'
+		})
+			.catch(console.error)
+		;
+	}
+}
+
+if (app.requestSingleInstanceLock() === true) {
+	// noinspection JSUnusedLocalSymbols
+	app.on('second-instance', (event, commandLine, workingDirectory) => {
+		// Quelqu'un a tenté d'exécuter une seconde instance.
+		onOpen(commandLine);
+	});
+
+	app.on('ready', onReady);
+} else {
+	app.quit();
+}
