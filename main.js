@@ -1,7 +1,7 @@
 const path = require('path'),
 	{app, BrowserWindow, nativeImage} = require('electron'),
 
-	resourcePath = (process.env.NODE_ENV === 'development')? __dirname : process.resourcesPath,
+	resourcePath = (app.isPackaged === false)? __dirname : process.resourcesPath,
 
 	appIconPath = path.resolve(resourcePath, './images/icon.png'),
 	appIconPath_x3 = path.resolve(resourcePath, './images/icon@3x.png'),
