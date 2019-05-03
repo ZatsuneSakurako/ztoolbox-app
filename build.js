@@ -22,7 +22,7 @@ const yargs = require('yargs')
 
 
 
-(async function f() {
+(async function() {
 	const {build} = require('electron-builder');
 
 
@@ -32,7 +32,7 @@ const yargs = require('yargs')
 
 		const buildOptions = {
 			win: ['msi:x64', '7z:x64'],
-			linux: ['tar.gz:x64','deb:x64'],
+			linux: ['tar.gz:x64'/*,'deb:x64'*/],
 			// mac: 'default', // Only supported when running from a Mac
 			config: {
 				"appId": "com.electron.zelectron-streamlink",
