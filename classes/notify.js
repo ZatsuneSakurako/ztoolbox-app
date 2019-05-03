@@ -1,4 +1,6 @@
-const notifier = require('node-notifier');
+const notifier = require('node-notifier'),
+	{app} = require('electron')
+;
 
 let appIcon = null;
 
@@ -20,6 +22,9 @@ function notify(options) {
 			return;
 		}
 
+		if (typeof options.title !== 'undefined') {
+			options.title = `${app.getName()} - ${options.title.toString()}`;
+		}
 		if (options.hasOwnProperty('icon') === false || typeof options.icon !== 'string' && typeof appIcon === 'string') {
 			options.icon = appIcon;
 		}

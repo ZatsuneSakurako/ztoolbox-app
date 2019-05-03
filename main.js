@@ -8,6 +8,8 @@ const path = require('path'),
 	appIcon = nativeImage.createFromPath(appIconPath)
 ;
 
+app.setName('Z-ToolBox');
+
 
 
 
@@ -221,7 +223,7 @@ app.on('ready', () => {
 
 
 	tray = new Tray(appIcon);
-	tray.setToolTip('Ceci est mon application.');
+	tray.setToolTip(app.getName());
 	tray.setContextMenu(contextMenu);
 
 
