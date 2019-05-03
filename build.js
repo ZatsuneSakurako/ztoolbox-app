@@ -31,8 +31,8 @@ const yargs = require('yargs')
 	try {
 
 		const buildOptions = {
-			win: ['nsis:ia32', 'portable:ia32'],
-			linux: ['deb:x64'],
+			win: ['msi:ia32', '7z:ia32'],
+			linux: ['tar.gz:x64','deb:x64'],
 			// mac: 'default', // Only supported when running from a Mac
 			config: {
 				"appId": "com.electron.zelectron-streamlink",
