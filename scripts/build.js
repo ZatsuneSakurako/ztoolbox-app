@@ -23,7 +23,9 @@ const yargs = require('yargs')
 
 
 (async function() {
-	const {build} = require('electron-builder');
+	const path = require('path'),
+		{build} = require('electron-builder/out/index')
+	;
 
 
 
@@ -31,6 +33,8 @@ const yargs = require('yargs')
 	try {
 
 		const buildOptions = {
+			projectDir: path.resolve(__dirname, '..'),
+
 			win: ['msi:x64', '7z:x64'],
 			linux: ['tar.gz:x64'/*,'deb:x64'*/],
 			// mac: 'default', // Only supported when running from a Mac
