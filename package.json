@@ -1,7 +1,7 @@
 {
-  "name": "zelectron-streamlink",
+  "name": "zelectron-toolbox",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "A toolbox Electron application",
   "main": "main.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development electron .",
