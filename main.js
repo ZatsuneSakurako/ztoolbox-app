@@ -13,8 +13,16 @@ const path = require('path'),
 
 
 app.setName('Z-ToolBox');
-app.removeAsDefaultProtocolClient('ztoolbox');
-app.setAsDefaultProtocolClient('ztoolbox');
+if (app.isDefaultProtocolClient('ztoolbox') === true && app.isPackaged === false) {
+	app.removeAsDefaultProtocolClient('ztoolbox');
+}
+if (app.isDefaultProtocolClient('ztoolbox') === false && app.isPackaged === true) {
+	/*
+	 * Unpackaged version does not work anyway
+	 * as the executable is electron.exe
+	 */
+	app.setAsDefaultProtocolClient('ztoolbox');
+}
 
 
 
