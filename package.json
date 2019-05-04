@@ -1,5 +1,5 @@
 {
-  "name": "zelectron-toolbox",
+  "name": "ztoolbox",
   "version": "1.0.0",
   "description": "A toolbox Electron application",
   "main": "main.js",
