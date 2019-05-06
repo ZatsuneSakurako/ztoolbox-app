@@ -39,6 +39,10 @@ const yargs = require('yargs')
 			linux: ['tar.gz:x64'/*,'deb:x64'*/],
 			// mac: 'default', // Only supported when running from a Mac
 			config: {
+				"files": [
+					"!scripts/*"
+				],
+
 				"appId": "com.electron.zelectron-streamlink",
 				"nsis": {
 					"oneClick": false,
@@ -58,8 +62,19 @@ const yargs = require('yargs')
 						]
 					},
 					{
-						"from": "index.html",
-						"to": "resources/"
+						"from": "browserViews/",
+						"to": "resources/browserViews",
+						"filter": "*.html"
+					},
+					{
+						"from": "browserViews/js",
+						"to": "resources/browserViews/js",
+						"filter": "**/*.js"
+					},
+					{
+						"from": "browserViews/css",
+						"to": "resources/browserViews/css",
+						"filter": "**/*.css"
 					},
 					{
 						"from": "lib/",

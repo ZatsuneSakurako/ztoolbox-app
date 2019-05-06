@@ -1,0 +1,7 @@
+#codeInputs {
+	display: flex;
+}
+
+#codeInputs > div {
+	flex: 1;
+}

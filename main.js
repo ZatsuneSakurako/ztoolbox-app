@@ -32,8 +32,8 @@ let mainWindow;
 function createWindow() {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
-		width: 400,
-		height: 300,
+		width: 1000,
+		height: 800,
 		icon: appIcon,
 		webPreferences: {
 			nodeIntegration: true
@@ -41,7 +41,7 @@ function createWindow() {
 	});
 
 	// and load the index.html of the app.
-	mainWindow.loadFile(path.resolve(resourcePath, './index.html'))
+	mainWindow.loadFile(path.resolve(resourcePath, './browserViews/index.html'))
 		.catch(console.error)
 	;
 
