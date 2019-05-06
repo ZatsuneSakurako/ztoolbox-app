@@ -32,7 +32,8 @@ window.addEventListener("load", function () {
 		indentWithTabs: true,
 		lineNumbers: true,
 		lineSeparator: "\n",
-		lineWrapping: true
+		lineWrapping: true,
+		theme: 'monokai'
 	};
 
 	const htmlEditor = new CodeMirror(document.querySelector('#codeInputs'), Object.assign({
