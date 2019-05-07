@@ -5,3 +5,9 @@
 #codeInputs > div {
 	flex: 1;
 }
+
+#iframe {
+    border-style: solid;
+    border-color: #00000033;
+    width: 100%;
+}
