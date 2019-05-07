@@ -24,6 +24,15 @@ function init(e) {
 			vm = new VM({
 				timeout: 10000,
 				sandbox: {
+					/**
+					 *
+					 * @param {string} moduleName
+					 * @return {Module}
+					 */
+					loadModule: function(moduleName) {
+						const url = `https://unpkg.com/${moduleName}`;
+						return import(url);
+					},
 					console,
 					document
 				},
