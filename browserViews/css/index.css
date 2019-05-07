@@ -9,5 +9,6 @@
 #iframe {
     border-style: solid;
     border-color: #00000033;
+    height: 300px;
     width: 100%;
 }
