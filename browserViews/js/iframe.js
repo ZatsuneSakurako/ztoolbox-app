@@ -49,7 +49,7 @@ function init(e) {
 			document.body.textContent = '';
 			document.body.innerHTML = stripHtml(e.data.html, {
 				skipHtmlDecoding: true,
-				onlyStripTags: ['script']
+				onlyStripTags: ['html', 'head', 'script']
 			});
 	}
 }
