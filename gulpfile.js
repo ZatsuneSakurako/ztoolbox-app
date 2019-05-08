@@ -72,7 +72,7 @@ exports.html = gulp.series(clearHtml, HTML);
 
 
 const clear = gulp.series(clearStyles, clearHtml);
-exports.clean = clear;
+exports.clear = clear;
 
 const build = gulp.series(clear, gulp.parallel(styles, HTML));
 exports.build = build;
