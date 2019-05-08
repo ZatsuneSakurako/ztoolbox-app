@@ -1,14 +1,32 @@
 const gulp = require('gulp'),
+	del = require('del'),
 	gulpSass = require('gulp-sass'),
 	sourcemaps = require('gulp-sourcemaps')
 ;
 
+const paths = {
+	styles: {
+		src: 'browserViews/css/**/*.sass',
+		dest: 'browserViews/css/'
+	}
+};
 
 
 
 
-gulp.task('styles', function() {
-	return gulp.src('browserViews/css/**/*.sass')
+
+function clearStyles() {
+	return del([
+		'browserViews/css/**/*.css',
+		'browserViews/css/**/*.map',
+		// 'browserViews/css/**/*',
+		// '!browserViews/css/**/*.sass',
+	]);
+}
+const clear = gulp.series(clearStyles);
+
+function styles() {
+	return gulp.src(paths.styles.src)
 		.pipe(sourcemaps.init())
 		.pipe(
 			gulpSass({
@@ -21,14 +39,25 @@ gulp.task('styles', function() {
 				.on('error', gulpSass.logError)
 		)
 		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest('./browserViews/css/'))
-});
+		.pipe(gulp.dest(paths.styles.dest))
+}
+exports.styles = gulp.series(clearStyles, styles);
 
 
 
 
+
+exports.clean = clear;
+
+
+const build = gulp.series(clear, styles);
+exports.build = build;
+
+/*function watch() {
+	gulp.watch(paths.styles.src, styles);
+}
+exports.watch = gulp.series(clear, build, watch);*/
 
 //Watch task
-gulp.task('default', function() {
-	gulp.watch('src/sass/**/*.sass',['styles']);
-});
+exports.default = build;
+
