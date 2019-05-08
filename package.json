@@ -23,6 +23,9 @@
   "devDependencies": {
     "electron": "^5.0.0",
     "electron-builder": "^20.39.0",
+    "gulp": "^4.0.2",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
     "yargs": "^13.2.2"
   },
   "dependencies": {
