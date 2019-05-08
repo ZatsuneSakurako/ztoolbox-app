@@ -1,6 +1,7 @@
 .idea
 dist
 browserViews/lib
+browserViews/*.html
 browserViews/css/*.css
 browserViews/css/*.map
 
