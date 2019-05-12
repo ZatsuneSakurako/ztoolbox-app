@@ -29,7 +29,7 @@ function clearStyles() {
 	]);
 }
 
-function styles() {
+function css() {
 	return gulp.src(paths.styles.src)
 		.pipe(sourcemaps.init())
 		.pipe(
@@ -45,7 +45,7 @@ function styles() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.styles.dest))
 }
-exports.styles = gulp.series(clearStyles, styles);
+exports.styles = gulp.series(clearStyles, css);
 
 
 
@@ -57,15 +57,14 @@ function clearHtml() {
 	]);
 }
 
-function HTML() {
-	return gulp.src(paths.html.src)
+function html() {
+	return gulp.src([paths.html.src, '!**/_*.pug'])
 		.pipe(gulpPug({
 			// Your options in here.
 		}))
 		.pipe(gulp.dest(paths.html.dest))
 }
-exports.html = gulp.series(clearHtml, HTML);
-
+exports.html = gulp.series(clearHtml, html);
 
 
 
@@ -74,7 +73,7 @@ exports.html = gulp.series(clearHtml, HTML);
 const clear = gulp.series(clearStyles, clearHtml);
 exports.clear = clear;
 
-const build = gulp.series(clear, gulp.parallel(styles, HTML));
+const build = gulp.series(clear, gulp.parallel(css, html));
 exports.build = build;
 
 /*function watch() {

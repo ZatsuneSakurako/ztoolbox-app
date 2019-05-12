@@ -1,4 +1,5 @@
 const {GlobSync} = require('glob'),
+	{shell} = require('electron'),
 	removeAccents = require('remove-accents'),
 	path = require('path')
 ;
@@ -10,7 +11,15 @@ const {GlobSync} = require('glob'),
 class Shortcuts {
 	/**
 	 *
-	 * @type {{path: string, search: string}[]}
+	 * @typedef {Object} Shortcuts.fileItem
+	 * @property {string} filename
+	 * @property {string} path
+	 * @property {string} search
+	 * @property {"lnk" | "url" | "other"} type
+	 */
+	/**
+	 *
+	 * @type {fileItem[]}
 	 */
 	files = [];
 
@@ -24,7 +33,7 @@ class Shortcuts {
 
 	/**
 	 *
-	 * @return {{path: string, search: string}[]}
+	 * @return {fileItem[]}
 	 */
 	getAll() {
 		let files = [];
@@ -33,7 +42,7 @@ class Shortcuts {
 			path.resolve(process.env.APPDATA, './Microsoft/Windows/Start Menu/Programs'),
 			path.resolve(process.env.ProgramData, './Microsoft/Windows/Start Menu/Programs')
 		].forEach(currentBasePath => {
-			const globSync = new GlobSync('/**/*.lnk', {
+			const globSync = new GlobSync('/**/*.@(lnk|url)', {
 				root: currentBasePath,
 				nodir: true,
 				cache: this._cache
@@ -43,7 +52,8 @@ class Shortcuts {
 				return {
 					'path': value,
 					'search': removeAccents(path.relative(currentBasePath, value).toLowerCase()),
-					'filename': path.basename(value)
+					'filename': path.basename(value),
+					'type': path.extname(value).replace(/^\./, '')
 				};
 			}));
 
@@ -60,7 +70,27 @@ class Shortcuts {
 
 		return this.files;
 	}
+
+	/**
+	 *
+	 * @param {fileItem} fileItem
+	 * @return {boolean}
+	 */
+	static openItem(fileItem) {
+		return shell.openItem(fileItem.path);
+	}
+
+	/**
+	 *
+	 * @see https://electronjs.org/docs/api/shell#shellreadshortcutlinkshortcutpath-windows
+	 * @param {fileItem} fileItem
+	 */
+	static getLinkDetails(fileItem) {
+		return shell.readShortcutLink(fileItem.path);
+	}
 }
+
+
 
 
 

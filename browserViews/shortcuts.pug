@@ -1,14 +1,21 @@
-html(lang='fr', xmlns:v-on="http://www.w3.org/1999/xhtml")
-	head
-		meta(charset='UFT-8')
-		title Z-ToolBox
-		meta(http-equiv="Content-Security-Policy", content="default-src 'none'; script-src 'self' 'unsafe-eval'; object-src 'none'; style-src 'self'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'")
+extends _layout
 
-		link(rel='stylesheet', href='css/shortcuts.css')
-		script(src='js/shortcuts.js')
+block head
+	meta(http-equiv="Content-Security-Policy", content="default-src 'none'; script-src 'self' 'unsafe-eval'; object-src 'none'; style-src 'self'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'")
 
-	body
-		main
-			input#search(v-model.trim='search', v-on:input='onInputSearch')
-			section(v-for='item in list' :key="item.path")
-				| {{ item.filename }}
+block head-css
+	link(rel='stylesheet', href='css/reset.css')
+	link(rel='stylesheet', href='css/common.css')
+	link(rel='stylesheet', href='css/shortcuts.css')
+
+block head-js
+	script(src='js/shortcuts.js')
+
+block body
+	main(xmlns:v-on="http://www.w3.org/1999/xhtml")
+		p
+			input#search.block.w100(v-model.trim='search', v-focus='', v-on:keyup.prevent.enter='onEnter', v-on:keyup.esc='onEscape', tabindex=0)
+		section
+			ul.list
+				li(v-for='(item, index) in filteredList', :key="item.path", :tabindex='index + 1', v-on:keyup.enter='onItemTrigger(item)', v-on:click='onItemTrigger(item)')
+					| {{ item.filename }}

@@ -36,6 +36,7 @@ class Settings extends Map {
 			// Default settings
 			super.set("quality", "best");
 			super.set("clipboardWatch", false);
+			super.set("shortcutsWindow", false);
 			this._save();
 		}
 	}

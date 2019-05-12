@@ -62,6 +62,7 @@ function createShortcutWindow() {
 		width: 600,
 		height: 400,
 		icon: appIcon,
+		show: false,
 		webPreferences: {
 			nodeIntegration: true
 		}
@@ -71,10 +72,17 @@ function createShortcutWindow() {
 		.catch(console.error)
 	;
 
+
+
+	shortcutsWindow.once('ready-to-show', () => {
+		shortcutsWindow.show()
+	});
+
+	shortcutsWindow.on('blur', function () {
+		shortcutsWindow.close();
+	});
+
 	shortcutsWindow.on('closed', function () {
-		// Dereference the window object, usually you would store windows
-		// in an array if your app supports multi windows, this is the time
-		// when you should delete the corresponding element.
 		shortcutsWindow = null
 	})
 }
@@ -207,6 +215,22 @@ function toggleWindow() {
 	}
 }
 
+function toggleShortcutsWindow(enabled=true) {
+	globalShortcut.unregister('shift+F2');
+
+	if (enabled === false) {
+		return;
+	}
+
+	globalShortcut.register('shift+F2', () => {
+		if (shortcutsWindow === null) {
+			createShortcutWindow();
+		} else {
+			shortcutsWindow.focus();
+		}
+	})
+}
+
 let tray = null;
 let contextMenu = null;
 let shortcuts = null;
@@ -242,6 +266,16 @@ function onReady() {
 			checked: settings.get('clipboardWatch'),
 			click() {
 				settings.set('clipboardWatch', !settings.get('clipboardWatch'));
+			}
+		},
+
+		{
+			id: 'shortcutsWindow',
+			label: 'Activer shift+F2',
+			type: 'checkbox',
+			checked: settings.get('shortcutsWindow'),
+			click() {
+				settings.set('shortcutsWindow', !settings.get('shortcutsWindow'));
 			}
 		},
 
@@ -300,6 +334,9 @@ function onReady() {
 			shortcuts.getAll();
 			e.returnValue = shortcuts;
 		})
+		.on('openShortcutItem', (e, item) => {
+			e.returnValue = Shortcuts.openItem(item);
+		})
 	;
 	tray.addListener('click', () => {
 		if (clipboard.isEnabled === true) {
@@ -342,6 +379,9 @@ function onReady() {
 				contextMenu.getMenuItemById('clipboardWatch').checked = settings.get('clipboardWatch');
 				clipboard.toggle(settings.get('clipboardWatch'));
 				break;
+			case 'shortcutsWindow':
+				toggleShortcutsWindow(!!settings.get('shortcutsWindow'));
+				break;
 		}
 	});
 	refreshQualityChecked();
@@ -355,15 +395,7 @@ function onReady() {
 
 
 
-
-
-	/*globalShortcut.register('shift+F2', () => {
-		if (shortcutsWindow === null) {
-			createShortcutWindow();
-		} else {
-			shortcutsWindow.focus();
-		}
-	})*/
+	toggleShortcutsWindow(!!settings.get('shortcutsWindow'));
 }
 
 

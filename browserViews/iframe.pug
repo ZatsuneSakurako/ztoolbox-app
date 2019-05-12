@@ -1,8 +1,9 @@
-html(lang='fr')
-	head
-		meta(charset='UFT-8')
-		title iframe
-		meta(http-equiv='Content-Security-Policy', content="default-src 'none'; script-src 'self' https://unpkg.com/; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'")
+extends _layout
 
-		script(src='js/iframe.js')
-	body
+block title
+	title iframe
+
+block head
+	meta(http-equiv='Content-Security-Policy', content="default-src 'none'; script-src 'self' https://unpkg.com/; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'")
+
+block body
