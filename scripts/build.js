@@ -77,8 +77,8 @@ const yargs = require('yargs')
 						"filter": "**/*.css"
 					},
 					{
-						"from": "lib/",
-						"to": "resources/lib/",
+						"from": "browserViews/lib/",
+						"to": "resources/browserViews/lib/",
 						"filter": [
 							"**/*.js"
 						]
