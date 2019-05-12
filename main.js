@@ -28,7 +28,7 @@ if (app.isDefaultProtocolClient('ztoolbox') === false && app.isPackaged === true
 
 
 
-let mainWindow;
+let mainWindow = null, shortcutsWindow = null;
 function createWindow() {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
@@ -56,6 +56,28 @@ function createWindow() {
 		mainWindow = null
 	})
 }
+function createShortcutWindow() {
+	// Create the browser window.
+	shortcutsWindow = new BrowserWindow({
+		width: 600,
+		height: 400,
+		icon: appIcon,
+		webPreferences: {
+			nodeIntegration: true
+		}
+	});
+
+	shortcutsWindow.loadFile(path.resolve(resourcePath, './browserViews/shortcuts.html'))
+		.catch(console.error)
+	;
+
+	shortcutsWindow.on('closed', function () {
+		// Dereference the window object, usually you would store windows
+		// in an array if your app supports multi windows, this is the time
+		// when you should delete the corresponding element.
+		shortcutsWindow = null
+	})
+}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -74,12 +96,13 @@ app.on('activate', function () {
 
 
 
-const { Menu, Tray, ipcMain } = require('electron');
+const { Menu, Tray, ipcMain, globalShortcut } = require('electron');
 
 const {Clipboard} = require('./classes/Clipboard'),
 	{notify} = require('./classes/notify')(appIconPath_x3),
 	{Settings} = require('./classes/Settings'),
 	{Streamlink} = require('./classes/Streamlink'),
+	{Shortcuts} = require('./classes/Shortcuts'),
 	urlRegexp = /https?:\/\/*/,
 	clipboard = new Clipboard(5000, false)
 ;
@@ -107,6 +130,8 @@ async function openStreamlink(useConfirmNotification=true, url=null) {
 		clipboardText = clipboard.text
 	;
 
+	let targetQuality = selected;
+
 	if (url === null && urlRegexp.test(clipboardText)) {
 		try {
 			url = new URL(clipboard.text);
@@ -127,7 +152,13 @@ async function openStreamlink(useConfirmNotification=true, url=null) {
 
 
 
-	const availableQualities = await Streamlink.getQualities(url)
+	let maxQuality;
+	if (/\d+p/.test(targetQuality)) {
+		maxQuality = selected;
+		targetQuality = 'best';
+	}
+
+	const availableQualities = await Streamlink.getQualities(url, maxQuality)
 		.catch(console.error)
 	;
 
@@ -136,6 +167,9 @@ async function openStreamlink(useConfirmNotification=true, url=null) {
 			title: 'Information',
 			message: 'Vérifiez l\'url (flux en ligne, qualités, ...)'
 		})
+			.then(() => {
+				require("shell").openExternal(url.toString())
+			})
 			.catch(console.error)
 		;
 		return;
@@ -161,7 +195,7 @@ async function openStreamlink(useConfirmNotification=true, url=null) {
 
 
 
-	Streamlink.open(url, selected)
+	Streamlink.open(url, targetQuality)
 		.catch(console.error)
 	;
 
@@ -175,6 +209,7 @@ function toggleWindow() {
 
 let tray = null;
 let contextMenu = null;
+let shortcuts = null;
 // This method will be called when Electron has finished initialization.
 // Some APIs can only be used after this event occurs.
 function onReady() {
@@ -213,6 +248,10 @@ function onReady() {
 		{type: 'separator'},
 
 		{id: 'worst', label: 'Pire', type: 'radio'},
+		{id: '360p', label: '360p', type: 'radio'},
+		{id: '480p', label: '480p', type: 'radio'},
+		{id: '720p', label: '720p', type: 'radio'},
+		{id: '1080p', label: '1080p', type: 'radio'},
 		{id: 'best', label: 'Meilleure', type: 'radio'},
 
 		{type: 'separator'},
@@ -246,13 +285,23 @@ function onReady() {
 
 
 
-	ipcMain.on('openStreamlink', e => {
-		openStreamlink(false)
-			.catch(console.error)
-		;
-		e.returnValue = true
-	});
-	tray.addListener("click", () => {
+	ipcMain
+		.on('openStreamlink', e => {
+			openStreamlink(false)
+				.catch(console.error)
+			;
+			e.returnValue = true
+		})
+		.on('getShortcuts', e => {
+			if (shortcuts === null) {
+				shortcuts = new Shortcuts();
+			}
+
+			shortcuts.getAll();
+			e.returnValue = shortcuts;
+		})
+	;
+	tray.addListener('click', () => {
 		if (clipboard.isEnabled === true) {
 			toggleWindow()
 		} else {
@@ -261,7 +310,7 @@ function onReady() {
 			;
 		}
 	});
-	tray.addListener("double-click", toggleWindow);
+	tray.addListener('double-click', toggleWindow);
 
 	clipboard.toggle(settings.get('clipboardWatch'));
 	clipboard.on('text', clipboardText => {
@@ -303,6 +352,18 @@ function onReady() {
 
 	// Check if currently opened for a ztoolbox://*
 	onOpen(process.argv);
+
+
+
+
+
+	/*globalShortcut.register('shift+F2', () => {
+		if (shortcutsWindow === null) {
+			createShortcutWindow();
+		} else {
+			shortcutsWindow.focus();
+		}
+	})*/
 }
 
 

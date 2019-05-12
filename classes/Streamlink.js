@@ -45,16 +45,17 @@ function promisedExec(command) {
 class Streamlink {
 	/**
 	 *
-	 * @param url
+	 * @param {URL} url
+	 * @param {String} [maxQuality]
 	 * @return {Promise<String[]>}
 	 */
-	static async getQualities(url) {
+	static async getQualities(url, maxQuality) {
 		let output = null,
 			result
 		;
 
 		try {
-			result = await promisedExec(`streamlink --quiet --json ${url.toString()}`);
+			result = await promisedExec(`streamlink --quiet --json ${url.toString()}${typeof maxQuality === 'string'? ' --stream-sorting-excludes ' + maxQuality : ''}`);
 		} catch (e) {
 			console.error(e);
 		}
