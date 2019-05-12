@@ -62,11 +62,16 @@ class Shortcuts {
 
 
 
-		this.files = files.filter(value =>
-			value.search.includes('uninstall') === false
-			&& value.search.includes('desinstaller') === false
-			&& value.search.includes('deprecated') === false
-		);
+		this.files = files
+			.filter(value =>
+				value.search.includes('uninstall') === false
+				&& value.search.includes('desinstaller') === false
+				&& value.search.includes('deprecated') === false
+			)
+			.sort(function (a, b) {
+				return a.filename.localeCompare(b.filename);
+			})
+		;
 
 		return this.files;
 	}
