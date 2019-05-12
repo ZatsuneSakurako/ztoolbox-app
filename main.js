@@ -35,6 +35,7 @@ function createWindow() {
 		width: 1000,
 		height: 800,
 		icon: appIcon,
+		show: false,
 		webPreferences: {
 			nodeIntegration: true
 		}
@@ -47,6 +48,10 @@ function createWindow() {
 
 	// Open the DevTools.
 	// mainWindow.webContents.openDevTools()
+
+	mainWindow.once('ready-to-show', () => {
+		mainWindow.show()
+	});
 
 	// Emitted when the window is closed.
 	mainWindow.on('closed', function () {
