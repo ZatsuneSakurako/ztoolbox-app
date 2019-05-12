@@ -158,11 +158,11 @@ async function openStreamlink(useConfirmNotification=true, url=null) {
 		targetQuality = 'best';
 	}
 
-	const availableQualities = await Streamlink.getQualities(url, maxQuality)
+	const isAvailable = await Streamlink.isAvailable(url, targetQuality, maxQuality)
 		.catch(console.error)
 	;
 
-	if (availableQualities.length === 0) {
+	if (isAvailable === false) {
 		notify({
 			title: 'Information',
 			message: 'Vérifiez l\'url (flux en ligne, qualités, ...)'
@@ -195,7 +195,7 @@ async function openStreamlink(useConfirmNotification=true, url=null) {
 
 
 
-	Streamlink.open(url, targetQuality)
+	Streamlink.open(url, targetQuality, maxQuality)
 		.catch(console.error)
 	;
 

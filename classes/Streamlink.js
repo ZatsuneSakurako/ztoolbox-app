@@ -46,16 +46,15 @@ class Streamlink {
 	/**
 	 *
 	 * @param {URL} url
-	 * @param {String} [maxQuality]
 	 * @return {Promise<String[]>}
 	 */
-	static async getQualities(url, maxQuality) {
+	static async getQualities(url) {
 		let output = null,
 			result
 		;
 
 		try {
-			result = await promisedExec(`streamlink --quiet --json ${url.toString()}${typeof maxQuality === 'string'? ' --stream-sorting-excludes ' + maxQuality : ''}`);
+			result = await promisedExec(`streamlink --quiet --json ${url.toString()}`);
 		} catch (e) {
 			console.error(e);
 		}
@@ -73,13 +72,33 @@ class Streamlink {
 	 *
 	 * @param {String | URL} url
 	 * @param {String} quality
+	 * @param {String} [maxQuality]
+	 * @return {Promise<boolean>}
+	 */
+	static async isAvailable(url, quality, maxQuality) {
+		let result = null;
+
+		try {
+			result = await promisedExec(`streamlink --quiet --json${typeof maxQuality === 'string'? ' --stream-sorting-excludes=">' + maxQuality + '"' : ''} ${url.toString()} ${quality}`);
+		} catch (e) {
+			console.error(e)
+		}
+
+		return typeof result === 'object' && result !== null && result.hasOwnProperty('error') === false;
+	}
+
+	/**
+	 *
+	 * @param {String | URL} url
+	 * @param {String} quality
+	 * @param {String} [maxQuality]
 	 * @return {Promise<void>}
 	 */
-	static async open(url, quality) {
+	static async open(url, quality, maxQuality) {
 		let result;
 
 		try {
-			result = await promisedExec(`streamlink --quiet ${url.toString()} ${quality}`);
+			result = await promisedExec(`streamlink --quiet${typeof maxQuality === 'string'? ' --stream-sorting-excludes=">' + maxQuality + '"' : ''} ${url.toString()} ${quality}`);
 		} catch (e) {
 			throw e;
 		}
