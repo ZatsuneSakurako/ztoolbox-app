@@ -1,6 +1,7 @@
 const data = {
 	search: '',
-	list: []
+	list: [],
+	icons: []
 };
 
 
@@ -11,6 +12,7 @@ window.addEventListener("load", function () {
 	const path = require('path'),
 		Vue = require(path.resolve(__dirname, './lib/vue.js')),
 		{ ipcRenderer } = require('electron'),
+		_ = require('lodash'),
 		removeAccents = require('remove-accents')
 	;
 
@@ -54,10 +56,25 @@ window.addEventListener("load", function () {
 		}
 	});
 
-	ipcRenderer.send('getShortcuts');
-	ipcRenderer.on('async-getShortcuts', (event, list) => {
-		// const shortcuts = ipcRenderer.sendSync('getShortcuts');
-		data.list.splice(0, data.list.length);
-		Array.prototype.push.apply(data.list, list);
+	const list = ipcRenderer.sendSync('getShortcuts');
+	data.list.splice(0, data.list.length);
+	Array.prototype.push.apply(data.list, list);
+
+	list.forEach((item, index) => {
+		ipcRenderer.send('getIcon', item, index);
+	});
+
+	/**
+	 *
+	 * @type {debounced}
+	 */
+	const debounced = _.debounce(() => {
+		app.$forceUpdate();
+	}, 250, { 'maxWait': 500 });
+
+	ipcRenderer.on('async-getIcon', (event, index, dataUrl) => {
+		data.list[index].fileIcon = dataUrl;
+		console.trace();
+		debounced();
 	})
 });

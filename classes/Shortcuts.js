@@ -80,7 +80,7 @@ class Shortcuts {
 
 	/**
 	 *
-	 * @param {fileItem} fileItem
+	 * @param {Shortcuts.fileItem} fileItem
 	 * @return {boolean}
 	 */
 	static openItem(fileItem) {
@@ -90,32 +90,64 @@ class Shortcuts {
 	/**
 	 *
 	 * @see https://electronjs.org/docs/api/shell#shellreadshortcutlinkshortcutpath-windows
-	 * @param {fileItem} fileItem
+	 * @param {string} filepath
 	 */
-	static getLinkDetails(fileItem) {
-		return shell.readShortcutLink(fileItem.path);
+	static getLinkDetails(filepath) {
+		return shell.readShortcutLink(filepath);
 	}
 
 	/**
 	 *
-	 * @param {Shortcuts.fileItem} item
-	 * @param {string} [size]
-	 * @return {boolean}
+	 * @param {string} filepath
+	 * @return {string}
+	 * @private
 	 */
-	static getFileIconPng(item, size='normal') {
-		return new Promise((resolve, reject) => {
-			app.getFileIcon(item.path, {
+	static _resoveWinPath(filepath) {
+		return path.normalize(filepath.replace(/%([^%]+)%/g, (_,n) => process.env[n]));
+	}
+	/**
+	 *
+	 * @param {Shortcuts.fileItem} item
+	 * @param {"small"|"normal"|"large"} [size]
+	 * @return {Promise<String>}
+	 */
+	static getFileIcon(item, size='normal') {
+		return new Promise(resolve => {
+			let itemPath = this._resoveWinPath(item.path);
+
+			if (item.type === 'lnk') { // imagemagick
+				let shortcutData = null;
+				try {
+					shortcutData = this.getLinkDetails(itemPath);
+				} catch (e) {
+					console.error(e);
+					console.warn(itemPath);
+				}
+
+				if (shortcutData !== null) {
+					if (typeof shortcutData.icon === 'string') {
+						itemPath = this._resoveWinPath(shortcutData.icon);
+
+						/*if (shortcutData.iconIndex > 0) {
+							console.debug('iconIndex not supported');
+						}*/
+					} else {
+						itemPath = this._resoveWinPath(shortcutData.target);
+					}
+				}
+			}
+
+			app.getFileIcon(itemPath, {
 				size
 			}, (err, /** @type {NativeImage} */ icon) => {
 
 				if (!!err) {
 					console.error(err);
-					resolve(false)
+					resolve(null);
 					return;
 				}
 
-				item.fileIcon = icon.toDataURL();
-				resolve(true);
+				resolve(icon.toDataURL());
 			})
 		})
 	}

@@ -338,20 +338,18 @@ function onReady() {
 				shortcuts = new Shortcuts();
 			}
 
-			const list = shortcuts.getAll(),
-				promises = []
-			;
-
-			list.forEach(item => {
-				promises.push(Shortcuts.getFileIconPng(item))
-			})
-
-			await Promise.all(promises);
-			e.sender.send('async-getShortcuts', list);
-			// e.returnValue = shortcuts;
+			e.returnValue = shortcuts.getAll();
 		})
 		.on('openShortcutItem', (e, item) => {
 			e.returnValue = Shortcuts.openItem(item);
+		})
+		.on('getIcon', (e, item, index) => {
+			Shortcuts.getFileIcon(item)
+				.then(dataUrl => {
+					e.sender.send('async-getIcon', index, dataUrl);
+				})
+				.catch(console.error)
+			;
 		})
 	;
 	tray.addListener('click', () => {
