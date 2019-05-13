@@ -324,6 +324,8 @@ function onReady() {
 
 
 
+
+
 	ipcMain
 		.on('openStreamlink', e => {
 			openStreamlink(false)
@@ -331,13 +333,22 @@ function onReady() {
 			;
 			e.returnValue = true
 		})
-		.on('getShortcuts', e => {
+		.on('getShortcuts', async e => {
 			if (shortcuts === null) {
 				shortcuts = new Shortcuts();
 			}
 
-			shortcuts.getAll();
-			e.returnValue = shortcuts;
+			const list = shortcuts.getAll(),
+				promises = []
+			;
+
+			list.forEach(item => {
+				promises.push(Shortcuts.getFileIconPng(item))
+			})
+
+			await Promise.all(promises);
+			e.sender.send('async-getShortcuts', list);
+			// e.returnValue = shortcuts;
 		})
 		.on('openShortcutItem', (e, item) => {
 			e.returnValue = Shortcuts.openItem(item);

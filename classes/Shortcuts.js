@@ -1,5 +1,5 @@
 const {GlobSync} = require('glob'),
-	{shell} = require('electron'),
+	{app, shell} = require('electron'),
 	removeAccents = require('remove-accents'),
 	path = require('path')
 ;
@@ -15,6 +15,7 @@ class Shortcuts {
 	 * @property {string} filename
 	 * @property {string} path
 	 * @property {string} search
+	 * @property {String} fileIcon
 	 * @property {"lnk" | "url" | "other"} type
 	 */
 	/**
@@ -53,7 +54,8 @@ class Shortcuts {
 					'path': value,
 					'search': removeAccents(path.relative(currentBasePath, value).toLowerCase()),
 					'filename': path.basename(value),
-					'type': path.extname(value).replace(/^\./, '')
+					'type': path.extname(value).replace(/^\./, ''),
+					'fileIcon': ''
 				};
 			}));
 
@@ -92,6 +94,30 @@ class Shortcuts {
 	 */
 	static getLinkDetails(fileItem) {
 		return shell.readShortcutLink(fileItem.path);
+	}
+
+	/**
+	 *
+	 * @param {Shortcuts.fileItem} item
+	 * @param {string} [size]
+	 * @return {boolean}
+	 */
+	static getFileIconPng(item, size='normal') {
+		return new Promise((resolve, reject) => {
+			app.getFileIcon(item.path, {
+				size
+			}, (err, /** @type {NativeImage} */ icon) => {
+
+				if (!!err) {
+					console.error(err);
+					resolve(false)
+					return;
+				}
+
+				item.fileIcon = icon.toDataURL();
+				resolve(true);
+			})
+		})
 	}
 }
 

@@ -1,9 +1,3 @@
-const path = require('path'),
-	Vue = require(path.resolve(__dirname, './lib/vue.js')),
-	{ ipcRenderer } = require('electron'),
-	removeAccents = require('remove-accents')
-;
-
 const data = {
 	search: '',
 	list: []
@@ -14,11 +8,19 @@ const data = {
 
 
 window.addEventListener("load", function () {
+	const path = require('path'),
+		Vue = require(path.resolve(__dirname, './lib/vue.js')),
+		{ ipcRenderer } = require('electron'),
+		removeAccents = require('remove-accents')
+	;
+
 	Vue.directive('focus', {
 		inserted: function (el) {
 			el.focus()
 		}
 	});
+
+
 
 	const app = new Vue({
 		el: 'main',
@@ -52,7 +54,10 @@ window.addEventListener("load", function () {
 		}
 	});
 
-	const shortcuts = ipcRenderer.sendSync('getShortcuts');
-	data.list.splice(0, data.list.length);
-	Array.prototype.push.apply(data.list, shortcuts.files);
+	ipcRenderer.send('getShortcuts');
+	ipcRenderer.on('async-getShortcuts', (event, list) => {
+		// const shortcuts = ipcRenderer.sendSync('getShortcuts');
+		data.list.splice(0, data.list.length);
+		Array.prototype.push.apply(data.list, list);
+	})
 });
