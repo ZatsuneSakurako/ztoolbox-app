@@ -18,5 +18,5 @@ block body
 		section
 			ul.list
 				li(v-for='(item, index) in filteredList', :key="item.path", :tabindex='index + 1', v-on:keyup.enter='onItemTrigger(item)', v-on:click='onItemTrigger(item)')
-					img(:src="item.fileIcon", v-if="typeof item.fileIcon === 'string' && item.fileIcon.length > 0")
+					img.fileIcon(:src="item.fileIcon", v-if="typeof item.fileIcon === 'string' && item.fileIcon.length > 0")
 					| {{ item.filename }}
