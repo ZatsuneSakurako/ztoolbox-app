@@ -36,8 +36,11 @@ class Settings extends Map {
 			// Default settings
 			super.set("quality", "best");
 			super.set("clipboardWatch", false);
-			super.set("shortcutsWindow", false);
 			this._save();
+		}
+
+		if (this.has('shortcutsWindow')) {
+			this.delete('shortcutsWindow');
 		}
 	}
 
@@ -67,6 +70,21 @@ class Settings extends Map {
 		super.set(key, value);
 		this.emit('change', key, oldValue, value);
 		this._save();
+	}
+
+	/**
+	 *
+	 * @inheritDoc
+	 */
+	delete(key) {
+		const oldValue = this.get(key),
+			result = super.delete(key)
+		;
+
+		this.emit('change', key, oldValue, undefined);
+		this._save();
+
+		return result;
 	}
 
 	/**

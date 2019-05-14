@@ -61,7 +61,7 @@ function createWindow() {
 		mainWindow = null
 	})
 }
-function createShortcutWindow() {
+/*function createShortcutWindow() {
 	// Create the browser window.
 	shortcutsWindow = new BrowserWindow({
 		width: 600,
@@ -90,7 +90,7 @@ function createShortcutWindow() {
 	shortcutsWindow.on('closed', function () {
 		shortcutsWindow = null
 	})
-}
+}*/
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -109,13 +109,12 @@ app.on('activate', function () {
 
 
 
-const { Menu, Tray, ipcMain, globalShortcut } = require('electron');
+const { Menu, Tray, ipcMain } = require('electron');
 
 const {Clipboard} = require('./classes/Clipboard'),
 	{notify} = require('./classes/notify')(appIconPath_x3),
 	{Settings} = require('./classes/Settings'),
 	{Streamlink} = require('./classes/Streamlink'),
-	{Shortcuts} = require('./classes/Shortcuts'),
 	urlRegexp = /https?:\/\/*/,
 	clipboard = new Clipboard(5000, false)
 ;
@@ -220,25 +219,10 @@ function toggleWindow() {
 	}
 }
 
-function toggleShortcutsWindow(enabled=true) {
-	globalShortcut.unregister('shift+F2');
 
-	if (enabled === false) {
-		return;
-	}
-
-	globalShortcut.register('shift+F2', () => {
-		if (shortcutsWindow === null) {
-			createShortcutWindow();
-		} else {
-			shortcutsWindow.focus();
-		}
-	})
-}
 
 let tray = null;
 let contextMenu = null;
-let shortcuts = null;
 // This method will be called when Electron has finished initialization.
 // Some APIs can only be used after this event occurs.
 function onReady() {
@@ -271,16 +255,6 @@ function onReady() {
 			checked: settings.get('clipboardWatch'),
 			click() {
 				settings.set('clipboardWatch', !settings.get('clipboardWatch'));
-			}
-		},
-
-		{
-			id: 'shortcutsWindow',
-			label: 'Activer shift+F2',
-			type: 'checkbox',
-			checked: settings.get('shortcutsWindow'),
-			click() {
-				settings.set('shortcutsWindow', !settings.get('shortcutsWindow'));
 			}
 		},
 
@@ -333,24 +307,6 @@ function onReady() {
 			;
 			e.returnValue = true
 		})
-		.on('getShortcuts', async e => {
-			if (shortcuts === null) {
-				shortcuts = new Shortcuts();
-			}
-
-			e.returnValue = shortcuts.getAll();
-		})
-		.on('openShortcutItem', (e, item) => {
-			e.returnValue = Shortcuts.openItem(item);
-		})
-		.on('getIcon', (e, item, index) => {
-			Shortcuts.getFileIcon(item)
-				.then(dataUrl => {
-					e.sender.send('async-getIcon', index, dataUrl);
-				})
-				.catch(console.error)
-			;
-		})
 	;
 	tray.addListener('click', () => {
 		if (clipboard.isEnabled === true) {
@@ -393,9 +349,6 @@ function onReady() {
 				contextMenu.getMenuItemById('clipboardWatch').checked = settings.get('clipboardWatch');
 				clipboard.toggle(settings.get('clipboardWatch'));
 				break;
-			case 'shortcutsWindow':
-				toggleShortcutsWindow(!!settings.get('shortcutsWindow'));
-				break;
 		}
 	});
 	refreshQualityChecked();
@@ -406,10 +359,6 @@ function onReady() {
 
 	// Check if currently opened for a ztoolbox://*
 	onOpen(process.argv);
-
-
-
-	toggleShortcutsWindow(!!settings.get('shortcutsWindow'));
 }
 
 
