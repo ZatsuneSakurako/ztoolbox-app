@@ -69,18 +69,25 @@ const yargs = require('yargs')
 					{
 						"from": "browserViews/js",
 						"to": "resources/browserViews/js",
-						"filter": "**/*.js"
+						"filter": [
+							"**/*.js",
+							"**/*.map"
+						]
 					},
 					{
 						"from": "browserViews/css",
 						"to": "resources/browserViews/css",
-						"filter": "**/*.css"
+						"filter": [
+							"**/*.css",
+							"**/*.map"
+						]
 					},
 					{
 						"from": "browserViews/lib/",
 						"to": "resources/browserViews/lib/",
 						"filter": [
-							"**/*.js"
+							"**/*.js",
+							"**/*.map"
 						]
 					}
 				]
