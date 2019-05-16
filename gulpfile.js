@@ -35,7 +35,7 @@ function clearStyles() {
 }
 
 function css() {
-	return gulp.src(paths.styles.src)
+	return gulp.src([paths.styles.src, '!**/_*.sass'])
 		.pipe(sourcemaps.init())
 		.pipe(
 			gulpSass({
