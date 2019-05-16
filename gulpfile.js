@@ -2,7 +2,8 @@ const gulp = require('gulp'),
 	del = require('del'),
 	gulpSass = require('gulp-sass'),
 	sourcemaps = require('gulp-sourcemaps'),
-	gulpPug = require('gulp-pug')
+	gulpPug = require('gulp-pug'),
+	gulpTs = require('gulp-typescript')
 ;
 
 const paths = {
@@ -13,6 +14,10 @@ const paths = {
 	styles: {
 		src: 'browserViews/css/**/*.sass',
 		dest: 'browserViews/css/'
+	},
+	js: {
+		src: 'browserViews/js/**/*.ts',
+		dest: 'browserViews/js/'
 	}
 };
 
@@ -70,10 +75,32 @@ exports.html = gulp.series(clearHtml, html);
 
 
 
-const clear = gulp.series(clearStyles, clearHtml);
+function clearJs() {
+	return del([
+		'browserViews/js/*.js',
+	]);
+}
+
+function js() {
+	return gulp.src([paths.js.src, '!**/_*.ts'])
+		.pipe(sourcemaps.init())
+		.pipe(gulpTs({
+			noImplicitAny: true,
+			"target": "esNext"
+		}))
+		.pipe(sourcemaps.write('.'))
+		.pipe(gulp.dest(paths.js.dest))
+}
+exports.js = gulp.series(clearJs, js);
+
+
+
+
+
+const clear = gulp.series(clearStyles, clearHtml, clearJs);
 exports.clear = clear;
 
-const build = gulp.series(clear, gulp.parallel(css, html));
+const build = gulp.series(clear, gulp.parallel(css, html, js));
 exports.build = build;
 
 /*function watch() {

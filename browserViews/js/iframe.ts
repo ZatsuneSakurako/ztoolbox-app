@@ -1,15 +1,18 @@
-function clearAllSelect(sel) {
+// noinspection TypeScriptPreferShortImport
+import {NodeVMOptions, VM} from "../../node_modules/vm2/index";
+declare var stripHtml : Function;
+
+
+
+function clearAllSelect(sel: string) {
 	document.querySelectorAll(sel).forEach(node => {
 		node.remove();
 	})
 }
 
-/**
- *
- * @type {VM}
- */
-var vm = null;
-function init(e) {
+// noinspection ES6ConvertVarToLetConst
+var vm:VM = null;
+function init(e: any) {
 	if (e.origin.startsWith('file://') === false) {
 		throw 'SomethingWrong';
 	}
@@ -21,6 +24,7 @@ function init(e) {
 	switch (e.data.type) {
 		case 'init':
 			// https://yarnpkg.com/fr/package/vm2
+			// @ts-ignore
 			vm = new VM({
 				timeout: 10000,
 				sandbox: {
@@ -29,8 +33,10 @@ function init(e) {
 					 * @param {string} moduleName
 					 * @return {Module}
 					 */
-					loadModule: function(moduleName) {
+					loadModule: function(moduleName: string) {
 						const url = `https://unpkg.com/${moduleName}`;
+
+						// @ts-ignore
 						return import(url);
 					},
 					console,
@@ -38,7 +44,7 @@ function init(e) {
 				},
 				eval: false,
 				require: false
-			});
+			} as NodeVMOptions);
 			break;
 		case 'js':
 			if (vm === null) {

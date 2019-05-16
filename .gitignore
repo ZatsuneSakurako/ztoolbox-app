@@ -4,6 +4,8 @@ browserViews/lib
 browserViews/*.html
 browserViews/css/*.css
 browserViews/css/*.map
+browserViews/js/*.js
+browserViews/js/*.map
 
 
 

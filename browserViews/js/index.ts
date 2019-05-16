@@ -1,3 +1,15 @@
+// noinspection TypeScriptPreferShortImport
+import {VM} from "../../node_modules/vm2/index";
+declare var CodeMirror : any;
+declare global {
+	interface Window {
+		stripHtml: Function;
+		VM: VM;
+	}
+}
+
+
+
 const path = require('path'),
 	Vue = require(path.resolve(__dirname, './lib/vue.js')),
 	{ ipcRenderer } = require('electron')
@@ -51,7 +63,7 @@ window.addEventListener("load", function () {
 
 
 
-	const iframe = document.querySelector('#iframe');
+	const iframe = document.querySelector('#iframe') as HTMLIFrameElement;
 	iframe.addEventListener('load', function () {
 		const {VM} = require('vm2'),
 			stripHtml = require('string-strip-html')
