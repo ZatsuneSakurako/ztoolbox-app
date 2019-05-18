@@ -1,3 +1,11 @@
+/// <reference path="./node_modules/electron/electron.d.ts" />
+
+type BrowserWindow = Electron.BrowserWindow;
+type MenuItem = Electron.MenuItem;
+type Menu = Electron.Menu;
+
+
+
 const path = require('path'),
 	{app, BrowserWindow, nativeImage} = require('electron'),
 
@@ -28,7 +36,7 @@ if (app.isDefaultProtocolClient('ztoolbox') === false && app.isPackaged === true
 
 
 
-let mainWindow = null, shortcutsWindow = null;
+let mainWindow:BrowserWindow = null/*, shortcutsWindow = null*/;
 function createWindow() {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
@@ -109,35 +117,35 @@ app.on('activate', function () {
 
 
 
+
+
+
+
+
+
 const { Menu, Tray, ipcMain } = require('electron');
 
-const {Clipboard} = require('./classes/Clipboard'),
+const {Clipboard: ZClipboard} = require('./classes/Clipboard'),
 	{notify} = require('./classes/notify')(appIconPath_x3),
 	{Settings} = require('./classes/Settings'),
 	{Streamlink} = require('./classes/Streamlink'),
 	urlRegexp = /https?:\/\/*/,
-	clipboard = new Clipboard(5000, false)
+	clipboard = new ZClipboard(5000, false)
 ;
 
-const getSelectedMenu = () => {
-	let checked = null;
+function getSelectedMenu() : string {
+	let checked: IZMenuItem = null;
 
-	contextMenu.items.forEach(menuItem => {
+	contextMenu.items.forEach((menuItem: IZMenuItem) => {
 		if (menuItem.checked === true) {
 			checked = menuItem
 		}
 	});
 
-	return checked.id || checked.label;
-};
+	return checked === null ? null : (checked!.id || checked!.label);
+}
 
-/**
- *
- * @param {boolean=true} [useConfirmNotification]
- * @param {?String} [url]
- * @return {Promise<void>}
- */
-async function openStreamlink(useConfirmNotification=true, url=null) {
+async function openStreamlink(useConfirmNotification:boolean=true, url:String|URL=null) : Promise<void> {
 	const selected = getSelectedMenu().trim(),
 		clipboardText = clipboard.text
 	;
@@ -222,9 +230,13 @@ function toggleWindow() {
 
 
 let tray = null;
-let contextMenu = null;
+let contextMenu:Menu = null;
 // This method will be called when Electron has finished initialization.
 // Some APIs can only be used after this event occurs.
+interface IZMenuItem extends MenuItem {
+	id: string;
+	type: string;
+}
 function onReady() {
 	const settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'));
 
@@ -272,21 +284,9 @@ function onReady() {
 		{label: 'Exit', type: 'normal', role: 'quit'}
 	]);
 
-	const getSelected = () => {
-		let checked = null;
-
-		contextMenu.items.forEach(menuItem => {
-			if (menuItem.checked === true) {
-				checked = menuItem
-			}
-		});
-
-		return checked.id || checked.label;
-	};
-
 	contextMenu.addListener("menu-will-close", function () {
 		setTimeout(() => {
-			settings.set("quality", getSelected())
+			settings.set("quality", getSelectedMenu())
 		})
 	});
 
@@ -301,7 +301,7 @@ function onReady() {
 
 
 	ipcMain
-		.on('openStreamlink', e => {
+		.on('openStreamlink',(e:any) => {
 			openStreamlink(false)
 				.catch(console.error)
 			;
@@ -320,7 +320,7 @@ function onReady() {
 	tray.addListener('double-click', toggleWindow);
 
 	clipboard.toggle(settings.get('clipboardWatch'));
-	clipboard.on('text', clipboardText => {
+	clipboard.on('text', (clipboardText:string) => {
 		if (urlRegexp.test(clipboardText)) {
 			openStreamlink(true)
 				.catch(console.error)
@@ -333,14 +333,14 @@ function onReady() {
 
 
 	const refreshQualityChecked = () => {
-		contextMenu.items.forEach(/** @type {Electron.MenuItem} */menuItem => {
+		contextMenu.items.forEach((menuItem: IZMenuItem) => {
 			const value = menuItem.id || menuItem.label;
 			if (menuItem.type === "radio" && settings.get("quality") === value) {
 				menuItem.checked = true;
 			}
 		});
 	};
-	settings.on('change', function (key) {
+	settings.on('change', function (key:any) {
 		switch (key) {
 			case 'quality':
 				refreshQualityChecked();
@@ -365,11 +365,7 @@ function onReady() {
 
 
 
-/**
- *
- * @param {String[]} commandLine
- */
-function onOpen(commandLine) {
+function onOpen(commandLine:string[]) {
 	const requests = commandLine.filter(value => {
 		return value.indexOf('ztoolbox://') !== -1
 	});
@@ -396,6 +392,7 @@ function onOpen(commandLine) {
 				[siteType, liveId] = inputUrl.split('/')
 			;
 
+			let liveUrl:string = null;
 			switch (siteType) {
 				case 'youtube':
 					liveUrl = `https://www.youtube.com/watch?v=${liveId}`;
@@ -417,6 +414,7 @@ function onOpen(commandLine) {
 
 
 
+	// @ts-ignore
 	if (unsupported === true) {
 		notify({
 			title: 'Erreur',

@@ -1,0 +1,4 @@
+{
+	"noImplicitAny": true,
+	"target": "esNext"
+}

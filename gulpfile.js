@@ -18,6 +18,10 @@ const paths = {
 	js: {
 		src: 'browserViews/js/**/*.ts',
 		dest: 'browserViews/js/'
+	},
+	mainJs: {
+		src: './*.ts',
+		dest: '.'
 	}
 };
 
@@ -25,12 +29,10 @@ const paths = {
 
 
 
-function clearStyles() {
+function clearCss() {
 	return del([
 		'browserViews/css/**/*.css',
 		'browserViews/css/**/*.map',
-		// 'browserViews/css/**/*',
-		// '!browserViews/css/**/*.sass',
 	]);
 }
 
@@ -50,7 +52,7 @@ function css() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.styles.dest))
 }
-exports.styles = gulp.series(clearStyles, css);
+exports.css = gulp.series(clearCss, css);
 
 
 
@@ -63,7 +65,7 @@ function clearHtml() {
 }
 
 function html() {
-	return gulp.src([paths.html.src, '!**/_*.pug'])
+	return gulp.src([paths.html.src, '!_*.pug'])
 		.pipe(gulpPug({
 			// Your options in here.
 		}))
@@ -75,9 +77,34 @@ exports.html = gulp.series(clearHtml, html);
 
 
 
+function clearMainJs() {
+	return del([
+		'./*.js',
+		'./*.map',
+		'!./gulpfile.js'
+	])
+}
+
+function mainJs() {
+	return gulp.src([paths.mainJs.src, '!_*.ts'])
+		.pipe(sourcemaps.init())
+		.pipe(gulpTs({
+			noImplicitAny: true,
+			"target": "esNext"
+		}))
+		.pipe(sourcemaps.write('.'))
+		.pipe(gulp.dest(paths.mainJs.dest))
+}
+exports.mainJs = gulp.series(clearMainJs, mainJs);
+
+
+
+
+
 function clearJs() {
 	return del([
-		'browserViews/js/*.js',
+		'browserViews/js/**/*.js',
+		'browserViews/js/**/*.map',
 	]);
 }
 
@@ -97,10 +124,10 @@ exports.js = gulp.series(clearJs, js);
 
 
 
-const clear = gulp.series(clearStyles, clearHtml, clearJs);
+const clear = gulp.series(clearCss, clearHtml, clearJs, clearMainJs);
 exports.clear = clear;
 
-const build = gulp.series(clear, gulp.parallel(css, html, js));
+const build = gulp.series(clear, gulp.parallel(css, html, js, mainJs));
 exports.build = build;
 
 /*function watch() {
