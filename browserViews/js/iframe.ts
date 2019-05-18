@@ -1,5 +1,3 @@
-// noinspection TypeScriptPreferShortImport
-import {NodeVMOptions, VM} from "../../node_modules/vm2/index";
 declare var stripHtml : Function;
 
 
@@ -10,8 +8,7 @@ function clearAllSelect(sel: string) {
 	})
 }
 
-// noinspection ES6ConvertVarToLetConst
-var vm:VM = null;
+var vm:any = null;
 function init(e: any) {
 	if (e.origin.startsWith('file://') === false) {
 		throw 'SomethingWrong';
@@ -44,7 +41,7 @@ function init(e: any) {
 				},
 				eval: false,
 				require: false
-			} as NodeVMOptions);
+			});
 			break;
 		case 'js':
 			if (vm === null) {

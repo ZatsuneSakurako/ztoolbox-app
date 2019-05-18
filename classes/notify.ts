@@ -2,20 +2,11 @@ const notifier = require('node-notifier'),
 	{app} = require('electron')
 ;
 
-let appIcon = null;
+let appIcon:string = null;
 
 
 
-/**
- *
- * @param {Object} options
- * @param {String} options.title
- * @param {String} options.message
- * @param {String} [options.icon]
- * @param {Boolean} [options.sound]
- * @return {Promise<*>}
- */
-function notify(options) {
+function notify(options:{title:string, message:string, icon?:string, sound?:boolean}):Promise<any> {
 	return new Promise((resolve, reject) => {
 		if (options === null || typeof options !== 'object') {
 			reject('WrongArgument');
@@ -28,8 +19,9 @@ function notify(options) {
 		if (options.hasOwnProperty('icon') === false || typeof options.icon !== 'string' && typeof appIcon === 'string') {
 			options.icon = appIcon;
 		}
+		// @ts-ignore
 		options.wait = true;
-		notifier.notify(options, function (error, response) {
+		notifier.notify(options, function (error:any, response:any) {
 			if (!!error) {
 				reject(error);
 			} else if (!(typeof response === 'string' && response.indexOf('clicked'))) {
@@ -52,7 +44,7 @@ function notify(options) {
  * @param {String} [appIconPath]
  * @return {{notify: (function({title: String, message: String, icon?: String, sound?: Boolean}): Promise<*>)}}
  */
-module.exports = function(appIconPath) {
+module.exports = function(appIconPath:string) {
 	if (appIconPath === undefined) {
 		appIconPath = null;
 	}

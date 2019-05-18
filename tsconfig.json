@@ -1,4 +1,8 @@
 {
-	"noImplicitAny": true,
-	"target": "esNext"
+	"compilerOptions": {
+		"module": "commonjs",
+		"types": ["node"],
+		"noImplicitAny": true,
+		"target": "esNext"
+	}
 }

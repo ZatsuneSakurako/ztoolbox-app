@@ -1,20 +1,34 @@
+// @ts-ignore
 const {EventEmitter} = require('events'),
 	classUtils = require('class-utils')
 ;
 
 
 
-/**
- *
- * @extends Map
- * @implements NodeJS.Events
- * @inheritDoc
- */
-class Settings extends Map {
+interface Settings {
+	get(key:string):any;
+	has(key:string):boolean;
+	set(key:string, value:any):this;
+	delete(key:string):boolean;
+	clear():void;
+	toJSON():string;
+	emit(event: string | symbol, ...args: any[]): boolean;
+	// @ts-ignore
+	forEach(callbackfn: (value:any, key:string, map:Map<string,any>) => void, thisArgs?:any)
+
+	emit():void;
+	on(event: string | symbol, listener: (...args: any[]) => void): this;
+	once(event: string | symbol, listener: (...args: any[]) => void): this;
+	off(event: string | symbol, listener: (...args: any[]) => void): this;
+}
+
+class Settings extends Map<string, any> implements Settings {
+	storagePath:string;
+
 	/**
 	 * @inheritDoc
 	 */
-	constructor(storagePath) {
+	constructor(storagePath:string) {
 		super();
 
 		this.storagePath = storagePath;
@@ -45,8 +59,9 @@ class Settings extends Map {
 	}
 
 	static get _fs() {
+		// @ts-ignore
 		delete Settings._fs;
-		// noinspection JSUnresolvedVariable
+		// @ts-ignore
 		return Settings._fs = require('fs');
 	}
 
@@ -65,18 +80,16 @@ class Settings extends Map {
 	/**
 	 * @inheritDoc
 	 */
-	set(key, value) {
+	set(key:string, value:any):this {
 		const oldValue = this.get(key);
 		super.set(key, value);
 		this.emit('change', key, oldValue, value);
 		this._save();
+
+		return this;
 	}
 
-	/**
-	 *
-	 * @inheritDoc
-	 */
-	delete(key) {
+	delete(key:string):boolean {
 		const oldValue = this.get(key),
 			result = super.delete(key)
 		;
@@ -100,11 +113,13 @@ class Settings extends Map {
 	 *
 	 * @return {JSON}
 	 */
-	toJSON() {
-		const json = {};
-		this.forEach((value, key) => {
+	toJSON():Object {
+		const json = {} as { [key: string]: any };
+
+		this.forEach((value:any, key:string) => {
 			json[key] = value;
 		});
+
 		return json
 	}
 }

@@ -1,4 +1,5 @@
 /// <reference path="./node_modules/electron/electron.d.ts" />
+/// <reference path="./classes/ZClipboard.ts" />
 
 type BrowserWindow = Electron.BrowserWindow;
 type MenuItem = Electron.MenuItem;
@@ -125,7 +126,7 @@ app.on('activate', function () {
 
 const { Menu, Tray, ipcMain } = require('electron');
 
-const {Clipboard: ZClipboard} = require('./classes/Clipboard'),
+const {ZClipboard} = require('./classes/ZClipboard'),
 	{notify} = require('./classes/notify')(appIconPath_x3),
 	{Settings} = require('./classes/Settings'),
 	{Streamlink} = require('./classes/Streamlink'),
@@ -436,3 +437,5 @@ if (app.requestSingleInstanceLock() === true) {
 } else {
 	app.quit();
 }
+
+export {};

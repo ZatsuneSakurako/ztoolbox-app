@@ -2,20 +2,10 @@ const { exec } = require('child_process');
 
 
 
-/**
- *
- * @param {String} command
- * @return {Promise<*>}
- */
-function promisedExec(command) {
+function promisedExec(command:string):Promise<any> {
 	return new Promise((resolve, reject) => {
-		/**
-		 *
-		 * @param {ExecException?} error
-		 * @param {string} stdout
-		 * @param {string} stderr
-		 */
-		const callback = function (error, stdout, stderr) {
+		// @ts-ignore
+		const callback = function (error: ExecException, stdout:string, stderr:string) {
 			if (!!error || !!stderr) {
 				reject({
 					error,
@@ -43,12 +33,7 @@ function promisedExec(command) {
 
 
 class Streamlink {
-	/**
-	 *
-	 * @param {URL} url
-	 * @return {Promise<String[]>}
-	 */
-	static async getQualities(url) {
+	static async getQualities(url:URL):Promise<string[]> {
 		let output = null,
 			result
 		;
@@ -68,15 +53,8 @@ class Streamlink {
 		return output === null? [] : output;
 	}
 
-	/**
-	 *
-	 * @param {String | URL} url
-	 * @param {String} quality
-	 * @param {String} [maxQuality]
-	 * @return {Promise<boolean>}
-	 */
-	static async isAvailable(url, quality, maxQuality) {
-		let result = null;
+	static async isAvailable(url:string|URL, quality:string, maxQuality?:string):Promise<boolean> {
+		let result:any = null;
 
 		try {
 			result = await promisedExec(`streamlink --quiet --json${typeof maxQuality === 'string'? ' --stream-sorting-excludes=">' + maxQuality + '"' : ''} ${url.toString()} ${quality}`);
@@ -87,14 +65,7 @@ class Streamlink {
 		return typeof result === 'object' && result !== null && result.hasOwnProperty('error') === false;
 	}
 
-	/**
-	 *
-	 * @param {String | URL} url
-	 * @param {String} quality
-	 * @param {String} [maxQuality]
-	 * @return {Promise<void>}
-	 */
-	static async open(url, quality, maxQuality) {
+	static async open(url:string|URL, quality:string, maxQuality:string):Promise<void> {
 		let result;
 
 		try {

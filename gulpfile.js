@@ -1,9 +1,11 @@
 const gulp = require('gulp'),
 	del = require('del'),
+	fs = require('fs-extra'),
 	gulpSass = require('gulp-sass'),
 	sourcemaps = require('gulp-sourcemaps'),
 	gulpPug = require('gulp-pug'),
-	gulpTs = require('gulp-typescript')
+	gulpTs = require('gulp-typescript'),
+	tsOptions = fs.readJsonSync('./tsconfig.json')
 ;
 
 const paths = {
@@ -22,6 +24,10 @@ const paths = {
 	mainJs: {
 		src: './*.ts',
 		dest: '.'
+	},
+	mainClassJs: {
+		src: 'classes/*.ts',
+		dest: 'classes/'
 	}
 };
 
@@ -88,14 +94,22 @@ function clearMainJs() {
 function mainJs() {
 	return gulp.src([paths.mainJs.src, '!_*.ts'])
 		.pipe(sourcemaps.init())
-		.pipe(gulpTs({
-			noImplicitAny: true,
-			"target": "esNext"
-		}))
+
+		.pipe(gulpTs(tsOptions.compilerOptions))
+
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.mainJs.dest))
 }
-exports.mainJs = gulp.series(clearMainJs, mainJs);
+function mainClassJs() {
+	return gulp.src([paths.mainClassJs.src, '!**/_*.ts'])
+		.pipe(sourcemaps.init())
+
+		.pipe(gulpTs(tsOptions.compilerOptions))
+
+		.pipe(sourcemaps.write('.'))
+		.pipe(gulp.dest(paths.mainClassJs.dest))
+}
+exports.mainJs = gulp.series(clearMainJs, mainJs, mainClassJs);
 
 
 
@@ -111,10 +125,9 @@ function clearJs() {
 function js() {
 	return gulp.src([paths.js.src, '!**/_*.ts'])
 		.pipe(sourcemaps.init())
-		.pipe(gulpTs({
-			noImplicitAny: true,
-			"target": "esNext"
-		}))
+
+		.pipe(gulpTs(tsOptions.compilerOptions))
+
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.js.dest))
 }

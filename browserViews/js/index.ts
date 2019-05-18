@@ -1,12 +1,4 @@
-// noinspection TypeScriptPreferShortImport
-import {VM} from "../../node_modules/vm2/index";
 declare var CodeMirror : any;
-declare global {
-	interface Window {
-		stripHtml: Function;
-		VM: VM;
-	}
-}
 
 
 
@@ -23,6 +15,7 @@ const data = {
 
 
 window.addEventListener("load", function () {
+	// @ts-ignore
 	const app = new Vue({
 		el: 'main',
 		data: data,
@@ -70,7 +63,9 @@ window.addEventListener("load", function () {
 		;
 
 		const iframeWin = iframe.contentWindow;
+		// @ts-ignore
 		iframeWin.stripHtml = stripHtml;
+		// @ts-ignore
 		iframeWin.VM = VM;
 
 		iframeWin.postMessage({
