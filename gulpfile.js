@@ -100,6 +100,18 @@ function mainJs() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.mainJs.dest))
 }
+
+
+
+
+
+function clearMainClassJs() {
+	return del([
+		'classes/*.js',
+		'classes/*.map',
+	])
+}
+
 function mainClassJs() {
 	return gulp.src([paths.mainClassJs.src, '!**/_*.ts'])
 		.pipe(sourcemaps.init())
@@ -137,10 +149,10 @@ exports.js = gulp.series(clearJs, js);
 
 
 
-const clear = gulp.series(clearCss, clearHtml, clearJs, clearMainJs);
+const clear = gulp.series(clearCss, clearHtml, clearJs, clearMainJs, clearMainClassJs);
 exports.clear = clear;
 
-const build = gulp.series(clear, gulp.parallel(css, html, js, mainJs));
+const build = gulp.series(clear, gulp.parallel(css, html, js, mainJs, mainClassJs));
 exports.build = build;
 
 /*function watch() {

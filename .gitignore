@@ -3,7 +3,6 @@ dist
 browserViews/lib
 browserViews/*.html
 browserViews/css/**/*.css
-browserViews/css/**/*.map
 browserViews/js/**/*.js
 **/*.map
 /*.js
