@@ -1,4 +1,3 @@
-/// <reference path="./node_modules/electron/electron.d.ts" />
 /// <reference path="./classes/ZClipboard.ts" />
 
 type BrowserWindow = Electron.BrowserWindow;
@@ -190,6 +189,8 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:String|UR
 		})
 			.then(() => {
 				require("shell").openExternal(url.toString())
+					.catch(console.error)
+				;
 			})
 			.catch(console.error)
 		;
