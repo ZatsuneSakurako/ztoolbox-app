@@ -4,6 +4,7 @@ const gulp = require('gulp'),
 	gulpSass = require('gulp-sass'),
 	sourcemaps = require('gulp-sourcemaps'),
 	gulpPug = require('gulp-pug'),
+	gulpVue = require('./scripts/gulp-vue'),
 	gulpTs = require('gulp-typescript'),
 	tsOptions = fs.readJsonSync('./tsconfig.json')
 ;
@@ -12,6 +13,10 @@ const paths = {
 	html: {
 		src: 'browserViews/*.pug',
 		dest: 'browserViews/'
+	},
+	vue: {
+		src: 'browserViews/vue/*.vue',
+		dest: 'browserViews/vue/'
 	},
 	styles: {
 		src: 'browserViews/css/**/*.sass',
@@ -83,6 +88,23 @@ exports.html = gulp.series(clearHtml, html);
 
 
 
+function clearVue() {
+	return del([
+		'browserViews/vue/*.js',
+	]);
+}
+
+function vue() {
+	return gulp.src(paths.vue.src)
+		.pipe(gulpVue())
+		.pipe(gulp.dest(paths.vue.dest))
+}
+exports.vue = gulp.series(clearVue, vue);
+
+
+
+
+
 function clearMainJs() {
 	return del([
 		'./*.js',
@@ -149,10 +171,10 @@ exports.js = gulp.series(clearJs, js);
 
 
 
-const clear = gulp.series(clearCss, clearHtml, clearJs, clearMainJs, clearMainClassJs);
+const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs, clearMainJs, clearMainClassJs);
 exports.clear = clear;
 
-const build = gulp.series(clear, gulp.parallel(css, html, js, mainJs, mainClassJs));
+const build = gulp.series(clear, gulp.parallel(css, html, vue, js, mainJs, mainClassJs));
 exports.build = build;
 
 /*function watch() {

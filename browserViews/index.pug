@@ -3,7 +3,7 @@ extends _layout
 
 
 block head
-	meta(http-equiv="Content-Security-Policy", content="default-src 'none'; script-src 'self' 'unsafe-eval'; object-src 'none'; style-src 'self'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'")
+	meta(http-equiv="Content-Security-Policy", content="default-src 'none'; script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'")
 
 block head-css
 	link(rel='stylesheet', href='lib/codemirror/lib/codemirror.css')
@@ -23,18 +23,3 @@ block append head-css
 
 block append head-js
 	script(src='js/index.js')
-
-
-
-
-block main
-	p(xmlns:v-on="http://www.w3.org/1999/xhtml")
-		button(v-on:click='onStreamLink') Ouvrir streamlink
-		button(v-on:click='reloadIframe') Run code !
-
-	p
-		// All of the Node.js APIs are available in this renderer process.
-		| We are using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}}.
-
-	div#codeInputs
-	iframe#iframe(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html')

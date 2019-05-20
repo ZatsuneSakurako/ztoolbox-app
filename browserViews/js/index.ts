@@ -1,4 +1,8 @@
 declare var CodeMirror : any;
+interface CompiledVue {
+	render: Function,
+	staticRenderFns: Function[]
+}
 
 
 
@@ -15,8 +19,10 @@ const data = {
 
 
 window.addEventListener("load", function () {
+	const indexTemplate:CompiledVue = require(path.resolve(__dirname, './vue/index.js'));
+
 	// @ts-ignore
-	const app = new Vue({
+	const app = new Vue(Object.assign({
 		el: 'main',
 		data: data,
 		methods: {
@@ -27,7 +33,7 @@ window.addEventListener("load", function () {
 				app.$refs.iframe.contentWindow.location.reload();
 			}
 		}
-	});
+	}, indexTemplate));
 
 
 
