@@ -25,15 +25,65 @@ function transpile(fn) {
 	})
 }
 function compileVue(inputText, options) {
+	let vueComponent = compiler.parseComponent(inputText),
+		content
+	;
+
+
+
+	if (vueComponent.errors.length > 0) {
+		throw vueComponent.errors;
+	}
+
+	if (Array.isArray(vueComponent.customBlocks) && vueComponent.customBlocks.length > 0) {
+		throw 'Unknown unsupported tag(s) present';
+	}
+
+	if (vueComponent.styles !== null && vueComponent.styles.length > 0) {
+		console.warn('Style tag not supported');
+	}
+
+
+
+	if (vueComponent.template !== null) {
+		if (!!vueComponent.template.attrs && !!vueComponent.template.attrs.lang) {
+			if (vueComponent.template.attrs.lang !== 'pug') {
+				throw `Unsupported template language "${vueComponent.template.attrs.lang}"`
+			}
+			inputText = pug.compile(vueComponent.template.content)();
+		} else {
+			inputText = vueComponent.template.content;
+		}
+	}
+
+
+
+	if (vueComponent.script !== null) {
+		if (!!vueComponent.script.attrs && !!vueComponent.script.attrs.lang) {
+			throw `Unsupported script language "${vueComponent.script.attrs.lang}"`
+		}
+		content = vueComponent.script.content;
+	}
+	if (content === undefined) {
+		content = `\texport default ${JSON.stringify({
+			name: options.outputName
+		})}`;
+	}
+
+
+
 	const compiledData = options.compiler.compile(inputText, options.compilerOptions),
 		staticRenderFns = (Array.isArray(compiledData.staticRenderFns))? compiledData.staticRenderFns.map(transpile) : []
 	;
 
-	return `'use strict';
-return Object.freeze({
-\t"render": ${transpile(compiledData.render)},
-\t"staticRenderFns": ${JSON.stringify(staticRenderFns)}
-});`;
+	if (!content.includes('render:') && !content.includes('staticRenderFns:')) {
+		content = content.replace(
+			/export default[^{]*{/,
+			`return {\n	"render": ${transpile(compiledData.render)},\n	"staticRenderFns": ${JSON.stringify(staticRenderFns)},`
+		);
+	}
+
+	return content;
 }
 
 
@@ -66,43 +116,9 @@ function gulpVue(opt) {
 
 
 
-		let fileContents = file.contents.toString('utf8'),
-			vueComponent = null
-		;
-		try {
-			vueComponent = compiler.parseComponent(fileContents)
-		} catch (e) {
-			return cb(new PluginError(PLUGIN_NAME, err));
-		}
-
-		if (vueComponent !== null) {
-			if (vueComponent.errors.length > 0) {
-				vueComponent.errors.forEach(console.error);
-			}
-
-			if (vueComponent.script !== null) {
-				return cb(new PluginError(PLUGIN_NAME, 'Script tag not supported'));
-			}
-			if (vueComponent.styles !== null && vueComponent.styles.length > 0) {
-				return cb(new PluginError(PLUGIN_NAME, 'Style tag not supported'));
-			}
-
-
-
-			if (vueComponent.template !== null) {
-				if (!!vueComponent.template.attrs && !!vueComponent.template.attrs.lang && vueComponent.template.attrs.lang === 'pug') {
-					fileContents = pug.compile(vueComponent.template.content)();
-				} else {
-					fileContents = vueComponent.template.content;
-				}
-			}
-		}
-
-
-
 		let data;
 		try {
-			data = umd(capitalize(options.outputName), compileVue(fileContents, options));
+			data = umd(capitalize(options.outputName), compileVue(file.contents.toString('utf8'), options));
 		} catch (err) {
 			return cb(new PluginError(PLUGIN_NAME, err));
 		}

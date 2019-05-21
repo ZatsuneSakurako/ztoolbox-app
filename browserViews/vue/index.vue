@@ -11,3 +11,13 @@
 		div#codeInputs
 		iframe#iframe(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html')
 </template>
+
+<script>
+	export default {
+		name: "index"
+	}
+</script>
+
+<style scoped>
+
+</style>
