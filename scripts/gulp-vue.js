@@ -39,8 +39,14 @@ function compileVue(inputText, options) {
 		throw 'Unknown unsupported tag(s) present';
 	}
 
-	if (vueComponent.styles !== null && vueComponent.styles.length > 0) {
-		console.warn('Style tag not supported');
+	if (vueComponent.styles !== null && Array.isArray(vueComponent.styles)) {
+		const filteredStyles = vueComponent.styles.filter(item => {
+			return item.content.trim().length > 0
+		});
+
+		if (filteredStyles.length > 0) {
+			console.warn('Style tag not supported');
+		}
 	}
 
 

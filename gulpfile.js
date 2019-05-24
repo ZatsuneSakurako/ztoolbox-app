@@ -15,8 +15,8 @@ const paths = {
 		dest: 'browserViews/'
 	},
 	vue: {
-		src: 'browserViews/vue/*.vue',
-		dest: 'browserViews/vue/'
+		src: 'browserViews/*.vue',
+		dest: 'browserViews/'
 	},
 	styles: {
 		src: 'browserViews/css/**/*.sass',
@@ -90,7 +90,7 @@ exports.html = gulp.series(clearHtml, html);
 
 function clearVue() {
 	return del([
-		'browserViews/vue/*.js',
+		'browserViews/*.js',
 	]);
 }
 

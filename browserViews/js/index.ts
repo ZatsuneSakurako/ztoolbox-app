@@ -19,7 +19,7 @@ const data = {
 
 
 window.addEventListener("load", function () {
-	const indexTemplate:CompiledVue = require(path.resolve(__dirname, './vue/index.js'));
+	const indexTemplate:CompiledVue = require(path.resolve(__dirname, './index.js'));
 
 	// @ts-ignore
 	const app = new Vue(Object.assign({
