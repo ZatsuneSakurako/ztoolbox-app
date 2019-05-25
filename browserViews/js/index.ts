@@ -7,7 +7,7 @@ interface CompiledVue {
 
 
 const path = require('path'),
-	Vue = require(path.resolve(__dirname, './lib/vue.js')),
+	Vue = require('vue'),
 	{ ipcRenderer } = require('electron')
 ;
 
@@ -21,7 +21,6 @@ const data = {
 window.addEventListener("load", function () {
 	const indexTemplate:CompiledVue = require(path.resolve(__dirname, './index.js'));
 
-	// @ts-ignore
 	const app = new Vue(Object.assign({
 		el: 'main',
 		data: data,
