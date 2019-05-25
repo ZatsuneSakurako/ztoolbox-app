@@ -3,13 +3,17 @@
 		.grid
 			display: grid
 			grid-auto-flow: dense
-			grid-column-gap: 1vmax
-			grid-row-gap: 1vmax
 			grid-template-columns: repeat($grid-columns, 1fr)
+
+			&:not(.no-r-gap)
+				grid-row-gap: 1vmax
+
+			&:not(.no-c-gap)
+				grid-column-gap: 1vmax
 
 		@for $i from 1 through $grid-columns
 			.grid-#{$i}
-				grid-column-end: span 1
+				grid-column-end: span $i
 
 			.grid-offset-#{$i}
 				grid-column-start: $i

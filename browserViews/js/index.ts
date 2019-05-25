@@ -46,15 +46,15 @@ window.addEventListener("load", function () {
 		theme: 'monokai'
 	};
 
-	const htmlEditor = new CodeMirror(document.querySelector('#codeInputs'), Object.assign({
+	const htmlEditor = new CodeMirror(document.querySelector('#codeInputs #input1'), Object.assign({
 		value: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
 		mode: 'htmlmixed'
 	}, defaultOptions));
-	const cssEditor = new CodeMirror(document.querySelector('#codeInputs'), Object.assign({
+	const cssEditor = new CodeMirror(document.querySelector('#codeInputs #input2'), Object.assign({
 		value: "body {\n\tpadding: 0;\n}",
 		mode: 'css'
 	}, defaultOptions));
-	const jsEditor = new CodeMirror(document.querySelector('#codeInputs'), Object.assign({
+	const jsEditor = new CodeMirror(document.querySelector('#codeInputs #input3'), Object.assign({
 		value: 'function test(){return true;}',
 		mode: 'javascript'
 	}, defaultOptions));
