@@ -85,7 +85,7 @@ function compileVue(inputText, options) {
 	if (!content.includes('render:') && !content.includes('staticRenderFns:')) {
 		content = content.replace(
 			/export default[^{]*{/,
-			`return {\n	"render": ${transpile(compiledData.render)},\n	"staticRenderFns": ${JSON.stringify(staticRenderFns)},`
+			`return {\n	"render": ${transpile(compiledData.render)},\n	"staticRenderFns": [\n\t\t${staticRenderFns.join(',\n\t')}\n\t],`
 		);
 	}
 
