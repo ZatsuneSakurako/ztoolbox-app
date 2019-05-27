@@ -52,10 +52,16 @@ function compileVue(inputText, options) {
 
 
 	if (vueComponent.template !== null) {
+		let lang = 'html';
 		if (!!vueComponent.template.attrs && !!vueComponent.template.attrs.lang) {
-			if (vueComponent.template.attrs.lang !== 'pug') {
+			if (vueComponent.template.attrs.lang !== 'pug' && vueComponent.template.attrs.lang !== 'html') {
 				throw `Unsupported template language "${vueComponent.template.attrs.lang}"`
 			}
+
+			lang = vueComponent.template.attrs.lang;
+		}
+
+		if (lang === 'pug') {
 			inputText = pug.compile(vueComponent.template.content)();
 		} else {
 			inputText = vueComponent.template.content;
@@ -65,10 +71,24 @@ function compileVue(inputText, options) {
 
 
 	if (vueComponent.script !== null) {
+		let lang = 'js';
+
 		if (!!vueComponent.script.attrs && !!vueComponent.script.attrs.lang) {
-			throw `Unsupported script language "${vueComponent.script.attrs.lang}"`
+			if (/*vueComponent.script.attrs.lang !== 'ts' &&*/ vueComponent.script.attrs.lang !== 'js') {
+				throw `Unsupported script language "${vueComponent.script.attrs.lang}"`
+			}
+
+			lang = vueComponent.script.attrs.lang;
 		}
+
+
 		content = vueComponent.script.content;
+		/*if (lang === 'ts') {
+			content = tsCompiler.compileString(content, {}, {}, err => {
+				console.error(err.messageText, `${err.file.text.substring(err.start, err.start + err.length)}`);
+				new PluginError(PLUGIN_NAME, err);
+			});
+		}*/
 	}
 	if (content === undefined) {
 		content = `\texport default ${JSON.stringify({
