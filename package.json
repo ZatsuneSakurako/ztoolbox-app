@@ -5,9 +5,10 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "pack": "gulp build && node scripts/build.js --dir",
-    "dist": "gulp build && node scripts/build.js",
-    "postinstall": "node scripts/postinstall.js"
+    "build": "gulp --require ts-node/register",
+    "pack": "gulp build --require ts-node/register && ts-node scripts/build.js --dir",
+    "dist": "gulp build --require ts-node/register && ts-node scripts/build.js",
+    "postinstall": "ts-node scripts/postinstall.ts"
   },
   "repository": "git@gitlab.com:ZatsuneNoMokou/streamlink-electron.git",
   "keywords": [
@@ -21,30 +22,42 @@
   },
   "license": "GPL-3.0-or-later",
   "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/gulp": "^4.0.9",
+    "@types/gulp-sass": "^5.0.0",
+    "@types/gulp-sourcemaps": "^0.0.35",
+    "@types/node": "^16.10.0",
+    "@types/node-notifier": "^8.0.1",
+    "@types/through2": "^2.0.36",
+    "@types/umd": "^3.0.1",
+    "@types/yargs": "^17.0.3",
+    "cross-fetch": "^3.1.4",
     "del": "^4.1.1",
     "electron": "^5.0.0",
     "electron-builder": "^20.39.0",
     "gulp": "^4.0.2",
     "gulp-pug": "^4.0.1",
-    "gulp-sass": "^4.0.2",
-    "gulp-sourcemaps": "^2.6.5",
+    "gulp-sass": "^5.0.0",
+    "gulp-sourcemaps": "^3.0.0",
     "gulp-typescript": "^5.0.1",
-    "plugin-error": "^1.0.1",
+    "node-sass": "^6.0.1",
     "pug": "^2.0.3",
     "through2": "^3.0.1",
-    "typescript": "^3.4.5",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3",
     "umd": "^3.0.3",
-    "vue-template-compiler": "^2.6.10",
+    "vue-template-compiler": "^2.6.14",
     "vue-template-es2015-compiler": "^1.9.1",
-    "yargs": "^13.2.2"
+    "yargs": "^17.2.0"
   },
   "dependencies": {
     "class-utils": "^0.3.6",
     "codemirror": "^5.46.0",
-    "fs-extra": "^7.0.1",
-    "node-notifier": "^5.4.0",
+    "fs-extra": "^10.0.0",
+    "muicss": "^0.10.3",
+    "node-notifier": "^10.0.0",
     "string-strip-html": "^4.0.12",
     "vm2": "^3.8.1",
-    "vue": "^2.6.10"
+    "vue": "^2.6.14"
   }
 }

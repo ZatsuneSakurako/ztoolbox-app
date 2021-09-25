@@ -1,10 +1,8 @@
-const { exec } = require('child_process');
-
+import {exec, ExecException} from "child_process";
 
 
 function promisedExec(command:string):Promise<any> {
 	return new Promise((resolve, reject) => {
-		// @ts-ignore
 		const callback = function (error: ExecException, stdout:string, stderr:string) {
 			if (!!error || !!stderr) {
 				reject({
@@ -32,7 +30,7 @@ function promisedExec(command:string):Promise<any> {
 
 
 
-class Streamlink {
+export class Streamlink {
 	static async getQualities(url:URL):Promise<string[]> {
 		let output = null,
 			result
@@ -77,7 +75,3 @@ class Streamlink {
 		return result;
 	}
 }
-
-
-
-module.exports.Streamlink = Streamlink;

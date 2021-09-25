@@ -1,8 +1,18 @@
 {
 	"compilerOptions": {
+		"alwaysStrict": true,
+		"declaration": true,
+		"esModuleInterop": true,
+		"experimentalDecorators": false,
+		"forceConsistentCasingInFileNames": true,
+		"newLine": "LF",
 		"module": "commonjs",
+		"moduleResolution": "node",
+		"pretty": true,
 		"types": ["node"],
 		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"skipLibCheck": true,
 		"target": "esNext"
 	}
 }

@@ -1,6 +1,6 @@
-const notifier = require('node-notifier'),
-	{app} = require('electron')
-;
+import notifier from "node-notifier";
+import {app} from "electron";
+
 
 let appIcon:string = null;
 
@@ -28,12 +28,12 @@ function notify(options:{title:string, message:string, icon?:string, sound?:bool
 				resolve(response);
 			}
 		})
-			.on('click', () => {
+			/*.on('click', () => {
 				resolve('click');
 			})
 			.on('timeout', () => {
 				reject('timeout');
-			})
+			})*/
 	})
 }
 

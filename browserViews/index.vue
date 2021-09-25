@@ -2,17 +2,17 @@
 	main.grid.no-c-gap.no-r-gap
 		p.grid-12
 			input#streamlink(type='radio', v-model='menu', value='streamlink')
-			label(for='streamlink') Streamlink
+			label.mui--text-light(for='streamlink') Streamlink
 			input#codeTester(type='radio', v-model='menu', value='code-tester')
-			label(for='codeTester') Code tester
+			label.mui--text-light(for='codeTester') Code tester
 
 		p.grid-12(v-if='menu === \'streamlink\'')
-			button(v-on:click='onStreamLink') Ouvrir streamlink
+			button(class='mui-btn', v-on:click='onStreamLink') Ouvrir streamlink
 
 		p.grid-12(v-if='menu === \'code-tester\'')
-			button(v-on:click='reloadIframe') Run code !
+			button(class='mui-btn', v-on:click='reloadIframe') Run code !
 
-		p.grid-12(v-if='menu === \'streamlink\'')
+		p.grid-12.mui--text-light(v-if='menu === \'streamlink\'')
 			// All of the Node.js APIs are available in this renderer process.
 			| We are using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}}.
 

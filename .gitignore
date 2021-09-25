@@ -6,9 +6,9 @@ browserViews/*.js
 browserViews/css/**/*.css
 browserViews/js/**/*.js
 **/*.map
+**/*.d.ts
 /*.js
 classes/*.js
-!/gulpfile.js
 
 
 

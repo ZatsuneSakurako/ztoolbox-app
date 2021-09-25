@@ -1,5 +1,7 @@
 /// <reference path="./classes/ZClipboard.ts" />
 
+import {app} from 'electron';
+
 type BrowserWindow = Electron.BrowserWindow;
 type MenuItem = Electron.MenuItem;
 type Menu = Electron.Menu;
@@ -7,7 +9,7 @@ type Menu = Electron.Menu;
 
 
 const path = require('path'),
-	{app, BrowserWindow, nativeImage} = require('electron'),
+	{BrowserWindow, nativeImage} = require('electron'),
 
 	resourcePath = (app.isPackaged === false)? __dirname : process.resourcesPath,
 

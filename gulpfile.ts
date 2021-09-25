@@ -1,13 +1,13 @@
-const gulp = require('gulp'),
-	del = require('del'),
-	fs = require('fs-extra'),
-	gulpSass = require('gulp-sass'),
-	sourcemaps = require('gulp-sourcemaps'),
-	gulpPug = require('gulp-pug'),
-	gulpVue = require('./scripts/gulp-vue'),
-	gulpTs = require('gulp-typescript'),
-	tsOptions = fs.readJsonSync('./tsconfig.json')
-;
+import gulp from "gulp";
+import del from "del";
+import fs from "fs-extra";
+import gulpSass from "gulp-sass";
+import sourcemaps from "gulp-sourcemaps";
+import gulpPug from "gulp-pug";
+import gulpVue from "./scripts/gulp-vue";
+import gulpTs from "gulp-typescript";
+
+const tsOptions = fs.readJsonSync('./tsconfig.json');
 
 const paths = {
 	html: {
@@ -47,7 +47,7 @@ function clearCss() {
 	]);
 }
 
-function css() {
+function _css() {
 	return gulp.src([paths.styles.src, '!**/_*.sass'])
 		.pipe(sourcemaps.init())
 		.pipe(
@@ -63,7 +63,7 @@ function css() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.styles.dest))
 }
-exports.css = gulp.series(clearCss, css);
+export const css = gulp.series(clearCss, _css);
 
 
 
@@ -75,14 +75,14 @@ function clearHtml() {
 	]);
 }
 
-function html() {
+function _html() {
 	return gulp.src([paths.html.src, '!_*.pug'])
 		.pipe(gulpPug({
 			// Your options in here.
 		}))
 		.pipe(gulp.dest(paths.html.dest))
 }
-exports.html = gulp.series(clearHtml, html);
+export const html = gulp.series(clearHtml, _html);
 
 
 
@@ -94,12 +94,12 @@ function clearVue() {
 	]);
 }
 
-function vue() {
+function _vue() {
 	return gulp.src(paths.vue.src)
 		.pipe(gulpVue())
 		.pipe(gulp.dest(paths.vue.dest))
 }
-exports.vue = gulp.series(clearVue, vue);
+export const vue = gulp.series(clearVue, _vue);
 
 
 
@@ -113,7 +113,7 @@ function clearMainJs() {
 	])
 }
 
-function mainJs() {
+function _mainJs() {
 	return gulp.src([paths.mainJs.src, '!_*.ts'])
 		.pipe(sourcemaps.init())
 
@@ -143,7 +143,7 @@ function mainClassJs() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.mainClassJs.dest))
 }
-exports.mainJs = gulp.series(clearMainJs, mainJs, mainClassJs);
+export const mainJs = gulp.series(clearMainJs, _mainJs, mainClassJs);
 
 
 
@@ -156,7 +156,7 @@ function clearJs() {
 	]);
 }
 
-function js() {
+function _js() {
 	return gulp.src([paths.js.src, '!**/_*.ts'])
 		.pipe(sourcemaps.init())
 
@@ -165,17 +165,15 @@ function js() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.js.dest))
 }
-exports.js = gulp.series(clearJs, js);
+export const js = gulp.series(clearJs, _js);
 
 
 
 
 
-const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs, clearMainJs, clearMainClassJs);
-exports.clear = clear;
+export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs, clearMainJs, clearMainClassJs);
 
-const build = gulp.series(clear, gulp.parallel(css, html, vue, js, mainJs, mainClassJs));
-exports.build = build;
+export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js, _mainJs, mainClassJs));
 
 /*function watch() {
 	gulp.watch(paths.styles.src, styles);
@@ -183,5 +181,5 @@ exports.build = build;
 exports.watch = gulp.series(clear, build, watch);*/
 
 //Watch task
-exports.default = build;
+export default build;
 

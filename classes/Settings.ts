@@ -1,8 +1,6 @@
 // @ts-ignore
-const {EventEmitter} = require('events'),
-	classUtils = require('class-utils')
-;
-
+import classUtils from "class-utils";
+import {EventEmitter} from "events";
 
 
 interface Settings {
