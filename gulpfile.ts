@@ -1,13 +1,16 @@
 import gulp from "gulp";
 import del from "del";
 import fs from "fs-extra";
-import gulpSass from "gulp-sass";
+import _gulpSass from "gulp-sass";
+import nodeSass from "node-sass";
 import sourcemaps from "gulp-sourcemaps";
 import gulpPug from "gulp-pug";
 import gulpVue from "./scripts/gulp-vue";
 import gulpTs from "gulp-typescript";
 
-const tsOptions = fs.readJsonSync('./tsconfig.json');
+const gulpSass = _gulpSass(nodeSass),
+	tsOptions = fs.readJsonSync('./tsconfig.json')
+;
 
 const paths = {
 	html: {
@@ -108,8 +111,7 @@ export const vue = gulp.series(clearVue, _vue);
 function clearMainJs() {
 	return del([
 		'./*.js',
-		'./*.map',
-		'!./gulpfile.js'
+		'./*.map'
 	])
 }
 
@@ -143,6 +145,7 @@ function mainClassJs() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.mainClassJs.dest))
 }
+// noinspection JSUnusedGlobalSymbols
 export const mainJs = gulp.series(clearMainJs, _mainJs, mainClassJs);
 
 
@@ -151,6 +154,7 @@ export const mainJs = gulp.series(clearMainJs, _mainJs, mainClassJs);
 
 function clearJs() {
 	return del([
+		'browserViews/js/*.js',
 		'browserViews/js/**/*.js',
 		'browserViews/js/**/*.map',
 	]);
@@ -181,5 +185,6 @@ export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js, _m
 exports.watch = gulp.series(clear, build, watch);*/
 
 //Watch task
+// noinspection JSUnusedGlobalSymbols
 export default build;
 

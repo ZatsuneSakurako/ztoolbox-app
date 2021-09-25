@@ -1,38 +1,33 @@
-const path = require('path'),
-	through = require('through2'),
-	compiler = require('vue-template-compiler'),
-	pug = require('pug'),
-	umd = require('umd'),
-	templateEs2015 = require('vue-template-es2015-compiler'),
-	PluginError = require('plugin-error'),
+import path from "path";
+import through from "through2";
+import * as compiler from "vue-template-compiler";
+import pug from "pug";
+import umd from "umd";
+import PluginError from "plugin-error";
+// @ts-ignore
+import templateEs2015 from "vue-template-es2015-compiler";
 
-
-
-	PLUGIN_NAME = 'gulp-vue'
-;
-
+const PLUGIN_NAME = 'gulp-vue';
 
 
 
 
-/**
- *
- * @param {string|function} fn
- */
-function transpile(fn) {
+
+function transpile(fn:string|Function) {
 	return templateEs2015(`function r(){${typeof fn === 'function'? fn.toString() : fn}}`, {
 		stripWith: true
 	})
 }
-function compileVue(inputText, options) {
+
+function compileVue(inputText:string, options:any) {
 	let vueComponent = compiler.parseComponent(inputText),
 		content
 	;
 
 
 
-	if (vueComponent.errors.length > 0) {
-		throw vueComponent.errors;
+	if ((vueComponent as any).errors.length > 0) {
+		throw (vueComponent as any).errors;
 	}
 
 	if (Array.isArray(vueComponent.customBlocks) && vueComponent.customBlocks.length > 0) {
@@ -114,17 +109,17 @@ function compileVue(inputText, options) {
 
 
 
-function gulpVue(opt) {
-	function replaceExtension(path) {
+function gulpVue(opt?:any) {
+	function replaceExtension(path:string) {
 		return path.replace(/\.vue$/, '.js');
 	}
-	function capitalize(str) {
+	function capitalize(str:string) {
 		return str.charAt(0).toUpperCase() + str.slice(1)
 	}
 
 
 
-	function transform(file, enc, cb) {
+	function transform(file:any, enc:string, cb:Function) {
 		if (file.isNull()) {
 			return cb(null, file);
 		}
@@ -164,4 +159,4 @@ function gulpVue(opt) {
 
 
 // Exporting the plugin main function
-module.exports = gulpVue;
+export default gulpVue;

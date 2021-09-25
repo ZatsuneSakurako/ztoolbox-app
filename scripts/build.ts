@@ -1,5 +1,9 @@
-// noinspection JSUnresolvedFunction
-const yargs = require('yargs')
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import path from "path";
+import {build, CliOptions} from "electron-builder";
+
+const _yargs = yargs(hideBin(process.argv))
 	.usage('Usage: $0 [options]')
 
 	.option('d', {
@@ -12,27 +16,20 @@ const yargs = require('yargs')
 			console.error(yargs.help());
 		}
 
-		process.exit(1)
+		process.exit(1);
 	})
 
 	.help('h')
 	.alias('h', 'help')
-	.argv
+	.parseSync()
 ;
 
 
 
 (async function() {
-	const path = require('path'),
-		{build} = require('electron-builder/out/index')
-	;
-
-
-
 	let buildResult = null;
 	try {
-
-		const buildOptions = {
+		const buildOptions:CliOptions = {
 			projectDir: path.resolve(__dirname, '..'),
 
 			win: ['nsis:x64', '7z:x64'],
@@ -94,8 +91,8 @@ const yargs = require('yargs')
 			}
 		};
 
-		if (yargs.dir === true) {
-			buildOptions.dir = false
+		if (_yargs.dir === true) {
+			buildOptions.dir = false;
 		}
 
 		buildResult = await build(buildOptions);
