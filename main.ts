@@ -1,11 +1,13 @@
 import {app, BrowserWindow, nativeImage, MenuItem, Menu, Tray, ipcMain, session} from 'electron';
 import * as path from "path";
 import crypto from "crypto";
+import WebSocket, {RawData} from "ws";
 
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
 import {Streamlink} from './classes/Streamlink';
 import _notify from "./classes/notify";
+
 
 
 const resourcePath = (app.isPackaged === false)? __dirname : process.resourcesPath,
@@ -28,6 +30,32 @@ if (app.isDefaultProtocolClient('ztoolbox') === false && app.isPackaged === true
 	 */
 	app.setAsDefaultProtocolClient('ztoolbox');
 }
+
+
+
+
+
+const wss = new WebSocket.Server({
+	port: 42080
+});
+
+function onSocketMessage(rawData:RawData, socket:WebSocket) {
+	let msg:string|object = rawData.toString();
+	try {
+		msg = JSON.parse(msg);
+	} catch (_) {}
+	console.dir(msg);
+	socket.send(JSON.stringify({
+		lorem: 'ipsum'
+	}));
+}
+
+wss.on('connection', function(socket) {
+	// When you receive a message, send that message to every socket.
+	socket.on('message', function(msg) {
+		onSocketMessage(msg, socket);
+	});
+});
 
 
 

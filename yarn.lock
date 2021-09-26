@@ -101,6 +101,11 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
+"@josephuspaye/chrome-native-bridge@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@josephuspaye/chrome-native-bridge/-/chrome-native-bridge-0.3.0.tgz#d42e022dff9614a3e4bcc268a3790d0b7f0d5f2d"
+  integrity sha512-bKelG2396kxE5rfsoZOTiZ1bMJPEsuG8a5I79fpOC9CL1WbMKP3S1tm2+xWyZrhS3CByy1PTE/z+FM8Al9dJHg==
+
 "@malept/cross-spawn-promise@^1.1.0":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@malept/cross-spawn-promise/-/cross-spawn-promise-1.1.1.tgz#504af200af6b98e198bce768bc1730c6936ae01d"
@@ -337,6 +342,13 @@
   integrity sha512-ayJ0iOCDNHnKpKTgBG6Q6JOnHTj9zFta+3j2b8Ejza0e4cvRyMn0ZoLEmbPrTHe5YYRlDYPvPWVdV4cTaRyH7g==
   dependencies:
     "@types/expect" "^1.20.4"
+    "@types/node" "*"
+
+"@types/ws@^8.2.0":
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.2.0.tgz#75faefbe2328f3b833cb8dc640658328990d04f3"
+  integrity sha512-cyeefcUCgJlEk+hk2h3N+MqKKsPViQgF5boi9TTHSK+PoR9KWBb/C5ccPcDyAqgsbAYHTwulch725DV84+pSpg==
+  dependencies:
     "@types/node" "*"
 
 "@types/yargs-parser@*":
@@ -5400,6 +5412,11 @@ write-file-atomic@^3.0.0:
     is-typedarray "^1.0.0"
     signal-exit "^3.0.2"
     typedarray-to-buffer "^3.1.5"
+
+ws@^8.2.2:
+  version "8.2.2"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.2.2.tgz#ca684330c6dd6076a737250ed81ac1606cb0a63e"
+  integrity sha512-Q6B6H2oc8QY3llc3cB8kVmQ6pnJWVQbP7Q5algTcIxx7YEpc0oU4NBVHlztA7Ekzfhw2r0rPducMUiCGWKQRzw==
 
 xdg-basedir@^4.0.0:
   version "4.0.0"
