@@ -21,8 +21,24 @@ fs.writeJSONSync(
 	}
 );
 
+delete json.allowed_origins;
+json.allowed_extensions = [
+	"ztoolbox_dev@zatsunenomokou.eu",
+];
+
+fs.writeJSONSync(
+	path.normalize(`${__dirname}/eu.gitlab.zatsunenomokou.chromenativebridge_firefox_${process.platform}.json`),
+	json,
+	{
+		encoding: 'utf8',
+		spaces: '\t',
+		EOL: '\n'
+	}
+);
+
 /**
  *
+ * @see https://unpkg.com/browse/native-installer@1.0.0/paths.json
  * @param {"chrome"|"chromium"|"firefox"} browser
  * @param {"darwin"|"win32"|"linux"} os
  * @param {'user'|'global'} type
@@ -79,7 +95,8 @@ function getInstallPath(browser='chrome', os='win32', type='user') {
 	return paths[browser][os][type];
 }
 
-console.dir(getInstallPath("chrome"))
+console.dir(getInstallPath('chrome'))
 console.dir(getInstallPath('chromium'))
+console.dir(getInstallPath('firefox'))
 console.error('WIP');
 process.exit(1)
