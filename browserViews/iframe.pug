@@ -4,9 +4,10 @@ block title
 	title iframe
 
 block head
-	meta(http-equiv='Content-Security-Policy', content="default-src 'none'; script-src 'self' https://unpkg.com/; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'")
+	// HEAD
 
 block head-js
-	script(src='js/iframe.js')
+	script(src='lib/string-strip-html/string-strip-html.umd.js')
+	script(src='js/iframe.js', type='module')
 
 block body

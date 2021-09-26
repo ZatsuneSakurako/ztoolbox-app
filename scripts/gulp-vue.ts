@@ -1,7 +1,7 @@
-import path from "path";
-import through from "through2";
+import * as path from "path";
+import * as through from "through2";
 import * as compiler from "vue-template-compiler";
-import pug from "pug";
+import * as pug from "pug";
 import umd from "umd";
 import PluginError from "plugin-error";
 // @ts-ignore
@@ -100,7 +100,7 @@ function compileVue(inputText:string, options:any) {
 	if (!content.includes('render:') && !content.includes('staticRenderFns:')) {
 		content = content.replace(
 			/export default[^{]*{/,
-			`return {\n	"render": ${transpile(compiledData.render)},\n	"staticRenderFns": [\n\t\t${staticRenderFns.join(',\n\t')}\n\t],`
+			`export default {\n	"render": ${transpile(compiledData.render)},\n	"staticRenderFns": [\n\t\t${staticRenderFns.join(',\n\t')}\n\t],`
 		);
 	}
 
@@ -139,7 +139,8 @@ function gulpVue(opt?:any) {
 
 		let data;
 		try {
-			data = umd(capitalize(options.outputName), compileVue(file.contents.toString('utf8'), options));
+			// data = umd(capitalize(options.outputName), compileVue(file.contents.toString('utf8'), options));
+			data = compileVue(file.contents.toString('utf8'), options);
 		} catch (err) {
 			return cb(new PluginError(PLUGIN_NAME, err));
 		}

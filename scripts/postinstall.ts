@@ -18,3 +18,11 @@ fs.copy(path.resolve(currentPath, './node_modules/codemirror/'), path.resolve(li
 fs.copy(path.resolve(currentPath, './node_modules/muicss/dist/'), path.resolve(libPath, './muicss'))
 	.catch(console.error)
 ;
+
+fs.copy(path.resolve(currentPath, './node_modules/vue/dist/'), path.resolve(libPath, './vue'))
+	.catch(console.error)
+;
+
+fs.copy(path.resolve(currentPath, './node_modules/string-strip-html/dist/'), path.resolve(libPath, './string-strip-html'))
+	.catch(console.error)
+;

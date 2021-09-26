@@ -1,11 +1,11 @@
-import gulp from "gulp";
+import * as gulp from "gulp";
 import del from "del";
-import fs from "fs-extra";
+import * as fs from "fs-extra";
 import _gulpSass from "gulp-sass";
-import nodeSass from "node-sass";
-import sourcemaps from "gulp-sourcemaps";
+import * as nodeSass from "node-sass";
+import * as sourcemaps from "gulp-sourcemaps";
 import gulpPug from "gulp-pug";
-import gulpVue from "./scripts/gulp-vue";
+import gulpVue from "./scripts/gulp-vue.js";
 import gulpTs from "gulp-typescript";
 
 const gulpSass = _gulpSass(nodeSass),
@@ -161,10 +161,13 @@ function clearJs() {
 }
 
 function _js() {
+	const _tsOptions = JSON.parse(JSON.stringify(tsOptions));
+	_tsOptions.compilerOptions.module = 'es6';
+
 	return gulp.src([paths.js.src, '!**/_*.ts'])
 		.pipe(sourcemaps.init())
 
-		.pipe(gulpTs(tsOptions.compilerOptions))
+		.pipe(gulpTs(_tsOptions.compilerOptions))
 
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.js.dest))

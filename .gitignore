@@ -8,6 +8,7 @@ browserViews/js/**/*.js
 **/*.map
 **/*.d.ts
 /*.js
+/scripts/*.js
 classes/*.js
 
 

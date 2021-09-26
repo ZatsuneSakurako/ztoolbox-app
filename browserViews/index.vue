@@ -1,38 +1,37 @@
 <template lang="pug">
 	main.grid.no-c-gap.no-r-gap
 		p.grid-12
-			input#streamlink(type='radio', v-model='menu', value='streamlink')
-			label.mui--text-light(for='streamlink') Streamlink
-			input#codeTester(type='radio', v-model='menu', value='code-tester')
-			label.mui--text-light(for='codeTester') Code tester
+			ul.mui-tabs__bar
+				li.mui--is-active
+					a(data-mui-toggle="tab", data-mui-controls="menu-streamlink") Streamlink
+				li
+					a(data-mui-toggle="tab", data-mui-controls="menu-code-tester") Code tester
 
-		p.grid-12(v-if='menu === \'streamlink\'')
+		p#menu-streamlink.grid-12.mui-tabs__pane.mui--is-active
 			button(class='mui-btn', v-on:click='onStreamLink') Ouvrir streamlink
 
-		p.grid-12(v-if='menu === \'code-tester\'')
+		p#menu-code-tester.grid-12.mui-tabs__pane
 			button(class='mui-btn', v-on:click='reloadIframe') Run code !
 
-		p.grid-12.mui--text-light(v-if='menu === \'streamlink\'')
+		p.grid-12(v-if='menu === \'menu-streamlink\'')
 			// All of the Node.js APIs are available in this renderer process.
 			| We are using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}}.
 
-		div#input1.grid-4(ref='input1', v-if='menu === \'code-tester\'')
-		div#input2.grid-4(ref='input2', v-if='menu === \'code-tester\'')
-		div#input3.grid-4(ref='input3', v-if='menu === \'code-tester\'')
+		div#input1.grid-4(ref='input1', v-if='menu === \'menu-code-tester\'')
+		div#input2.grid-4(ref='input2', v-if='menu === \'menu-code-tester\'')
+		div#input3.grid-4(ref='input3', v-if='menu === \'menu-code-tester\'')
 
-		iframe#iframe.grid-12(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html', v-if='menu === \'code-tester\'')
+		iframe#iframe.grid-12(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html', v-if='menu === \'menu-code-tester\'')
 </template>
 
-<script>
-	const { ipcRenderer } = require('electron'),
-		editors = {
-			html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
-			css: 'body {\n\tpadding: 0;\n}',
-			js: 'function test(){return true;}'
-		}
-	;
-
-
+<script type="module">
+	const editors = {
+		html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
+		css: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}',
+		js: 'function test(){return true;}\ndocument.body.classList.add(\'red\');console.info("test console")'
+	};
+	// @ts-ignore
+	const nonce = nodeCrypto.nonce();
 
 
 
@@ -66,18 +65,16 @@
 		 */
 		const iframe = this.$refs.iframe;
 		iframe.addEventListener('load', function () {
-			const {VM} = require('vm2'),
-				stripHtml = require('string-strip-html')
-			;
+			// const {VM} = require('vm2');
 
 			const iframeWin = iframe.contentWindow;
 			// @ts-ignore
-			iframeWin.stripHtml = stripHtml;
-			// @ts-ignore
-			iframeWin.VM = VM;
+			iframeWin.nodeCrypto = window.nodeCrypto;
+			// iframeWin.VM = VM;
 
 			iframeWin.postMessage({
-				type: 'init'
+				type: 'init',
+				nonce
 			}, location.href);
 
 
@@ -137,7 +134,7 @@
 		},
 		watch: {
 			menu: function (val) {
-				if (val === 'code-tester') {
+				if (val === 'menu-code-tester') {
 					this.nextTick()
 						.then(() => {
 							codeTesterLoader.call(this);

@@ -9,10 +9,12 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"pretty": true,
-		"types": ["node"],
+		"types": [
+			"node"
+		],
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"skipLibCheck": true,
-		"target": "esNext"
+		"target": "ESNext"
 	}
 }

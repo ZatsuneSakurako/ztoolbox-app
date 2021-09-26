@@ -44,7 +44,7 @@ function notify(options:{title:string, message:string, icon?:string, sound?:bool
  * @param {String} [appIconPath]
  * @return {{notify: (function({title: String, message: String, icon?: String, sound?: Boolean}): Promise<*>)}}
  */
-module.exports = function(appIconPath:string) {
+export default function(appIconPath:string) {
 	if (appIconPath === undefined) {
 		appIconPath = null;
 	}

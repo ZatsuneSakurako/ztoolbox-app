@@ -1,0 +1,16 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "commonjs",
+		"sourceMap": true
+	},
+	"files": [],
+	"include": [
+		"./gulpfile.ts",
+		"./scripts/*.ts"
+	],
+	"exclude": [
+		"./**/*.d.ts",
+		"./*.d.ts"
+	]
+}

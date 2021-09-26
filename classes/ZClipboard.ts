@@ -1,14 +1,9 @@
-/// <reference path="../node_modules/electron/electron.d.ts" />
+import {EventEmitter} from "events";
+import {clipboard, NativeImage} from "electron";
 
-type NativeImage = Electron.nativeImage;
 type Timeout = NodeJS.Timeout;
 
-
-
-// @ts-ignore
-const {EventEmitter} = require('events');
-
-class ZClipboard extends EventEmitter {
+export class ZClipboard extends EventEmitter {
 	/**
 	 * @type {Number}
 	 */
@@ -19,8 +14,6 @@ class ZClipboard extends EventEmitter {
 	lastImage:NativeImage;
 
 	_interval:Timeout = null;
-
-	private static _clipboard=require('electron').clipboard;
 
 	constructor(watchDelay:number, autoStart=true) {
 		super();
@@ -86,25 +79,25 @@ class ZClipboard extends EventEmitter {
 
 
 	// @ts-ignore
-	static setText(value:string, type?:string):this {
-		this._clipboard.writeText(value, type);
+	static setText(value:string, type?:'selection' | 'clipboard'):this {
+		clipboard.writeText(value, type);
 		return this;
 	}
 
-	static getText(type?:string):string {
-		return this._clipboard.readText(type);
+	static getText(type?:'selection' | 'clipboard'):string {
+		return clipboard.readText(type);
 	}
 
 
 
 	// @ts-ignore
-	static setImage(value:NativeImage, type?:string):this {
-		this._clipboard.writeImage(value, type);
+	static setImage(value:NativeImage, type?:'selection' | 'clipboard'):this {
+		clipboard.writeImage(value, type);
 		return this;
 	}
 
-	static getImage(type?:string):NativeImage {
-		return this._clipboard.readImage(type);
+	static getImage(type?:'selection' | 'clipboard'):NativeImage {
+		return clipboard.readImage(type);
 	}
 
 
@@ -144,6 +137,3 @@ class ZClipboard extends EventEmitter {
 		return this;
 	}
 }
-
-module.exports.ZClipboard = ZClipboard;
-export {}

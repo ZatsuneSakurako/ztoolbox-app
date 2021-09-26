@@ -1,26 +1,30 @@
-interface CompiledVue {
-	render: Function,
-	staticRenderFns: Function[]
-}
+// noinspection ES6UnusedImports
+import Vue from 'vue';
+
+// @ts-ignore
+import indexTemplate from '../index.js';
 
 
 
-
-
-
-
-
-window.addEventListener("load", function () {
-	const indexTemplate:CompiledVue = require(__dirname + '\\' + 'index.js');
-	const Vue = require('vue');
-
+window.addEventListener("load", async function () {
 	const data = {
-		menu: 'streamlink',
+		menu: 'menu-streamlink',
 		message: 'Hello Vue!',
-		versions: process.versions
+		versions: window.process.versions
 	};
 
-	const app = new Vue(Object.assign({
+
+
+	document.addEventListener('mui.tabs.showend', function (e) {
+		const $e = (<HTMLElement> e.target).closest('[data-mui-controls^="menu-"]');
+		if (!$e) return;
+
+		data.menu = (<HTMLElement>$e).dataset.muiControls;
+	});
+
+
+
+	const app = new window.Vue(Object.assign({
 		el: 'main',
 		data: data
 	}, indexTemplate));

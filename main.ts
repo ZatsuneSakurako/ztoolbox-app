@@ -1,24 +1,19 @@
-/// <reference path="./classes/ZClipboard.ts" />
+import {app, BrowserWindow, nativeImage, MenuItem, Menu, Tray, ipcMain, session} from 'electron';
+import * as path from "path";
+import crypto from "crypto";
 
-import {app} from 'electron';
-
-type BrowserWindow = Electron.BrowserWindow;
-type MenuItem = Electron.MenuItem;
-type Menu = Electron.Menu;
-
+import {ZClipboard} from './classes/ZClipboard';
+import {Settings} from './classes/Settings';
+import {Streamlink} from './classes/Streamlink';
+import _notify from "./classes/notify";
 
 
-const path = require('path'),
-	{BrowserWindow, nativeImage} = require('electron'),
-
-	resourcePath = (app.isPackaged === false)? __dirname : process.resourcesPath,
+const resourcePath = (app.isPackaged === false)? __dirname : process.resourcesPath,
 
 	appIconPath = path.resolve(resourcePath, './images/icon.png'),
 	appIconPath_x3 = path.resolve(resourcePath, './images/icon@3x.png'),
 	appIcon = nativeImage.createFromPath(appIconPath)
 ;
-
-
 
 
 
@@ -47,7 +42,8 @@ function createWindow() {
 		icon: appIcon,
 		show: false,
 		webPreferences: {
-			nodeIntegration: true
+			nodeIntegration: true,
+			preload: path.resolve(__dirname, './classes/preload.js')
 		}
 	});
 
@@ -102,6 +98,26 @@ function createWindow() {
 	})
 }*/
 
+const nonce = crypto.randomBytes(16).toString('base64');
+app.on('ready', function () {
+	session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+		callback({
+			responseHeaders: {
+				...details.responseHeaders,
+				'Content-Security-Policy': [
+					// 'default-src \'none\'; script-src \'self\'; object-src \'none\'; style-src \'self\' \'unsafe-inline\'; img-src \'self\'; media-src \'self\'; frame-src \'self\'; font-src \'self\'; connect-src \'none\'"',
+					`default-src 'none'; script-src 'self' https://unpkg.com/ 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'`
+				]
+			}
+		})
+	});
+});
+
+// noinspection JSUnusedLocalSymbols
+ipcMain.handle('nonce-ipc', async (event, ...args) => {
+	return nonce;
+})
+
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
 	// On macOS it is common for applications and their menu bar
@@ -117,20 +133,7 @@ app.on('activate', function () {
 
 
 
-
-
-
-
-
-
-
-
-const { Menu, Tray, ipcMain } = require('electron');
-
-const {ZClipboard} = require('./classes/ZClipboard'),
-	{notify} = require('./classes/notify')(appIconPath_x3),
-	{Settings} = require('./classes/Settings'),
-	{Streamlink} = require('./classes/Streamlink'),
+const {notify} = _notify(appIconPath_x3),
 	urlRegexp = /https?:\/\/*/,
 	clipboard = new ZClipboard(5000, false)
 ;
@@ -147,7 +150,7 @@ function getSelectedMenu() : string {
 	return checked === null ? null : (checked!.id || checked!.label);
 }
 
-async function openStreamlink(useConfirmNotification:boolean=true, url:String|URL=null) : Promise<void> {
+async function openStreamlink(useConfirmNotification:boolean=true, url:string|URL=null) : Promise<void> {
 	const selected = getSelectedMenu().trim(),
 		clipboardText = clipboard.text
 	;
@@ -239,7 +242,7 @@ let contextMenu:Menu = null;
 // Some APIs can only be used after this event occurs.
 interface IZMenuItem extends MenuItem {
 	id: string;
-	type: string;
+	type: 'normal' | 'separator' | 'submenu' | 'checkbox' | 'radio';
 }
 function onReady() {
 	const settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'));
@@ -373,7 +376,7 @@ function onOpen(commandLine:string[]) {
 	const requests = commandLine.filter(value => {
 		return value.indexOf('ztoolbox://') !== -1
 	});
-	let unsupported = false;
+	let unsupported:boolean = false;
 
 	requests.forEach(value => {
 		/**

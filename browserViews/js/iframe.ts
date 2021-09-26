@@ -1,4 +1,6 @@
-declare var stripHtml : Function;
+import {stripHtml as _stripHtml} from 'string-strip-html';
+
+const stripHtml:typeof _stripHtml = (window as any).stringStripHtml.stripHtml;
 
 
 
@@ -8,7 +10,7 @@ function clearAllSelect(sel: string) {
 	})
 }
 
-var vm:any = null;
+let nonce:string|undefined;
 function init(e: any) {
 	if (e.origin.startsWith('file://') === false) {
 		throw 'SomethingWrong';
@@ -20,39 +22,32 @@ function init(e: any) {
 
 	switch (e.data.type) {
 		case 'init':
-			// https://yarnpkg.com/fr/package/vm2
-			// @ts-ignore
-			vm = new VM({
-				timeout: 10000,
-				sandbox: {
-					/**
-					 *
-					 * @param {string} moduleName
-					 * @return {Module}
-					 */
-					loadModule: function(moduleName: string) {
-						const url = `https://unpkg.com/${moduleName}`;
-
-						// @ts-ignore
-						return import(url);
-					},
-					console,
-					document
-				},
-				eval: false,
-				require: false
-			});
+			console.info('init');
+			nonce = e.data.nonce;
 			break;
 		case 'js':
-			if (vm === null) {
-				throw 'vm not loaded';
-			}
+			const keys = new Set(['Function', ...Object.keys(globalThis)]),
+				js = 'var ' +
+					[...keys]
+						.filter(n => {
+							return !['document', 'console'].includes(n);
+						})
+						.map(n => n + ' = void 0')
+						.join(",")
+					+ ';'
+			;
 
-			vm.run(e.data.js);
+			clearAllSelect('head script.onMessage');
+			const script = document.createElement('script');
+			script.nonce = nonce;
+			script.textContent = `(function(){ 'use strict'; ${js}; ${ e.data.js } }.bind(null))()`;
+			script.classList.add('onMessage');
+			document.head.append(script);
 			break;
 		case 'css':
 			clearAllSelect('head style.onMessage');
 			const css = document.createElement('style');
+			css.nonce = nonce;
 			css.textContent = e.data.css;
 			css.classList.add('onMessage');
 			document.head.appendChild(css);
@@ -62,7 +57,7 @@ function init(e: any) {
 			document.body.innerHTML = stripHtml(e.data.html, {
 				skipHtmlDecoding: true,
 				onlyStripTags: ['html', 'head', 'script']
-			});
+			}).result;
 	}
 }
 window.addEventListener('message', init, false);

@@ -1,6 +1,7 @@
 // @ts-ignore
-import classUtils from "class-utils";
+import * as classUtils from "class-utils";
 import {EventEmitter} from "events";
+import * as fs from "fs";
 
 
 interface Settings {
@@ -57,10 +58,7 @@ class Settings extends Map<string, any> implements Settings {
 	}
 
 	static get _fs() {
-		// @ts-ignore
-		delete Settings._fs;
-		// @ts-ignore
-		return Settings._fs = require('fs');
+		return fs;
 	}
 
 	/**
@@ -127,4 +125,6 @@ classUtils.inherit(Settings, EventEmitter, []);
 
 
 
-module.exports.Settings = Settings;
+export {
+	Settings
+}

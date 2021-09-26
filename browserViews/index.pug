@@ -3,7 +3,7 @@ extends _layout
 
 
 block head
-	meta(http-equiv="Content-Security-Policy", content="default-src 'none'; script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'none'")
+	// HEAD
 
 block head-css
 	link(rel='stylesheet', href='lib/muicss/css/mui-noglobals.css')
@@ -11,6 +11,8 @@ block head-css
 	link(rel='stylesheet', href='lib/codemirror/theme/monokai.css')
 
 block head-js
+	script(src='lib/muicss/js/mui.js')
+	script(src='lib/vue/vue.runtime.js', type='module')
 	script(src='lib/codemirror/lib/codemirror.js')
 	script(src='lib/codemirror/mode/htmlmixed/htmlmixed.js')
 	script(src='lib/codemirror/mode/javascript/javascript.js')
@@ -25,4 +27,5 @@ block append head-css
 	link(rel='stylesheet', href='css/index.css')
 
 block append head-js
-	script(src='js/index.js')
+	script(src='index.js', type='module')
+	script(src='js/index.js', type='module')
