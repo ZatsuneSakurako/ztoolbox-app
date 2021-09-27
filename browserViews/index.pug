@@ -6,12 +6,10 @@ block head
 	// HEAD
 
 block head-css
-	link(rel='stylesheet', href='lib/muicss/css/mui-noglobals.css')
 	link(rel='stylesheet', href='lib/codemirror/lib/codemirror.css')
 	link(rel='stylesheet', href='lib/codemirror/theme/monokai.css')
 
 block head-js
-	script(src='lib/muicss/js/mui.js')
 	script(src='lib/vue/vue.runtime.js', type='module')
 	script(src='lib/codemirror/lib/codemirror.js')
 	script(src='lib/codemirror/mode/htmlmixed/htmlmixed.js')
@@ -28,4 +26,7 @@ block append head-css
 
 block append head-js
 	script(src='index.js', type='module')
+	script(src='js/translation-api.js', type='module')
+	script(src='js/theme/color.js', type='module')
+	script(src='js/theme/theme.js', type='module')
 	script(src='js/index.js', type='module')

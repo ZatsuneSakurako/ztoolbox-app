@@ -4,21 +4,15 @@ import {EventEmitter} from "events";
 import * as fs from "fs";
 
 
-interface Settings {
+interface Settings extends EventEmitter {
 	get(key:string):any;
 	has(key:string):boolean;
 	set(key:string, value:any):this;
 	delete(key:string):boolean;
 	clear():void;
 	toJSON():string;
-	emit(event: string | symbol, ...args: any[]): boolean;
 	// @ts-ignore
 	forEach(callbackfn: (value:any, key:string, map:Map<string,any>) => void, thisArgs?:any)
-
-	emit():void;
-	on(event: string | symbol, listener: (...args: any[]) => void): this;
-	once(event: string | symbol, listener: (...args: any[]) => void): this;
-	off(event: string | symbol, listener: (...args: any[]) => void): this;
 }
 
 class Settings extends Map<string, any> implements Settings {

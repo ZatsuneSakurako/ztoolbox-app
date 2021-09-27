@@ -1,12 +1,31 @@
 import {app, BrowserWindow, nativeImage, MenuItem, Menu, Tray, ipcMain, session} from 'electron';
 import * as path from "path";
+import fs from "fs-extra";
 import crypto from "crypto";
 import WebSocket, {RawData} from "ws";
+import i18next from "i18next";
+import Mustache from "mustache";
 
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
 import {Streamlink} from './classes/Streamlink';
 import _notify from "./classes/notify";
+import frTranslation from "./locales/fr.json";
+import enTranslation from "./locales/en.json";
+
+
+
+if (app.requestSingleInstanceLock() === true) {
+	// noinspection JSUnusedLocalSymbols
+	app.on('second-instance', (event, commandLine, workingDirectory) => {
+		// Quelqu'un a tenté d'exécuter une seconde instance.
+		onOpen(commandLine);
+	});
+
+	app.on('ready', onReady);
+} else {
+	app.quit();
+}
 
 
 
@@ -144,7 +163,57 @@ app.on('ready', function () {
 // noinspection JSUnusedLocalSymbols
 ipcMain.handle('nonce-ipc', async (event, ...args) => {
 	return nonce;
+});
+
+ipcMain.handle('openStreamlink', async () => {
+	return openStreamlink(false)
+		.catch(console.error)
+	;
+});
+
+const i18n = i18next
+	.init({
+		lng: app.getLocaleCountryCode(),
+		fallbackLng: 'fr',
+		defaultNS: 'default',
+		resources: {
+			en: {
+				default: enTranslation
+			},
+			fr: {
+				default: frTranslation
+			}
+		}
+	})
+;
+
+ipcMain.handle('i18n', async (event, key) => {
+	const _ = await i18n;
+	return _(key);
+});
+
+ipcMain.handle('getPreference', (e, preferenceId:string) => {
+	return settings.get(preferenceId);
+});
+
+ipcMain.handle('savePreference', (e, preferenceId:string, newValue:any) => {
+	settings.set(preferenceId, newValue);
+	return true;
+});
+
+const mstCache:Map<string, string> = new Map();
+ipcMain.handle('mustacheRender', async (e, templateName:string, context:any) => {
+	let template = mstCache.get(templateName);
+	if (template === undefined) {
+		template = fs.readFileSync(`${__dirname}/templates/${templateName}.mst`, {
+			encoding: 'utf8'
+		});
+		mstCache.set(templateName, template);
+	}
+	return Mustache.render(template, context);
 })
+
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -272,10 +341,8 @@ interface IZMenuItem extends MenuItem {
 	id: string;
 	type: 'normal' | 'separator' | 'submenu' | 'checkbox' | 'radio';
 }
+const settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'));
 function onReady() {
-	const settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'));
-
-
 	contextMenu = Menu.buildFromTemplate([
 		{
 			label: 'Ouvrir la fenêtre',
@@ -333,16 +400,6 @@ function onReady() {
 
 
 
-
-
-	ipcMain
-		.on('openStreamlink',(e:any) => {
-			openStreamlink(false)
-				.catch(console.error)
-			;
-			e.returnValue = true
-		})
-	;
 	tray.addListener('click', () => {
 		if (clipboard.isEnabled === true) {
 			toggleWindow()
@@ -395,8 +452,6 @@ function onReady() {
 	// Check if currently opened for a ztoolbox://*
 	onOpen(process.argv);
 }
-
-
 
 
 
@@ -460,16 +515,6 @@ function onOpen(commandLine:string[]) {
 	}
 }
 
-if (app.requestSingleInstanceLock() === true) {
-	// noinspection JSUnusedLocalSymbols
-	app.on('second-instance', (event, commandLine, workingDirectory) => {
-		// Quelqu'un a tenté d'exécuter une seconde instance.
-		onOpen(commandLine);
-	});
 
-	app.on('ready', onReady);
-} else {
-	app.quit();
-}
 
 export {};
