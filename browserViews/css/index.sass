@@ -11,6 +11,12 @@
 *
 	box-sizing: border-box
 
+body
+	display: grid
+	grid-template-rows: 52px auto
+	margin: 0
+	padding: 0
+
 #iframe
 	background: rgba(255,255,255,0.2)
 	border-style: solid
@@ -18,21 +24,43 @@
 	height: 300px
 	width: 100%
 
-header button, header [role="button"]
-	flex: 1
-	height: 36px
-	min-width: 42px
-	max-width: 64px
+header
+	display: flex
+	padding: 5px 2px
+
+button,
+label
+	cursor: pointer
+
+header button,
+header label[for],
+header [role="button"]
+	/* height: 36px */
+	/* min-width: 64px */
 	padding: 0 8px
 	border: 0 none
 	border-radius: 1px
 	margin-left: 5px
 	font-weight: 700
 
-button, [role="button"]
+header label[for]
+	line-height: 42px
+
+header button.icon,
+header label[for].icon,
+header [role="button"].icon
+	min-width: 42px
+	max-width: 64px
+
+button,
+.button,
+[role="button"]
 	padding: 0 8px
 	border: 0 none
 	border-radius: 1px
 	margin-left: 5px
 	min-height: 42px
 	font-weight: 700
+
+main
+	padding: 1rem

@@ -1,10 +1,7 @@
 <template lang="pug">
 	main.grid.no-c-gap.no-r-gap
-		p.grid-12
-			input#streamlink(type='radio', v-model='menu', value='streamlink')
-			label.mui--text-light(for='streamlink') Streamlink
-			input#codeTester(type='radio', v-model='menu', value='code-tester')
-			label.mui--text-light(for='codeTester') Code tester
+		input#streamlink.hidden(type='radio', name="menu", v-model='menu', value='streamlink')
+		input#codeTester.hidden(type='radio', name="menu", v-model='menu', value='code-tester')
 
 		p.grid-12(v-if='menu === \'streamlink\'')
 			button(class='mui-btn', v-on:click='onStreamLink') Ouvrir streamlink
