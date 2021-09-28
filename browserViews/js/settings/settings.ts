@@ -1,7 +1,7 @@
 import {SettingsConfig} from "./bo/settings-config";
 
 const settings:SettingsConfig = {
-	"panel_theme": {
+	"theme": {
 		"type": "menulist",
 		"value": "dark",
 		"options": [
@@ -20,6 +20,41 @@ const settings:SettingsConfig = {
 		"type": "color",
 		"value": "#000000",
 		"group": "theme"
+	},
+
+	"clipboardWatch": {
+		"type": "bool",
+		"value": false
+	},
+	"quality": {
+		"type": "menulist",
+		"value": "best",
+		"options": [
+			{
+				value: 'worst',
+				label: 'worst'
+			},
+			{
+				value: '360p',
+				label: '360p'
+			},
+			{
+				value: '480p',
+				label: '480p'
+			},
+			{
+				value: '720p',
+				label: '720p'
+			},
+			{
+				value: '1080p',
+				label: '1080p'
+			},
+			{
+				value: 'best',
+				label: 'best'
+			}
+		]
 	},
 };
 

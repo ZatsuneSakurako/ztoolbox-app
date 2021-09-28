@@ -5,6 +5,7 @@ import crypto from "crypto";
 import WebSocket, {RawData} from "ws";
 import i18next from "i18next";
 import Mustache from "mustache";
+import Dict = NodeJS.Dict;
 
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
@@ -12,6 +13,8 @@ import {Streamlink} from './classes/Streamlink';
 import _notify from "./classes/notify";
 import frTranslation from "./locales/fr.json";
 import enTranslation from "./locales/en.json";
+import frPreferencesTranslation from "./locales/preferences/fr.json";
+import enPreferencesTranslation from "./locales/preferences/en.json";
 
 
 
@@ -176,12 +179,18 @@ const i18n = i18next
 		lng: app.getLocaleCountryCode(),
 		fallbackLng: 'fr',
 		defaultNS: 'default',
+		ns: [
+			'default',
+			'preferences',
+		],
 		resources: {
 			en: {
-				default: enTranslation
+				default: enTranslation,
+				preferences: enPreferencesTranslation
 			},
 			fr: {
-				default: frTranslation
+				default: frTranslation,
+				preferences: frPreferencesTranslation
 			}
 		}
 	})
@@ -189,11 +198,21 @@ const i18n = i18next
 
 ipcMain.handle('i18n', async (event, key) => {
 	const _ = await i18n;
-	return _(key);
+	return _(key, {
+		nsSeparator: '.'
+	});
 });
 
 ipcMain.handle('getPreference', (e, preferenceId:string) => {
 	return settings.get(preferenceId);
+});
+
+ipcMain.handle('getPreferences', (e, ...preferenceIds:string[]) => {
+	const output:Dict<any> = {}
+	for (let preferenceId of preferenceIds) {
+		output[preferenceId] = settings.get(preferenceId);
+	}
+	return output;
 });
 
 ipcMain.handle('savePreference', (e, preferenceId:string, newValue:any) => {
@@ -211,7 +230,13 @@ ipcMain.handle('mustacheRender', async (e, templateName:string, context:any) => 
 		mstCache.set(templateName, template);
 	}
 	return Mustache.render(template, context);
-})
+});
+
+function triggerBrowserWindowPreferenceUpdate(preferenceId: string, newValue: any) {
+	for (let browserWindow of BrowserWindow.getAllWindows()) {
+		browserWindow.webContents.send('updatePreference', preferenceId, newValue);
+	}
+}
 
 
 
@@ -371,6 +396,7 @@ function onReady() {
 			checked: settings.get('clipboardWatch'),
 			click() {
 				settings.set('clipboardWatch', !settings.get('clipboardWatch'));
+				triggerBrowserWindowPreferenceUpdate('clipboardWatch', settings.get('clipboardWatch'));
 			}
 		},
 
@@ -390,7 +416,11 @@ function onReady() {
 
 	contextMenu.addListener("menu-will-close", function () {
 		setTimeout(() => {
-			settings.set("quality", getSelectedMenu())
+			const newSelectedQuality = getSelectedMenu();
+			if (settings.get('quality') !== newSelectedQuality) {
+				settings.set("quality", newSelectedQuality);
+				triggerBrowserWindowPreferenceUpdate('quality', newSelectedQuality);
+			}
 		})
 	});
 

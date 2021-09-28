@@ -1,7 +1,7 @@
 import Dict = NodeJS.Dict;
 
-interface IControlConfig {
-	type: 'control'
+interface IButtonConfig {
+	type: 'button'
 }
 
 interface IConfigBase<T> {
@@ -23,11 +23,11 @@ interface IColorConfig extends IConfigBase<string> {
 }
 
 interface IIntegerConfig extends IConfigBase<number> {
-	type: 'interger'
+	type: 'integer'
 	minValue?: number
 	maxValue?: number
-	rangeInput: boolean
-	rangeOutputUnit: string
+	stepValue?: boolean
+	rangeInput?: boolean
 }
 
 interface IBooleanConfig extends IConfigBase<boolean> {
@@ -38,5 +38,5 @@ interface IJsonConfig extends IConfigBase<Dict<string|boolean|number|null>> {
 	type: 'json'
 }
 
-type SettingConfig = IControlConfig|IStringConfig|IColorConfig|IMenuListConfig|IIntegerConfig|IBooleanConfig|IJsonConfig;
+type SettingConfig = IButtonConfig|IStringConfig|IColorConfig|IMenuListConfig|IIntegerConfig|IBooleanConfig|IJsonConfig;
 export type SettingsConfig = Dict<SettingConfig>;

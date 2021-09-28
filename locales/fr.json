@@ -1,4 +1,7 @@
 {
 	"language": "fr",
-	"settings": "Paramètres"
+	"settings": "Paramètres",
+
+	"group_default": "Général",
+	"group_theme": "Thème"
 }

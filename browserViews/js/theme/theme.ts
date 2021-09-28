@@ -3,10 +3,7 @@ import {Color} from "./color.js";
 
 async function getPreferences() {
 	const znmApi = (<BridgedWindow> window).znmApi;
-	return {
-		"panel_theme": await znmApi.getPreference('panel_theme'),
-		"background_color": await znmApi.getPreference('background_color')
-	}
+	return await znmApi.getPreferences('theme', 'background_color');
 }
 
 async function render(data:any) {
@@ -19,7 +16,7 @@ export async function themeCacheUpdate() {
 	let colorStylesheetNode:HTMLElement|null = document.querySelector<HTMLElement>('#' + STYLE_NODE_ID) ?? null;
 
 	const options = await getPreferences(),
-		currentTheme = options.panel_theme ?? 'dark',
+		currentTheme = options.theme ?? 'dark',
 		background_color = options.background_color ?? '#000000'
 	;
 

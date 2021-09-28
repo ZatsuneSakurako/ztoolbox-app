@@ -1,4 +1,7 @@
 {
 	"language": "en",
-	"settings": "Settings"
+	"settings": "Settings",
+
+	"group_default": "Default",
+	"group_theme": "Theme"
 }
