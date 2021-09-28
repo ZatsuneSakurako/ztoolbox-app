@@ -80,7 +80,7 @@ wss.on('connection', function(socket) {
 
 
 
-let mainWindow:BrowserWindow = null/*, shortcutsWindow = null*/;
+let mainWindow:BrowserWindow|null = null/*, shortcutsWindow = null*/;
 function createWindow() {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
@@ -103,7 +103,7 @@ function createWindow() {
 	// mainWindow.webContents.openDevTools()
 
 	mainWindow.once('ready-to-show', () => {
-		mainWindow.show()
+		mainWindow?.show()
 	});
 
 	// Emitted when the window is closed.
@@ -235,20 +235,19 @@ const {notify} = _notify(appIconPath_x3),
 	clipboard = new ZClipboard(5000, false)
 ;
 
-function getSelectedMenu() : string {
-	let checked: IZMenuItem = null;
-
-	contextMenu.items.forEach((menuItem: IZMenuItem) => {
-		if (menuItem.checked === true) {
+function getSelectedMenu() : string|null {
+	let checked:IZMenuItem|null = null;
+	for (const menuItem of contextMenu?.items ?? []) {
+		if (menuItem.checked) {
 			checked = menuItem
 		}
-	});
+	}
 
-	return checked === null ? null : (checked!.id || checked!.label);
+	return checked === null ? null : (checked?.id || checked?.label);
 }
 
-async function openStreamlink(useConfirmNotification:boolean=true, url:string|URL=null) : Promise<void> {
-	const selected = getSelectedMenu().trim(),
+async function openStreamlink(useConfirmNotification:boolean=true, url:string|URL|null=null) : Promise<void> {
+	const selected = (getSelectedMenu() ?? '').trim(),
 		clipboardText = clipboard.text
 	;
 
@@ -284,23 +283,25 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:string|UR
 		.catch(console.error)
 	;
 
-	if (isAvailable === false) {
+	if (isAvailable === false || maxQuality === undefined) {
 		notify({
 			title: 'Information',
 			message: 'Vérifiez l\'url (flux en ligne, qualités, ...)'
 		})
 			.then(() => {
-				require("shell").openExternal(url.toString())
-					.catch(console.error)
-				;
+				if (url) {
+					require("shell").openExternal(url.toString())
+						.catch(console.error)
+					;
+				}
 			})
 			.catch(console.error)
 		;
 		return;
 	}
 
-	if (useConfirmNotification !== false) {
-		let notificationConfirmed = false;
+	if (useConfirmNotification) {
+		let notificationConfirmed: boolean;
 		try {
 			await notify({
 				title: 'Lien détecté',
@@ -312,7 +313,7 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:string|UR
 			notificationConfirmed = false;
 		}
 
-		if (notificationConfirmed !== true) {
+		if (!notificationConfirmed) {
 			return;
 		}
 	}
@@ -333,8 +334,9 @@ function toggleWindow() {
 
 
 
-let tray = null;
-let contextMenu:Menu = null;
+let tray:Tray|null = null,
+	contextMenu:Menu|null = null
+;
 // This method will be called when Electron has finished initialization.
 // Some APIs can only be used after this event occurs.
 interface IZMenuItem extends MenuItem {
@@ -425,12 +427,12 @@ function onReady() {
 
 
 	const refreshQualityChecked = () => {
-		contextMenu.items.forEach((menuItem: IZMenuItem) => {
+		for (const menuItem of contextMenu?.items ?? []) {
 			const value = menuItem.id || menuItem.label;
 			if (menuItem.type === "radio" && settings.get("quality") === value) {
 				menuItem.checked = true;
 			}
-		});
+		}
 	};
 	settings.on('change', function (key:any) {
 		switch (key) {
@@ -438,7 +440,10 @@ function onReady() {
 				refreshQualityChecked();
 				break;
 			case 'clipboardWatch':
-				contextMenu.getMenuItemById('clipboardWatch').checked = settings.get('clipboardWatch');
+				let menu = contextMenu?.getMenuItemById('clipboardWatch') ?? null;
+				if (menu) {
+					menu.checked = settings.get('clipboardWatch');
+				}
 				clipboard.toggle(settings.get('clipboardWatch'));
 				break;
 		}
@@ -482,7 +487,7 @@ function onOpen(commandLine:string[]) {
 				[siteType, liveId] = inputUrl.split('/')
 			;
 
-			let liveUrl:string = null;
+			let liveUrl:string;
 			switch (siteType) {
 				case 'youtube':
 					liveUrl = `https://www.youtube.com/watch?v=${liveId}`;

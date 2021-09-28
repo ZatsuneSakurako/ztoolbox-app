@@ -111,12 +111,22 @@ export const vue = gulp.series(clearVue, _vue);
 function clearMainJs() {
 	return del([
 		'./*.js',
-		'./*.map'
+		'./*.d.ts',
+		'./*.map',
+		'classes/*.js',
+		'classes/*.d.ts',
+		'classes/*.map',
 	])
 }
 
 function _mainJs() {
-	return gulp.src([paths.mainJs.src, '!_*.ts'])
+	return gulp.src([
+		paths.mainJs.src, '!_*.ts',
+		paths.mainClassJs.src, '!**/_*.ts'
+	], {
+		cwd: __dirname,
+		base: __dirname
+	})
 		.pipe(sourcemaps.init())
 
 		.pipe(gulpTs(tsOptions.compilerOptions))
@@ -125,28 +135,8 @@ function _mainJs() {
 		.pipe(gulp.dest(paths.mainJs.dest))
 }
 
-
-
-
-
-function clearMainClassJs() {
-	return del([
-		'classes/*.js',
-		'classes/*.map',
-	])
-}
-
-function mainClassJs() {
-	return gulp.src([paths.mainClassJs.src, '!**/_*.ts'])
-		.pipe(sourcemaps.init())
-
-		.pipe(gulpTs(tsOptions.compilerOptions))
-
-		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.mainClassJs.dest))
-}
 // noinspection JSUnusedGlobalSymbols
-export const mainJs = gulp.series(clearMainJs, _mainJs, mainClassJs);
+export const mainJs = gulp.series(clearMainJs, _mainJs);
 
 
 
@@ -178,14 +168,19 @@ export const js = gulp.series(clearJs, _js);
 
 
 
-export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs, clearMainJs, clearMainClassJs);
+export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs, clearMainJs);
 
-export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js, _mainJs, mainClassJs));
+export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js, _mainJs));
 
-/*function watch() {
-	gulp.watch(paths.styles.src, styles);
+function _watch() {
+	gulp.watch(paths.styles.src, _css);
+	gulp.watch(paths.html.src, _html);
+	gulp.watch(paths.vue.src, _vue);
+	gulp.watch(paths.js.src, _js);
+	gulp.watch(paths.mainJs.src, _mainJs);
+	gulp.watch(paths.mainClassJs.src, _mainJs);
 }
-exports.watch = gulp.series(clear, build, watch);*/
+export const watch = gulp.series(clear, build, _watch);
 
 //Watch task
 // noinspection JSUnusedGlobalSymbols

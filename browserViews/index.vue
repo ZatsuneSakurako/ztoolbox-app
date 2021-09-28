@@ -2,24 +2,28 @@
 	main.grid.no-c-gap.no-r-gap
 		input#streamlink.hidden(type='radio', name="menu", v-model='menu', value='streamlink')
 		input#codeTester.hidden(type='radio', name="menu", v-model='menu', value='code-tester')
+		input#settings.hidden(type='radio', name="menu", v-model='menu', value='settings')
 
-		p.grid-12(v-if='menu === \'streamlink\'')
+		p.grid-12(v-show='menu === \'streamlink\'')
 			button(class='mui-btn', v-on:click='onStreamLink') Ouvrir streamlink
 
-		p.grid-12(v-if='menu === \'code-tester\'')
+		p.grid-12(v-show='menu === \'code-tester\'')
 			button(class='mui-btn', v-on:click='reloadIframe') Run code !
 
-		p.grid-12(v-if='menu === \'streamlink\'')
+		p.grid-12(v-show='menu === \'streamlink\'')
 			// All of the Node.js APIs are available in this renderer process.
 			| We are using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}} (current i18next language :&nbsp;
 			span(data-translate-id='language')
 			| ).
 
-		div#input1.grid-4(ref='input1', v-if='menu === \'code-tester\'')
-		div#input2.grid-4(ref='input2', v-if='menu === \'code-tester\'')
-		div#input3.grid-4(ref='input3', v-if='menu === \'code-tester\'')
+		p.grid-12(v-show='menu === \'settings\'')
+			settings(:menu='menu')
 
-		iframe#iframe.grid-12(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html', v-if='menu === \'code-tester\'')
+		div#input1.grid-4(ref='input1', v-show='menu === \'code-tester\'')
+		div#input2.grid-4(ref='input2', v-show='menu === \'code-tester\'')
+		div#input3.grid-4(ref='input3', v-show='menu === \'code-tester\'')
+
+		iframe#iframe.grid-12(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html', v-show='menu === \'code-tester\'')
 </template>
 
 <script type="module">
@@ -32,7 +36,9 @@
 
 
 	const nonce = znmApi.nonce();
+	let codeTesterLoaded = false;
 	function codeTesterLoader() {
+		codeTesterLoaded = true;
 		const defaultOptions = {
 			indentWithTabs: true,
 			lineNumbers: true,
@@ -129,7 +135,7 @@
 		},
 		watch: {
 			menu: function (val) {
-				if (val === 'code-tester') {
+				if (val === 'code-tester' && codeTesterLoaded === false) {
 					this.nextTick()
 						.then(() => {
 							codeTesterLoader.call(this);

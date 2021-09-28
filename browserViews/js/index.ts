@@ -3,6 +3,8 @@ import Vue from 'vue';
 
 // @ts-ignore
 import indexTemplate from '../index.js';
+// @ts-ignore
+import settingsTemplate from '../settings.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeCacheUpdate} from "./theme/theme.js";
 
@@ -17,6 +19,7 @@ window.addEventListener("load", async function () {
 
 
 
+	window.Vue.component('settings', settingsTemplate);
 	const app = new window.Vue(Object.assign({
 		el: 'main',
 		data: data

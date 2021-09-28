@@ -46,7 +46,7 @@ function compileVue(inputText:string, options:any) {
 
 
 
-	if (vueComponent.template !== null) {
+	if (vueComponent.template) {
 		let lang = 'html';
 		if (!!vueComponent.template.attrs && !!vueComponent.template.attrs.lang) {
 			if (vueComponent.template.attrs.lang !== 'pug' && vueComponent.template.attrs.lang !== 'html') {
@@ -65,7 +65,7 @@ function compileVue(inputText:string, options:any) {
 
 
 
-	if (vueComponent.script !== null) {
+	if (vueComponent.script) {
 		let lang = 'js';
 
 		if (!!vueComponent.script.attrs && !!vueComponent.script.attrs.lang) {

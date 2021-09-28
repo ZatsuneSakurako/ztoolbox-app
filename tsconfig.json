@@ -15,6 +15,7 @@
 		],
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
+		"strictNullChecks": true,
 		"skipLibCheck": true,
 		"target": "ESNext"
 	}

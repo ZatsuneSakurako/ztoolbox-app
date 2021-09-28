@@ -2,7 +2,7 @@ import notifier from "node-notifier";
 import {app} from "electron";
 
 
-let appIcon:string = null;
+let appIcon:string|null = null;
 
 
 
@@ -16,7 +16,7 @@ function notify(options:{title:string, message:string, icon?:string, sound?:bool
 		if (typeof options.title !== 'undefined') {
 			options.title = `${app.getName()} - ${options.title.toString()}`;
 		}
-		if (options.hasOwnProperty('icon') === false || typeof options.icon !== 'string' && typeof appIcon === 'string') {
+		if (!options.icon && !!appIcon) {
 			options.icon = appIcon;
 		}
 		// @ts-ignore
@@ -46,10 +46,11 @@ function notify(options:{title:string, message:string, icon?:string, sound?:bool
  */
 export default function(appIconPath:string) {
 	if (appIconPath === undefined) {
-		appIconPath = null;
+		appIcon = null;
+	} else {
+		appIcon = appIconPath;
 	}
 
-	appIcon = appIconPath;
 
 	return {
 		notify

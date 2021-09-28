@@ -2,10 +2,11 @@ export class Color {
 	R:number;
 	G:number;
 	B:number;
-	constructor(hexColorCode:string){
-		const getCodes =  /^#([\da-fA-F]{2,2})([\da-fA-F]{2,2})([\da-fA-F]{2,2})$/;
-		if(getCodes.test(hexColorCode)){
-			const result = getCodes.exec(hexColorCode);
+	constructor(hexColorCode:string) {
+		const getCodes =  /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})$/,
+			result = getCodes.exec(hexColorCode)
+		;
+		if (result) {
 			this.R= parseInt(result[1],16);
 			this.G= parseInt(result[2],16);
 			this.B= parseInt(result[3],16);
@@ -21,14 +22,16 @@ export class Color {
 	getHSL(){
 		let r = this.R;let g = this.G;let b = this.B;
 
-		r /= 255; g /= 255; b /= 255;
-		let max = Math.max(r, g, b), min = Math.min(r, g, b);
-		let h, s, l = (max + min) / 2;
+		r /= 255;
+		g /= 255;
+		b /= 255;
+		const max = Math.max(r, g, b), min = Math.min(r, g, b);
+		let h:any, s, l = (max + min) / 2;
 
-		if (max === min) {
+		if (max == min) {
 			h = s = 0; // achromatic
 		} else {
-			let d = max - min;
+			const d = max - min;
 			s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 			switch(max){
 				case r: h = (g - b) / d + (g < b ? 6 : 0); break;
@@ -37,6 +40,11 @@ export class Color {
 			}
 			h /= 6;
 		}
-		return {"H": h * 360, "S": s * 100 + "%", "L": l * 100 + "%"};
+
+		return {
+			"H": h * 360,
+			"S": s * 100 + "%",
+			"L": l * 100 + "%"
+		};
 	}
 }

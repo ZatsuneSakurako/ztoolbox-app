@@ -31,9 +31,9 @@ export async function themeCacheUpdate() {
 
 	const baseColor = new Color(background_color),
 		baseColor_hsl = baseColor.getHSL(),
-		baseColor_L = JSON.parse(baseColor_hsl.L.replace("%",""))/100
+		baseColor_L = parseInt(baseColor_hsl.L)/100
 	;
-	let values;
+	let values:[string,string,string,string]|undefined;
 	if (currentTheme === "dark") {
 		if (baseColor_L > 0.5 || baseColor_L < 0.1) {
 			values = ["19%","13%","26%","13%"];
@@ -47,6 +47,7 @@ export async function themeCacheUpdate() {
 			values = [baseColor_L * 100 + "%", (baseColor_L - 0.13) * 100 + "%", (baseColor_L - 0.06) * 100 + "%", baseColor_L * 100 + "%"];
 		}
 	}
+	if (!values) throw new Error('SHOULD_NOT_HAPPEN');
 
 
 

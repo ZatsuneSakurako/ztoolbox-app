@@ -27,13 +27,14 @@ body
 header
 	display: flex
 	padding: 5px 2px
+	position: sticky
+	top: 0
 
 button,
 label
 	cursor: pointer
 
 header button,
-header label[for],
 header [role="button"]
 	/* height: 36px */
 	/* min-width: 64px */
@@ -44,10 +45,11 @@ header [role="button"]
 	font-weight: 700
 
 header label[for]
-	line-height: 42px
+	display: flex
+	align-items: center
+	justify-content: center
 
 header button.icon,
-header label[for].icon,
 header [role="button"].icon
 	min-width: 42px
 	max-width: 64px
@@ -62,5 +64,23 @@ button,
 	min-height: 42px
 	font-weight: 700
 
+.tab
+	border: 2px solid transparent
+	margin: -5px 0
+	padding: 10px 15px
+
+	&.checked
+		border-bottom-color: var(--InvColor)
+
+	.material-icons + span
+		margin-left: 8px
+
+	&.setting-group
+		display: inline-flex
+		align-items: center
+		justify-content: center
+		margin-bottom: 15px
+
 main
+	grid-auto-rows: minmax(min-content, max-content)
 	padding: 1rem

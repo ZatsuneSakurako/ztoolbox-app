@@ -13,7 +13,7 @@ export class ZClipboard extends EventEmitter {
 
 	lastImage:NativeImage;
 
-	_interval:Timeout = null;
+	_interval:Timeout|null = null;
 
 	constructor(watchDelay:number, autoStart=true) {
 		super();

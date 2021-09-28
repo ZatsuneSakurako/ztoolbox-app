@@ -10,30 +10,32 @@ const i18ex = {
 async function translateNodes() {
 	const nodes:Element[] = [...document.querySelectorAll("[data-translate-id]")];
 	for (let node of nodes) {
-		if (typeof node.tagName === "string") {
-			i18ex._((<HTMLElement> node).dataset.translateId)
-				.then(str => {
-					node.textContent = str;
-					delete (<HTMLElement> node).dataset.translateId;
-				})
-				.catch(console.error)
-			;
-		}
+		let translateId = (<HTMLElement>node).dataset.translateId;
+		if (!translateId) continue;
+
+		i18ex._(translateId)
+			.then(str => {
+				node.textContent = str;
+				delete (<HTMLElement>node).dataset.translateId;
+			})
+			.catch(console.error)
+		;
 	}
 }
 
 function translateNodes_title() {
 	const nodes:Element[] = [...document.querySelectorAll("[data-translate-title]")];
 	for (let node of nodes) {
-		if (typeof node.tagName === "string") {
-			i18ex._((<HTMLElement> node).dataset.translateTitle)
-				.then(str => {
-					node.setAttribute('title', str);
-					delete (<HTMLElement> node).dataset.translateTitle;
-				})
-				.catch(console.error)
-			;
-		}
+		let translateTitle = (<HTMLElement>node).dataset.translateTitle;
+		if (!translateTitle) continue;
+
+		i18ex._(translateTitle)
+			.then(str => {
+				node.setAttribute('title', str);
+				delete (<HTMLElement>node).dataset.translateTitle;
+			})
+			.catch(console.error)
+		;
 	}
 }
 
