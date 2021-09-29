@@ -6,7 +6,9 @@ import * as nodeSass from "node-sass";
 import * as sourcemaps from "gulp-sourcemaps";
 import gulpPug from "gulp-pug";
 import gulpVue from "./scripts/gulp-vue.js";
+import {TsConfig} from "./scripts/gulp-vue.js";
 import gulpTs from "gulp-typescript";
+import ts from "typescript";
 
 const gulpSass = _gulpSass(nodeSass),
 	tsOptions = fs.readJsonSync('./tsconfig.json')
@@ -99,7 +101,7 @@ function clearVue() {
 
 function _vue() {
 	return gulp.src(paths.vue.src)
-		.pipe(gulpVue())
+		.pipe(gulpVue({}, browserViewsTsProject))
 		.pipe(gulp.dest(paths.vue.dest))
 }
 export const vue = gulp.series(clearVue, _vue);
@@ -150,14 +152,13 @@ function clearJs() {
 	]);
 }
 
+const browserViewsTsProject:any = JSON.parse(JSON.stringify(tsOptions));
+browserViewsTsProject.compilerOptions.module = 'es6';
 function _js() {
-	const _tsOptions = JSON.parse(JSON.stringify(tsOptions));
-	_tsOptions.compilerOptions.module = 'es6';
-
 	return gulp.src([paths.js.src, '!**/_*.ts'])
 		.pipe(sourcemaps.init())
 
-		.pipe(gulpTs(_tsOptions.compilerOptions))
+		.pipe(gulpTs(browserViewsTsProject.compilerOptions))
 
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.js.dest))

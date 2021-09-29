@@ -1,7 +1,8 @@
 import Dict = NodeJS.Dict;
 
 interface IButtonConfig {
-	type: 'button'
+	type: 'button',
+	group?: string
 }
 
 interface IConfigBase<T> {

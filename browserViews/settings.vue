@@ -24,17 +24,20 @@
 					option(:value='choice.value', :data-translate-id="'preferences.' + id + '-options-' + choice.value", v-for="choice in conf.options")
 </template>
 
-<script type="module">
+<script lang="ts">
 import settings from './js/settings/settings.js';
+import {BridgedWindow} from "./js/bridgedWindow";
+import Dict = NodeJS.Dict;
+import {SettingsConfig} from "./js/settings/bo/settings-config";
 
 let settingsLoaded = false;
 async function settingsLoader() {
 	settingsLoaded = true;
 	document.querySelector('label[for="setting-group-default"]')?.classList.add('checked');
 
-	const $inputs = Array.from(document.querySelectorAll('[id^="pref-"]')),
+	const $inputs = [...document.querySelectorAll<HTMLInputElement>('[id^="pref-"]')],
 		names = new Set($inputs.map(el => el.name)),
-		preferenceValues = await window.znmApi.getPreferences(...names)
+		preferenceValues = await (window as BridgedWindow).znmApi.getPreferences(...names)
 	;
 
 	for (let $input of $inputs) {
@@ -42,7 +45,7 @@ async function settingsLoader() {
 			conf = settings[inputName]
 		;
 
-		if (!conf) continue;
+		if (!conf || conf.type === 'button') continue;
 
 		const value = preferenceValues[inputName] ?? conf.value;
 
@@ -50,7 +53,7 @@ async function settingsLoader() {
 	}
 }
 
-function setInputValue($input, newValue) {
+function setInputValue($input:HTMLInputElement, newValue:any) {
 	const inputName = $input.name,
 		conf = settings[inputName]
 	;
@@ -88,8 +91,8 @@ function setInputValue($input, newValue) {
 	}
 }
 
-window.znmApi.onUpdatePreference(function (preferenceId, newValue) {
-	const inputs = document.querySelectorAll(`[id^="pref-"][name="${preferenceId}"]`);
+(window as BridgedWindow).znmApi.onUpdatePreference(function (preferenceId:string, newValue:any) {
+	const inputs = document.querySelectorAll<HTMLInputElement>(`[id^="pref-"][name="${preferenceId}"]`);
 	for (let input of inputs) {
 		setInputValue(input, newValue);
 	}
@@ -98,35 +101,44 @@ window.znmApi.onUpdatePreference(function (preferenceId, newValue) {
 export default {
 	name: "settings",
 	data: function () {
-		const groups = new Set(), settingsByGroup = {};
+		const groups = new Set<string>(), settingsByGroup : Dict<SettingsConfig> = {};
 		groups.add('default');
 		for (let [, conf] of Object.entries(settings)) {
-			if (conf.group) {
-				groups.add(conf.group)
+			if (conf && conf.group) {
+				groups.add(conf.group);
 			}
 		}
 
 		for (let [prefId, conf] of Object.entries(settings)) {
+			if (!conf) continue;
+
 			const group = conf.group ?? 'default';
 			if (!settingsByGroup[group]) {
 				settingsByGroup[group] = {};
 			}
 
-			settingsByGroup[group][prefId] = conf;
+			const containerGroup = settingsByGroup[group];
+			if (!containerGroup) throw new Error('SHOULD_NOT_HAPPEN');
+
+			containerGroup[prefId] = conf;
 		}
 
 		return {
 			selected_group: 'default',
-			groups: [...groups],
+			groups: [...groups.values()],
 			settingsByGroup
 		}
 	},
 	methods: {
 		onGroupChange: function () {
-			this.$data.selected_group = document.querySelector('input[type="radio"][name="setting-group"]:checked').value;
+			const $input = document.querySelector<HTMLInputElement>('input[type="radio"][name="setting-group"]:checked');
+			if ($input) {
+				this.$data.selected_group = $input.value;
+			}
 		},
-		onChange: function (e) {
-			const $input = e.target;
+		onChange: function (e:Event) {
+			const $input = <HTMLInputElement|null> e.target;
+			if (!$input) return;
 
 			let inputType = $input.tagName.toLowerCase();
 			if (inputType === 'input') {
@@ -156,7 +168,7 @@ export default {
 			}
 
 			if (newValue !== undefined) {
-				window.znmApi.savePreference($input.name, newValue)
+				(window as BridgedWindow).znmApi.savePreference($input.name, newValue)
 					.then(() => {
 						console.info('saved :', $input.name);
 					})
@@ -172,8 +184,8 @@ export default {
 		"menu"
 	],
 	watch: {
-		menu: function (val) {
-			if (val === 'settings' && settingsLoaded === false) {
+		menu: function (val:any) {
+			if (val === 'settings' && !settingsLoaded) {
 				settingsLoader()
 					.catch(console.error)
 				;

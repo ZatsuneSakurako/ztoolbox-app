@@ -27,6 +27,7 @@
   ],
   "license": "GPL-3.0-or-later",
   "devDependencies": {
+    "@types/codemirror": "^5.60.3",
     "@types/fs-extra": "^9.0.13",
     "@types/gulp": "^4.0.9",
     "@types/gulp-sass": "^5.0.0",
@@ -53,7 +54,6 @@
     "through2": "^3.0.1",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3",
-    "umd": "^3.0.3",
     "vue-template-compiler": "^2.6.14",
     "vue-template-es2015-compiler": "^1.9.1",
     "yargs": "^17.2.0"
@@ -61,7 +61,7 @@
   "dependencies": {
     "@josephuspaye/chrome-native-bridge": "^0.3.0",
     "class-utils": "^0.3.6",
-    "codemirror": "^5.46.0",
+    "codemirror": "^5.60.0",
     "fs-extra": "^10.0.0",
     "i18next": "^21.1.0",
     "mustache": "^4.2.0",

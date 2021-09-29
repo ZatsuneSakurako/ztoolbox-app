@@ -2,16 +2,130 @@ import * as path from "path";
 import * as through from "through2";
 import * as compiler from "vue-template-compiler";
 import * as pug from "pug";
-import umd from "umd";
 import PluginError from "plugin-error";
 // @ts-ignore
 import templateEs2015 from "vue-template-es2015-compiler";
+import ts from "typescript";
+import gulpTs from "gulp-typescript";
+import fs from "fs-extra";
 
 const PLUGIN_NAME = 'gulp-vue';
 
 
 
+export interface TsConfig {
+	files?: string[];
+	include?: string[];
+	exclude?: string[];
+	compilerOptions?: ts.CompilerOptions;
+}
 
+function tsCompile(tsProject:TsConfig, file:any, source: string): string {
+	const options: TsConfig = JSON.parse(JSON.stringify(tsProject));
+	if (options === null) throw new Error('NO_TS_PROJECT')
+
+	if (!options.compilerOptions) {
+		options.compilerOptions = {};
+	}
+	options.compilerOptions.moduleResolution = ts.ModuleResolutionKind.NodeJs;
+
+	let rootDir:string = path.dirname(file.path);
+	if (!!options.compilerOptions?.rootDir) {
+		rootDir = options.compilerOptions.rootDir;
+		delete options.compilerOptions.rootDir;
+	}
+	(<ts.TranspileOptions> options).reportDiagnostics = true;
+
+	const filename = path.basename(file.path, path.extname(file.path)) + '.vue.ts';
+	const sourceFile = ts.createSourceFile(
+		filename, source, ts.ScriptTarget.Latest
+	);
+
+	const defaultCompilerHost = ts.createCompilerHost(options.compilerOptions);
+	const customCompilerHost: ts.CompilerHost = {
+		getSourceFile: (name, languageVersion, onError) => {
+			// console.log(`getSourceFile ${name}`);
+
+			if (name === filename) {
+				return sourceFile;
+			} else {
+				if (!name.startsWith('nodes_modules') && !path.isAbsolute(name)) {
+					const testPath = path.resolve(rootDir, name);
+					if (fs.existsSync(testPath)) {
+						name = testPath;
+					}
+					const testTsPath = testPath
+						.replace(/\.js\.ts$/i, '.ts')
+						.replace(/\.js$/i, '.ts')
+					;
+					if (fs.existsSync(testTsPath)) {
+						name = testTsPath;
+					}
+				}
+				if (!name.startsWith('nodes_modules/') && !path.isAbsolute(name)) {
+					const projectRoot = path.normalize(__dirname + '/../');
+					const testPath = path.resolve(projectRoot, name);
+					if (fs.existsSync(testPath)) {
+						name = testPath;
+					}
+				}
+				return defaultCompilerHost.getSourceFile(
+					name, languageVersion, onError
+				);
+			}
+		},
+		writeFile: (filename, data) => {},
+		getDefaultLibFileName: () => ts.getDefaultLibFilePath({
+			"target": ts.ScriptTarget.ESNext
+		}),
+		useCaseSensitiveFileNames: () => false,
+		getCanonicalFileName: filename => filename,
+		getCurrentDirectory: () => "",
+		getNewLine: () => "\n",
+		getDirectories: () => [],
+		fileExists: () => true,
+		readFile: () => ""
+	};
+
+	let program:ts.Program|undefined;
+	try {
+		program = ts.createProgram(
+			[filename], options.compilerOptions ?? {}, customCompilerHost
+		);
+	} catch (e) {
+		console.error(e)
+	}
+	if (!program) throw new Error('ts error')
+
+
+	const diagnostics = ts.getPreEmitDiagnostics(program);
+	for (const diagnostic of diagnostics) {
+		const message = diagnostic.messageText;
+		const file = diagnostic.file ?? sourceFile;
+
+
+		if (!file || !diagnostic.start) {
+			console.log(message);
+			continue;
+		}
+
+		const filename = file.fileName;
+		const lineAndChar = file.getLineAndCharacterOfPosition(
+			diagnostic.start
+		);
+
+		const line = lineAndChar.line + 1;
+		const character = lineAndChar.character + 1;
+		console.dir(message);
+		console.log(`(${filename}:${line}:${character})`);
+	}
+
+	if (diagnostics?.length) {
+		throw diagnostics;
+	}
+
+	return ts.transpileModule(source, options).outputText;
+}
 
 function transpile(fn:string|Function) {
 	return templateEs2015(`function r(){${typeof fn === 'function'? fn.toString() : fn}}`, {
@@ -19,8 +133,9 @@ function transpile(fn:string|Function) {
 	})
 }
 
-function compileVue(inputText:string, options:any) {
-	let vueComponent = compiler.parseComponent(inputText),
+function compileVue(file:any, options:any, tsProject?:TsConfig) {
+	let inputText = file.contents.toString('utf8'),
+		vueComponent = compiler.parseComponent(inputText),
 		content
 	;
 
@@ -69,7 +184,7 @@ function compileVue(inputText:string, options:any) {
 		let lang = 'js';
 
 		if (!!vueComponent.script.attrs && !!vueComponent.script.attrs.lang) {
-			if (/*vueComponent.script.attrs.lang !== 'ts' &&*/ vueComponent.script.attrs.lang !== 'js') {
+			if ((tsProject && vueComponent.script.attrs.lang !== 'ts') && vueComponent.script.attrs.lang !== 'js') {
 				throw `Unsupported script language "${vueComponent.script.attrs.lang}"`
 			}
 
@@ -78,12 +193,13 @@ function compileVue(inputText:string, options:any) {
 
 
 		content = vueComponent.script.content;
-		/*if (lang === 'ts') {
-			content = tsCompiler.compileString(content, {}, {}, err => {
-				console.error(err.messageText, `${err.file.text.substring(err.start, err.start + err.length)}`);
-				new PluginError(PLUGIN_NAME, err);
-			});
-		}*/
+		if (tsProject && lang === 'ts') {
+			try {
+				content = tsCompile(tsProject, file, content);
+			} catch (e) {
+				new PluginError(PLUGIN_NAME, e);
+			}
+		}
 	}
 	if (content === undefined) {
 		content = `\texport default ${JSON.stringify({
@@ -109,7 +225,7 @@ function compileVue(inputText:string, options:any) {
 
 
 
-function gulpVue(opt?:any) {
+function gulpVue(opt:any={}, tsProject?:TsConfig) {
 	function replaceExtension(path:string) {
 		return path.replace(/\.vue$/, '.js');
 	}
@@ -140,7 +256,7 @@ function gulpVue(opt?:any) {
 		let data;
 		try {
 			// data = umd(capitalize(options.outputName), compileVue(file.contents.toString('utf8'), options));
-			data = compileVue(file.contents.toString('utf8'), options);
+			data = compileVue(file, options, tsProject);
 		} catch (err) {
 			return cb(new PluginError(PLUGIN_NAME, err));
 		}

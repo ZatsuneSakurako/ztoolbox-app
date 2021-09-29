@@ -26,7 +26,11 @@
 		iframe#iframe.grid-12(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html', v-show='menu === \'code-tester\'')
 </template>
 
-<script type="module">
+<script lang="ts">
+	import {BridgedWindow} from "./js/bridgedWindow";
+
+	declare var CodeMirror : any;
+
 	const editors = {
 		html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
 		css: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}',
@@ -35,7 +39,7 @@
 
 
 
-	const nonce = znmApi.nonce();
+	const nonce = (window as BridgedWindow).znmApi.nonce();
 	let codeTesterLoaded = false;
 	function codeTesterLoader() {
 		codeTesterLoaded = true;
@@ -47,33 +51,29 @@
 			theme: 'monokai'
 		};
 
-		const htmlEditor = new CodeMirror(this.$refs.input1, Object.assign({
+		const htmlEditor = CodeMirror(this.$refs.input1, Object.assign({
 			value: editors.html,
 			mode: 'htmlmixed'
 		}, defaultOptions));
-		const cssEditor = new CodeMirror(this.$refs.input2, Object.assign({
+		const cssEditor = CodeMirror(this.$refs.input2, Object.assign({
 			value: editors.css,
 			mode: 'css'
 		}, defaultOptions));
-		const jsEditor = new CodeMirror(this.$refs.input3, Object.assign({
+		const jsEditor = CodeMirror(this.$refs.input3, Object.assign({
 			value: editors.js,
 			mode: 'javascript'
 		}, defaultOptions));
 
 
 
-		/**
-		 *
-		 * @type {HTMLIFrameElement}
-		 */
-		const iframe = this.$refs.iframe;
+		const iframe: HTMLIFrameElement = this.$refs.iframe;
 		iframe.addEventListener('load', async function () {
 			// const {VM} = require('vm2');
 
 			const iframeWin = iframe.contentWindow;
 			// iframeWin.VM = VM;
 
-			iframeWin.postMessage({
+			iframeWin?.postMessage({
 				type: 'init',
 				nonce: await nonce
 			}, location.href);
@@ -82,7 +82,7 @@
 
 			try {
 				editors.html = htmlEditor.getValue();
-				iframeWin.postMessage({
+				iframeWin?.postMessage({
 					type: 'html',
 					html: editors.html
 				}, location.href);
@@ -92,7 +92,7 @@
 
 			try {
 				editors.css = cssEditor.getValue();
-				iframeWin.postMessage({
+				iframeWin?.postMessage({
 					type: 'css',
 					css: editors.css
 				}, location.href);
@@ -102,7 +102,7 @@
 
 			try {
 				editors.js = jsEditor.getValue();
-				iframeWin.postMessage({
+				iframeWin?.postMessage({
 					type: 'js',
 					js: editors.js
 				}, location.href);
@@ -113,7 +113,7 @@
 
 
 
-		iframe.contentWindow.location.reload();
+		iframe.contentWindow?.location.reload();
 	}
 
 
@@ -127,15 +127,15 @@
 				return this.constructor.nextTick()
 			},
 			onStreamLink: function () {
-				znmApi.openStreamlink();
+				(window as BridgedWindow).znmApi.openStreamlink();
 			},
 			reloadIframe: function () {
 				this.$refs.iframe.contentWindow.location.reload();
 			}
 		},
 		watch: {
-			menu: function (val) {
-				if (val === 'code-tester' && codeTesterLoaded === false) {
+			menu: function (val:string) {
+				if (val === 'code-tester' && !codeTesterLoaded) {
 					this.nextTick()
 						.then(() => {
 							codeTesterLoader.call(this);
