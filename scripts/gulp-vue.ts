@@ -20,7 +20,7 @@ export interface TsConfig {
 	compilerOptions?: ts.CompilerOptions;
 }
 
-function tsCompile(tsProject:TsConfig, file:any, source: string): string {
+function tsCompile(tsProject:TsConfig, inputFile:any, source: string, start:number): string {
 	const options: TsConfig = JSON.parse(JSON.stringify(tsProject));
 	if (options === null) throw new Error('NO_TS_PROJECT')
 
@@ -29,14 +29,14 @@ function tsCompile(tsProject:TsConfig, file:any, source: string): string {
 	}
 	options.compilerOptions.moduleResolution = ts.ModuleResolutionKind.NodeJs;
 
-	let rootDir:string = path.dirname(file.path);
+	let rootDir:string = path.dirname(inputFile.path);
 	if (!!options.compilerOptions?.rootDir) {
 		rootDir = options.compilerOptions.rootDir;
 		delete options.compilerOptions.rootDir;
 	}
 	(<ts.TranspileOptions> options).reportDiagnostics = true;
 
-	const filename = path.basename(file.path, path.extname(file.path)) + '.vue.ts';
+	const filename = path.basename(inputFile.path, path.extname(inputFile.path)) + '.vue.ts';
 	const sourceFile = ts.createSourceFile(
 		filename, source, ts.ScriptTarget.Latest
 	);
@@ -109,15 +109,21 @@ function tsCompile(tsProject:TsConfig, file:any, source: string): string {
 			continue;
 		}
 
-		const filename = file.fileName;
+		/*const filename = file.fileName;
 		const lineAndChar = file.getLineAndCharacterOfPosition(
 			diagnostic.start
+		);*/
+		const vueJsFile = ts.createSourceFile(
+			path.basename(inputFile.path), inputFile.contents.toString('utf8'), ts.ScriptTarget.Latest
 		);
-
-		const line = lineAndChar.line + 1;
-		const character = lineAndChar.character + 1;
-		console.dir(message);
-		console.log(`(${filename}:${line}:${character})`);
+		const lineAndChar = vueJsFile.getLineAndCharacterOfPosition(start + diagnostic.start);
+		const line = lineAndChar.line + 1,
+			character = lineAndChar.character + 1
+		;
+		throw {
+			message: `${message.toString()}\n    ${inputFile.path}:${line}:${character}`,
+			lineNumber: line,
+		};
 	}
 
 	if (diagnostics?.length) {
@@ -195,9 +201,9 @@ function compileVue(file:any, options:any, tsProject?:TsConfig) {
 		content = vueComponent.script.content;
 		if (tsProject && lang === 'ts') {
 			try {
-				content = tsCompile(tsProject, file, content);
+				content = tsCompile(tsProject, file, content, vueComponent.script.start ?? 0);
 			} catch (e) {
-				new PluginError(PLUGIN_NAME, e);
+				throw e;
 			}
 		}
 	}
