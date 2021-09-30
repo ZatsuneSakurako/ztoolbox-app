@@ -10,7 +10,7 @@ import Dict = NodeJS.Dict;
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
 import {Streamlink} from './classes/Streamlink';
-import _notify from "./classes/notify";
+import Notify from "./classes/notify";
 import frTranslation from "./locales/fr.json";
 import enTranslation from "./locales/en.json";
 import frPreferencesTranslation from "./locales/preferences/fr.json";
@@ -18,7 +18,7 @@ import enPreferencesTranslation from "./locales/preferences/en.json";
 
 
 
-if (app.requestSingleInstanceLock() === true) {
+if (app.requestSingleInstanceLock()) {
 	// noinspection JSUnusedLocalSymbols
 	app.on('second-instance', (event, commandLine, workingDirectory) => {
 		// Quelqu'un a tenté d'exécuter une seconde instance.
@@ -32,7 +32,7 @@ if (app.requestSingleInstanceLock() === true) {
 
 
 
-const resourcePath = (app.isPackaged === false)? __dirname : process.resourcesPath,
+const resourcePath = !app.isPackaged? __dirname : process.resourcesPath,
 
 	appIconPath = path.resolve(resourcePath, './images/icon.png'),
 	appIconPath_x3 = path.resolve(resourcePath, './images/icon@3x.png'),
@@ -42,10 +42,10 @@ const resourcePath = (app.isPackaged === false)? __dirname : process.resourcesPa
 
 
 app.setName('Z-ToolBox');
-if (app.isDefaultProtocolClient('ztoolbox') === true && app.isPackaged === false) {
+if (app.isDefaultProtocolClient('ztoolbox') && !app.isPackaged) {
 	app.removeAsDefaultProtocolClient('ztoolbox');
 }
-if (app.isDefaultProtocolClient('ztoolbox') === false && app.isPackaged === true) {
+if (!app.isDefaultProtocolClient('ztoolbox') && app.isPackaged) {
 	/*
 	 * Unpackaged version does not work anyway
 	 * as the executable is electron.exe
@@ -255,7 +255,7 @@ app.on('activate', function () {
 
 
 
-const {notify} = _notify(appIconPath_x3),
+const {notify} = Notify(appIconPath_x3),
 	urlRegexp = /https?:\/\/*/,
 	clipboard = new ZClipboard(5000, false)
 ;
@@ -354,6 +354,8 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:string|UR
 function toggleWindow() {
 	if (mainWindow == null) {
 		createWindow();
+	} else {
+		mainWindow.close();
 	}
 }
 
@@ -433,15 +435,9 @@ function onReady() {
 
 
 	tray.addListener('click', () => {
-		if (clipboard.isEnabled === true) {
-			toggleWindow()
-		} else {
-			openStreamlink(false)
-				.catch(console.error)
-			;
-		}
+		toggleWindow();
 	});
-	tray.addListener('double-click', toggleWindow);
+	// tray.addListener('double-click', toggleWindow);
 
 	clipboard.toggle(settings.get('clipboardWatch'));
 	clipboard.on('text', (clipboardText:string) => {
@@ -496,12 +492,8 @@ function onOpen(commandLine:string[]) {
 	});
 	let unsupported:boolean = false;
 
-	requests.forEach(value => {
-		/**
-		 *
-		 * @type {?URL}
-		 */
-		let url = null;
+	for (const value of requests) {
+		let url:URL|null = null;
 		try {
 			url = new URL(value)
 		} catch (e) {
@@ -509,7 +501,7 @@ function onOpen(commandLine:string[]) {
 		}
 
 		if (url === null) {
-			return;
+			continue;
 		}
 
 		if (url.host === 'live') {
@@ -535,12 +527,10 @@ function onOpen(commandLine:string[]) {
 		} else {
 			unsupported = true;
 		}
-	});
+	}
 
 
-
-	// @ts-ignore
-	if (unsupported === true) {
+	if (unsupported) {
 		notify({
 			title: 'Erreur',
 			message: 'Lien non supporté'

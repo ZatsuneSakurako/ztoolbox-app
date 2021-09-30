@@ -1,3 +1,4 @@
+import {ipcMain} from "electron";
 // @ts-ignore
 import * as classUtils from "class-utils";
 import {EventEmitter} from "events";
@@ -28,7 +29,7 @@ class Settings extends Map<string, any> implements Settings {
 
 		let settings = null;
 		try {
-			settings = JSON.parse(Settings._fs.readFileSync(storagePath, 'utf8'));
+			settings = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
 		} catch (e) {
 			console.error(e)
 		}
@@ -51,17 +52,13 @@ class Settings extends Map<string, any> implements Settings {
 		}
 	}
 
-	static get _fs() {
-		return fs;
-	}
-
 	/**
 	 *
 	 * @private
 	 */
 	_save() {
 		try {
-			Settings._fs.writeFileSync(this.storagePath, JSON.stringify(this.toJSON()), "utf8");
+			fs.writeFileSync(this.storagePath, JSON.stringify(this.toJSON()), "utf8");
 		} catch (e) {
 			console.error(e)
 		}

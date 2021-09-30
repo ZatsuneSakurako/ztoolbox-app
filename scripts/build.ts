@@ -50,6 +50,11 @@ const _yargs = yargs(hideBin(process.argv))
 				},
 				"extraFiles": [
 					{
+						"from": "chrome_messaging/",
+						"to": "resources/chrome_messaging",
+						"filter": "*"
+					},
+					{
 						"from": "images/",
 						"to": "resources/images",
 						"filter": [
@@ -72,6 +77,14 @@ const _yargs = yargs(hideBin(process.argv))
 						]
 					},
 					{
+						"from": "browserViews",
+						"to": "resources/browserViews",
+						"filter": [
+							"*.js",
+							"*.map"
+						]
+					},
+					{
 						"from": "browserViews/css",
 						"to": "resources/browserViews/css",
 						"filter": [
@@ -80,9 +93,17 @@ const _yargs = yargs(hideBin(process.argv))
 						]
 					},
 					{
+						"from": "browserViews/font",
+						"to": "resources/browserViews/font",
+						"filter": [
+							"**/*.woff2"
+						]
+					},
+					{
 						"from": "browserViews/lib/",
 						"to": "resources/browserViews/lib/",
 						"filter": [
+							"**/*.css",
 							"**/*.js",
 							"**/*.map"
 						]

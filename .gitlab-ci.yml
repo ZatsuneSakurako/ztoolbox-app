@@ -13,13 +13,17 @@ package:
     variables: 
         VERSION_ID: '1.0.$CI_PIPELINE_ID'
     before_script:
-        - yarn install
+        - yarn install --check-files --cache-folder .yarn
     script:
         - sed "s/1.0.0/${VERSION_ID}/g" package.json > _package.json && mv _package.json package.json
         - yarn dist
     artifacts:
         paths:
-            - $CI_PROJECT_DIR/dist/*.*
+#            - $CI_PROJECT_DIR/dist/*.*
+            - $CI_PROJECT_DIR/dist/ztoolbox*.exe
+            - $CI_PROJECT_DIR/dist/ztoolbox*.blockmap
+            - $CI_PROJECT_DIR/dist/ztoolbox-*-win.7z
+            - $CI_PROJECT_DIR/dist/ztoolbox-*.tar.gz
     only:
         - tags
         - web
