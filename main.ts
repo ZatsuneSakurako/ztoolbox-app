@@ -42,15 +42,25 @@ const resourcePath = !app.isPackaged? __dirname : process.resourcesPath,
 
 
 app.setName('Z-ToolBox');
-if (app.isDefaultProtocolClient('ztoolbox') && !app.isPackaged) {
+if (app.isDefaultProtocolClient('ztoolbox')) {
 	app.removeAsDefaultProtocolClient('ztoolbox');
 }
-if (!app.isDefaultProtocolClient('ztoolbox') && app.isPackaged) {
-	/*
-	 * Unpackaged version does not work anyway
-	 * as the executable is electron.exe
-	 */
-	app.setAsDefaultProtocolClient('ztoolbox');
+
+if (!app.isDefaultProtocolClient('ztoolbox')) {
+	let result;
+	if (app.isPackaged) {
+		result = app.setAsDefaultProtocolClient('ztoolbox');
+	} else {
+		/*
+		 * Arguments taken from :
+		 * https://stackoverflow.com/questions/45570589/electron-protocol-handler-not-working-on-windows#53786254
+		 */
+		result = app.setAsDefaultProtocolClient('ztoolbox', process.execPath, [path.resolve(process.argv[1])]);
+	}
+
+	if (!result) {
+		console.error('ZToolbox protocol failed');
+	}
 }
 
 
