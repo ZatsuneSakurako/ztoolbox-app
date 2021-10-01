@@ -56,7 +56,7 @@ if (!app.isDefaultProtocolClient('ztoolbox')) {
 		 * Arguments taken from :
 		 * https://stackoverflow.com/questions/45570589/electron-protocol-handler-not-working-on-windows#53786254
 		 */
-		result = app.setAsDefaultProtocolClient('ztoolbox', process.execPath, [path.resolve(process.argv[1])]);
+		result = app.setAsDefaultProtocolClient('ztoolbox', process.execPath, [`"${path.resolve(process.argv[1])}"`]);
 	}
 
 	if (!result) {
