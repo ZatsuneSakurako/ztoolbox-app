@@ -181,12 +181,10 @@ const i18n = i18next
 
 ipcMain.handle('i18n', async (event, key) => {
 	const _ = await i18n;
-	const result = _(key, {
+	return _(key, {
 		nsSeparator: '.',
 		defaultValue: ''
 	});
-	console.dir(result)
-	return result;
 });
 
 ipcMain.handle('getPreference', (e, preferenceId:string) => {
