@@ -28,6 +28,7 @@ if (app.requestSingleInstanceLock()) {
 	app.on('ready', onReady);
 } else {
 	app.quit();
+	process.exit();
 }
 
 
