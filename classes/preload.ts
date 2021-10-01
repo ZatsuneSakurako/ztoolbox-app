@@ -2,10 +2,27 @@ import {contextBridge, ipcRenderer} from "electron";
 
 // https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
 
+const updatePreferenceCb:((preferenceId:string, newValue:any) => void)[] = [];
 ipcRenderer.on('updatePreference', function (e, preferenceId:string, newValue:any) {
 	console.info(preferenceId, newValue);
 	for (let cb of updatePreferenceCb) {
 		cb(preferenceId, newValue);
+	}
+});
+
+const showSectionCb:((sectionName:string) => void)[] = [];
+ipcRenderer.on('showSection', function (e, sectionName:string) {
+	console.info(`showSection`, sectionName);
+	for (let cb of showSectionCb) {
+		cb(sectionName);
+	}
+});
+
+const themeUpdateCb:((theme:string, background_color:string) => void)[] = [];
+ipcRenderer.on('themeUpdate', function (e, theme:string, background_color:string) {
+	console.info('themeUpdate', theme, background_color);
+	for (let cb of themeUpdateCb) {
+		cb(theme, background_color);
 	}
 })
 
@@ -16,7 +33,6 @@ contextBridge.exposeInMainWorld(
 	}
 );
 
-const updatePreferenceCb:Function[] = [];
 contextBridge.exposeInMainWorld(
 	'znmApi',
 	{
@@ -37,6 +53,12 @@ contextBridge.exposeInMainWorld(
 		},
 		onUpdatePreference: (cb:(preferenceId:string, newValue:any) => void) => {
 			updatePreferenceCb.push(cb);
+		},
+		onShowSection: (cb:(sectionName:string) => void) => {
+			showSectionCb.push(cb);
+		},
+		onThemeUpdate: (cb:(theme:string, background_color:string) => void) => {
+			themeUpdateCb.push(cb);
 		}
 	}
 );

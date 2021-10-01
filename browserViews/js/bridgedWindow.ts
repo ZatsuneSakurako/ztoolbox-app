@@ -9,6 +9,8 @@ export interface IZnmApi {
 	savePreference(preferenceId: string, newValue: any): Promise<boolean>
 	mustacheRender(templateName: string, context: any): Promise<string>
 	onUpdatePreference(cb: (preferenceId: string, newValue: any) => void): void
+	onShowSection(cb: (sectionName:string) => void): void
+	onThemeUpdate(cb: (theme:string, background_color:string) => void): void
 }
 
 export type BridgedWindow = Window & typeof globalThis & {

@@ -92,12 +92,9 @@ wss.on('connection', function(socket) {
 
 
 
-
-
-let mainWindow:BrowserWindow|null = null/*, shortcutsWindow = null*/;
-function createWindow() {
+function createWindow(showSection?: string) {
 	// Create the browser window.
-	mainWindow = new BrowserWindow({
+	const mainWindow = new BrowserWindow({
 		width: 1000,
 		height: 800,
 		icon: appIcon,
@@ -108,8 +105,13 @@ function createWindow() {
 		}
 	});
 
+	const opts : Electron.LoadFileOptions = {};
+	if (showSection) {
+		opts.hash = showSection;
+	}
+
 	// and load the index.html of the app.
-	mainWindow.loadFile(path.resolve(resourcePath, './browserViews/index.html'))
+	mainWindow.loadFile(path.resolve(resourcePath, './browserViews/index.html'), opts)
 		.catch(console.error)
 	;
 
@@ -121,43 +123,13 @@ function createWindow() {
 	});
 
 	// Emitted when the window is closed.
-	mainWindow.on('closed', function () {
+	/*mainWindow.on('closed', function () {
 		// Dereference the window object, usually you would store windows
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
-		mainWindow = null
-	})
+		mainWindow = null;
+	});*/
 }
-/*function createShortcutWindow() {
-	// Create the browser window.
-	shortcutsWindow = new BrowserWindow({
-		width: 600,
-		height: 400,
-		icon: appIcon,
-		show: false,
-		webPreferences: {
-			nodeIntegration: true
-		}
-	});
-
-	shortcutsWindow.loadFile(path.resolve(resourcePath, './browserViews/shortcuts.html'))
-		.catch(console.error)
-	;
-
-
-
-	shortcutsWindow.once('ready-to-show', () => {
-		shortcutsWindow.show()
-	});
-
-	shortcutsWindow.on('blur', function () {
-		shortcutsWindow.close();
-	});
-
-	shortcutsWindow.on('closed', function () {
-		shortcutsWindow = null
-	})
-}*/
 
 const nonce = crypto.randomBytes(16).toString('base64');
 app.on('ready', function () {
@@ -209,9 +181,12 @@ const i18n = i18next
 
 ipcMain.handle('i18n', async (event, key) => {
 	const _ = await i18n;
-	return _(key, {
-		nsSeparator: '.'
+	const result = _(key, {
+		nsSeparator: '.',
+		defaultValue: ''
 	});
+	console.dir(result)
+	return result;
 });
 
 ipcMain.handle('getPreference', (e, preferenceId:string) => {
@@ -249,6 +224,17 @@ function triggerBrowserWindowPreferenceUpdate(preferenceId: string, newValue: an
 	}
 }
 
+function showSection(sectionName: string) {
+	const allWindows = BrowserWindow.getAllWindows();
+	if (allWindows.length === 0) {
+		createWindow(sectionName);
+	} else {
+		for (let browserWindow of allWindows) {
+			browserWindow.webContents.send('showSection', sectionName);
+		}
+	}
+}
+
 
 
 // Quit when all windows are closed.
@@ -261,7 +247,9 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
 	// On macOS it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
-	if (mainWindow === null) createWindow()
+	if (BrowserWindow.getAllWindows().length === 0) {
+		createWindow();
+	}
 });
 
 
@@ -362,11 +350,21 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:string|UR
 
 }
 
-function toggleWindow() {
-	if (mainWindow == null) {
-		createWindow();
+function showWindow() {
+	const [firstWindow] = BrowserWindow.getAllWindows();
+	if (firstWindow) {
+		firstWindow.show();
 	} else {
-		mainWindow.close();
+		createWindow();
+	}
+}
+
+function toggleWindow() {
+	const [firstWindow] = BrowserWindow.getAllWindows();
+	if (firstWindow) {
+		firstWindow.close();
+	} else {
+		createWindow();
 	}
 }
 
@@ -388,7 +386,14 @@ function onReady() {
 			label: 'Ouvrir la fenêtre',
 			type: 'normal',
 			click() {
-				toggleWindow()
+				showWindow();
+			}
+		},
+		{
+			label: 'Afficher les options',
+			type: 'normal',
+			click() {
+				showSection('settings');
 			}
 		},
 
@@ -483,6 +488,17 @@ function onReady() {
 				}
 				clipboard.toggle(settings.get('clipboardWatch'));
 				break;
+			case 'theme':
+			case 'background_color':
+				const allWindows = BrowserWindow.getAllWindows();
+				for (let browserWindow of allWindows) {
+					browserWindow.webContents.send(
+						'themeUpdate',
+						settings.get('theme'),
+						settings.get('background_color')
+					);
+				}
+				break;
 		}
 	});
 	refreshQualityChecked();
@@ -504,39 +520,46 @@ function onOpen(commandLine:string[]) {
 	let unsupported:boolean = false;
 
 	for (const value of requests) {
-		let url:URL|null = null;
+		let url:URL;
 		try {
 			url = new URL(value)
 		} catch (e) {
 			console.error(e);
-		}
-
-		if (url === null) {
 			continue;
 		}
 
-		if (url.host === 'live') {
-			const inputUrl = url.pathname.replace(/^\//, ''),
-				[siteType, liveId] = inputUrl.split('/')
-			;
+		switch (url.host) {
+			case 'live':
+				// ztoolbox://live/...
+				const inputUrl = url.pathname.replace(/^\//, ''),
+					[siteType, liveId] = inputUrl.split('/')
+				;
 
-			let liveUrl:string;
-			switch (siteType) {
-				case 'youtube':
-					liveUrl = `https://www.youtube.com/watch?v=${liveId}`;
-					break;
-				case 'twitch':
-					liveUrl = `https://twitch.tv/${liveId}`;
-					break;
-				default:
-					liveUrl = `https://${inputUrl}`;
-			}
+				let liveUrl: string;
+				switch (siteType) {
+					case 'youtube':
+						liveUrl = `https://www.youtube.com/watch?v=${liveId}`;
+						break;
+					case 'twitch':
+						liveUrl = `https://twitch.tv/${liveId}`;
+						break;
+					default:
+						liveUrl = `https://${inputUrl}`;
+				}
 
-			openStreamlink(false, liveUrl)
-				.catch(console.error)
-			;
-		} else {
-			unsupported = true;
+				openStreamlink(false, liveUrl)
+					.catch(console.error)
+				;
+				break;
+			case 'settings':
+				showSection('settings');
+				break;
+			case 'start':
+				console.info('start link');
+				break;
+			default:
+				unsupported = true;
+				break;
 		}
 	}
 

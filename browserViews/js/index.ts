@@ -7,6 +7,9 @@ import indexTemplate from '../index.js';
 import settingsTemplate from '../settings.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeCacheUpdate} from "./theme/theme.js";
+import {BridgedWindow} from "./bridgedWindow";
+
+declare var window : BridgedWindow;
 
 
 
@@ -16,6 +19,18 @@ window.addEventListener("load", async function () {
 		message: 'Hello Vue!',
 		versions: window.process.versions
 	};
+	if (location.hash.length > 1) {
+		data.menu = location.hash.substring(1);
+	}
+	window.znmApi.onShowSection(function (sectionName:string) {
+		data.menu = sectionName;
+		setTimeout(() => {
+			const $input = document.querySelector<HTMLInputElement>(`input[type="radio"][name="menu"][id="${sectionName}"]`);
+			if ($input) {
+				updateClassesFor($input);
+			}
+		});
+	});
 
 
 
@@ -24,6 +39,10 @@ window.addEventListener("load", async function () {
 		el: 'main',
 		data: data
 	}, indexTemplate));
+
+	app.$watch('menu', function (val:string) {
+		location.hash = val;
+	});
 
 	loadTranslations()
 		.catch(console.error)
@@ -37,18 +56,24 @@ window.addEventListener("load", async function () {
 		.catch(console.error)
 	;
 
+	window.znmApi.onThemeUpdate(function (theme, background_color) {
+		themeCacheUpdate(theme, background_color)
+			.catch(console.error)
+		;
+	})
+
 
 
 	function updateClassesFor(target: HTMLInputElement) {
-		const nodes = [...document.querySelectorAll(`label[for="${target.id}"]`)];
+		const nodes: HTMLLabelElement[] = [...document.querySelectorAll<HTMLLabelElement>(`label[for="${target.id}"]`)];
 		if (target.type === 'radio') {
 			const radios = document.querySelectorAll(`input[type="radio"][name="${target.name}"]:not([id="${target.id}"])`);
 			for (let radio of radios) {
-				nodes.push(...document.querySelectorAll(`label[for="${radio.id}"]`));
+				nodes.push(...document.querySelectorAll<HTMLLabelElement>(`label[for="${radio.id}"]`));
 			}
 		}
 
-		for (let node of <HTMLLabelElement[]>nodes) {
+		for (let node of nodes) {
 			node.classList.toggle('checked', (<HTMLInputElement|null> node.control)?.checked);
 		}
 	}

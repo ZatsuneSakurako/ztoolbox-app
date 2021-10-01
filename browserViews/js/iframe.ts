@@ -30,7 +30,7 @@ function init(e: any) {
 				js = 'var ' +
 					[...keys]
 						.filter(n => {
-							return !['document', 'console'].includes(n);
+							return !['document', 'console', 'Math', 'setTimout', 'setInterval', 'clearTimeout', 'clearInterval'].includes(n);
 						})
 						.map(n => n + ' = void 0')
 						.join(",")

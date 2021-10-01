@@ -30,6 +30,7 @@
 	import {BridgedWindow} from "./js/bridgedWindow";
 
 	declare var CodeMirror : any;
+	declare var window : BridgedWindow;
 
 	const editors = {
 		html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
@@ -39,7 +40,7 @@
 
 
 
-	const nonce = (window as BridgedWindow).znmApi.nonce();
+	const nonce = window.znmApi.nonce();
 	let codeTesterLoaded = false;
 	function codeTesterLoader() {
 		codeTesterLoaded = true;
@@ -127,7 +128,7 @@
 				return this.constructor.nextTick()
 			},
 			onStreamLink: function () {
-				(window as BridgedWindow).znmApi.openStreamlink();
+				window.znmApi.openStreamlink();
 			},
 			reloadIframe: function () {
 				this.$refs.iframe.contentWindow.location.reload();
@@ -144,7 +145,16 @@
 					;
 				}
 			}
-		}
+		},
+		mounted() {
+			this.$nextTick(function () {
+				// Code that will run only after the
+				// entire view has been rendered
+				if (this.menu === 'code-tester' && !codeTesterLoaded) {
+					codeTesterLoader.call(this);
+				}
+			});
+		},
 	}
 </script>
 

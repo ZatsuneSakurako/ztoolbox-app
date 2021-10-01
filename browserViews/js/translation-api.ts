@@ -1,8 +1,10 @@
 import {BridgedWindow} from "./bridgedWindow";
 
+declare var window : BridgedWindow;
+
 const i18ex = {
 	_: function (key:string) {
-		return (<BridgedWindow> window).znmApi._(key)
+		return window.znmApi._(key)
 	}
 }
 

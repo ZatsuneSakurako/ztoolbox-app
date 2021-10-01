@@ -3,8 +3,8 @@
 		input.hidden(v-for="group in groups", type='radio', name="setting-group", :value="group", :id="'setting-group-' + group", @change="onGroupChange")
 		label.tab.setting-group(v-for="group in groups", :for="'setting-group-' + group", :data-translate-id="'group_' + group")
 
-		div(v-show="group === selected_group", v-for="(list, group) in settingsByGroup")
-			div(v-for="(conf, id) in list")
+		div.pref-group(v-show="group === selected_group", v-for="(list, group) in settingsByGroup")
+			div.pref-container(v-for="(conf, id) in list")
 				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="conf.type === 'json'")
 				textarea(:id='"pref-" + id', :name='id', v-if="conf.type === 'json'", @change="onChange", disabled)
 
@@ -30,14 +30,15 @@ import {BridgedWindow} from "./js/bridgedWindow";
 import Dict = NodeJS.Dict;
 import {SettingsConfig} from "./js/settings/bo/settings-config";
 
+declare var window : BridgedWindow;
+
 let settingsLoaded = false;
 async function settingsLoader() {
 	settingsLoaded = true;
-	document.querySelector('label[for="setting-group-default"]')?.classList.add('checked');
 
 	const $inputs = [...document.querySelectorAll<HTMLInputElement>('[id^="pref-"]')],
 		names = new Set($inputs.map(el => el.name)),
-		preferenceValues = await (window as BridgedWindow).znmApi.getPreferences(...names)
+		preferenceValues = await window.znmApi.getPreferences(...names)
 	;
 
 	for (let $input of $inputs) {
@@ -91,7 +92,7 @@ function setInputValue($input:HTMLInputElement, newValue:any) {
 	}
 }
 
-(window as BridgedWindow).znmApi.onUpdatePreference(function (preferenceId:string, newValue:any) {
+window.znmApi.onUpdatePreference(function (preferenceId:string, newValue:any) {
 	const inputs = document.querySelectorAll<HTMLInputElement>(`[id^="pref-"][name="${preferenceId}"]`);
 	for (let input of inputs) {
 		setInputValue(input, newValue);
@@ -168,7 +169,7 @@ export default {
 			}
 
 			if (newValue !== undefined) {
-				(window as BridgedWindow).znmApi.savePreference($input.name, newValue)
+				window.znmApi.savePreference($input.name, newValue)
 					.then(() => {
 						console.info('saved :', $input.name);
 					})
@@ -191,6 +192,23 @@ export default {
 				;
 			}
 		}
-	}
+	},
+	mounted() {
+		if (!document.querySelector('[name="setting-group"]:checked')) {
+			const defaultGroup = document.querySelector<HTMLInputElement>('#setting-group-default');
+			if (defaultGroup) {
+				defaultGroup.checked = true
+			}
+		}
+		this.$nextTick(function () {
+			// Code that will run only after the
+			// entire view has been rendered
+			if (this.menu === 'settings' && !settingsLoaded) {
+				settingsLoader()
+					.catch(console.error)
+				;
+			}
+		});
+	},
 };
 </script>
