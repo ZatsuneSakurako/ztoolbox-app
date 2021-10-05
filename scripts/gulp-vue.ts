@@ -52,7 +52,7 @@ function tsCompile(tsProject:TsConfig, inputFile:Vinyl, source: string, start:nu
 	const defaultCompilerHost = ts.createCompilerHost(options.compilerOptions);
 	const customCompilerHost: ts.CompilerHost = {
 		getSourceFile: (name, languageVersion, onError) => {
-			console.log(`getSourceFile ${name}`);
+			// console.log(`getSourceFile ${name}`);
 
 			if (name === filename) {
 				return sourceFile;
