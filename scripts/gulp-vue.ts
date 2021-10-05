@@ -32,7 +32,6 @@ function tsCompile(tsProject:TsConfig, inputFile:Vinyl, source: string, start:nu
 	let rootDirs:string[] = [
 		inputFile.dirname
 	];
-	console.dir(rootDirs)
 	if (!!options.compilerOptions?.rootDir) {
 		let rootDir = path.resolve(options.compilerOptions.rootDir);
 		if (!path.isAbsolute(rootDir)) {
@@ -41,7 +40,6 @@ function tsCompile(tsProject:TsConfig, inputFile:Vinyl, source: string, start:nu
 		rootDirs.push(rootDir);
 		delete options.compilerOptions.rootDir;
 	}
-	console.dir(rootDirs);
 	(<ts.TranspileOptions> options).reportDiagnostics = true;
 
 	const filename = path.basename(inputFile.path, path.extname(inputFile.path)) + '.vue.ts';
