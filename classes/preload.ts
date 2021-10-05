@@ -39,6 +39,8 @@ const znmApi:IZnmApi = {
 	openStreamlink: () => ipcRenderer.invoke('openStreamlink'),
 	_: (key:string) => ipcRenderer.invoke('i18n', key),
 
+	getVersionState: () => ipcRenderer.invoke('getVersionState'),
+
 	getPreference: (preferenceId:string, type?:PreferenceTypes) => {
 		return ipcRenderer.invoke('getPreference', preferenceId, type)
 	},

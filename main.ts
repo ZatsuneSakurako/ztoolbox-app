@@ -16,6 +16,7 @@ import enTranslation from "./locales/en.json";
 import frPreferencesTranslation from "./locales/preferences/fr.json";
 import enPreferencesTranslation from "./locales/preferences/en.json";
 import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
+import {versionState} from "./classes/versionState";
 
 
 
@@ -186,6 +187,10 @@ ipcMain.handle('i18n', async (event, key) => {
 		nsSeparator: '.',
 		defaultValue: ''
 	});
+});
+
+ipcMain.handle('getVersionState', () => {
+	return versionState(__dirname);
 });
 
 ipcMain.handle('getPreference', (e, preferenceId:string, type?:PreferenceTypes) => {
