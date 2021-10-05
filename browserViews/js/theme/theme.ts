@@ -3,7 +3,10 @@ import {Color} from "./color.js";
 
 declare var window : BridgedWindow;
 async function getPreferences() {
-	return await window.znmApi.getPreferences('theme', 'background_color');
+	return {
+		'theme': await window.znmApi.getPreference('theme', 'string'),
+		'background_color': await window.znmApi.getPreference('background_color', 'string')
+	};
 }
 
 async function render(data:any) {

@@ -1,22 +1,28 @@
-import {ipcMain} from "electron";
 // @ts-ignore
 import * as classUtils from "class-utils";
 import {EventEmitter} from "events";
 import * as fs from "fs";
+import {PrimitivesValues, RandomJsonData} from "./bo/settings";
 
 
 interface Settings extends EventEmitter {
-	get(key:string):any;
+	get(key:string):RandomJsonData|undefined;
+
+	getString(key:string):string|undefined;
+	getNumber(key:string):number|undefined;
+	getBoolean(key:string):boolean|undefined;
+	getDate(key:string):Date|undefined;
+
 	has(key:string):boolean;
-	set(key:string, value:any):this;
+	set(key:string, value:RandomJsonData):this;
 	delete(key:string):boolean;
 	clear():void;
 	toJSON():string;
 	// @ts-ignore
-	forEach(callbackfn: (value:any, key:string, map:Map<string,any>) => void, thisArgs?:any)
+	forEach(callbackfn: (value:PrimitivesValues, key:string, map:Map<string, PrimitivesValues>) => void, thisArgs?:any)
 }
 
-class Settings extends Map<string, any> implements Settings {
+class Settings extends Map<string, RandomJsonData> implements Settings {
 	storagePath:string;
 
 	/**
@@ -27,18 +33,18 @@ class Settings extends Map<string, any> implements Settings {
 
 		this.storagePath = storagePath;
 
-		let settings = null;
+		let settings:RandomJsonData|null = null;
 		try {
 			settings = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
 		} catch (e) {
 			console.error(e)
 		}
 
-		if (settings !== null) {
-			for (let settingsKey in settings) {
-				if (settings.hasOwnProperty(settingsKey)) {
-					super.set(settingsKey, settings[settingsKey]);
-				}
+		if (!Array.isArray(settings) && !!settings) {
+			for (let [settingsKey, value] of Object.entries(settings)) {
+				if (value === undefined) continue;
+
+				super.set(settingsKey, value);
 			}
 		} else {
 			// Default settings
@@ -52,11 +58,7 @@ class Settings extends Map<string, any> implements Settings {
 		}
 	}
 
-	/**
-	 *
-	 * @private
-	 */
-	_save() {
+	private _save() {
 		try {
 			fs.writeFileSync(this.storagePath, JSON.stringify(this.toJSON()), "utf8");
 		} catch (e) {
@@ -64,10 +66,51 @@ class Settings extends Map<string, any> implements Settings {
 		}
 	}
 
+	getString(key:string):string|undefined {
+		const value = this.get(key);
+		if (!value) return;
+
+		if (typeof value !== 'string') {
+			throw new Error('TYPE_ERROR')
+		}
+
+		return value;
+	}
+	getNumber(key:string):number|undefined {
+		const value = this.get(key);
+		if (!value) return;
+
+		if (typeof value !== 'number') {
+			throw new Error('TYPE_ERROR')
+		}
+
+		return value;
+	}
+	getBoolean(key:string):boolean|undefined {
+		const value = this.get(key);
+		if (!value) return;
+
+		if (typeof value !== 'boolean') {
+			throw new Error('TYPE_ERROR')
+		}
+
+		return value;
+	}
+	getDate(key:string):Date|undefined {
+		const value = this.get(key);
+		if (!value) return;
+
+		if (typeof value !== 'string') {
+			throw new Error('TYPE_ERROR')
+		}
+
+		return new Date(value);
+	}
+
 	/**
 	 * @inheritDoc
 	 */
-	set(key:string, value:any):this {
+	set(key:string, value:PrimitivesValues):this {
 		const oldValue = this.get(key);
 		super.set(key, value);
 		this.emit('change', key, oldValue, value);
@@ -101,13 +144,13 @@ class Settings extends Map<string, any> implements Settings {
 	 * @return {JSON}
 	 */
 	toJSON():Object {
-		const json = {} as { [key: string]: any };
+		const json:RandomJsonData = {};
 
-		this.forEach((value:any, key:string) => {
+		this.forEach((value:PrimitivesValues, key:string) => {
 			json[key] = value;
 		});
 
-		return json
+		return json;
 	}
 }
 

@@ -1,4 +1,5 @@
 import {contextBridge, ipcRenderer} from "electron";
+import {IZnmApi, PreferenceTypes} from "../browserViews/js/bridgedWindow";
 
 // https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
 
@@ -33,32 +34,33 @@ contextBridge.exposeInMainWorld(
 	}
 );
 
-contextBridge.exposeInMainWorld(
-	'znmApi',
-	{
-		nonce: () => ipcRenderer.invoke('nonce-ipc'),
-		openStreamlink: () => ipcRenderer.invoke('openStreamlink'),
-		_: (key:string) => ipcRenderer.invoke('i18n', key),
-		getPreference: (preferenceId:string) => {
-			return ipcRenderer.invoke('getPreference', preferenceId)
-		},
-		getPreferences: (...preferenceIds:string[]) => {
-			return ipcRenderer.invoke('getPreferences', ...preferenceIds)
-		},
-		savePreference: (preferenceId:string, newValue:any) => {
-			return ipcRenderer.invoke('savePreference', preferenceId, newValue)
-		},
-		mustacheRender: (templateName:string, context:any) => {
-			return ipcRenderer.invoke('mustacheRender', templateName, context)
-		},
-		onUpdatePreference: (cb:(preferenceId:string, newValue:any) => void) => {
-			updatePreferenceCb.push(cb);
-		},
-		onShowSection: (cb:(sectionName:string) => void) => {
-			showSectionCb.push(cb);
-		},
-		onThemeUpdate: (cb:(theme:string, background_color:string) => void) => {
-			themeUpdateCb.push(cb);
-		}
+const znmApi:IZnmApi = {
+	nonce: () => ipcRenderer.invoke('nonce-ipc'),
+	openStreamlink: () => ipcRenderer.invoke('openStreamlink'),
+	_: (key:string) => ipcRenderer.invoke('i18n', key),
+
+	getPreference: (preferenceId:string, type?:PreferenceTypes) => {
+		return ipcRenderer.invoke('getPreference', preferenceId, type)
+	},
+	getPreferences: (...preferenceIds:string[]) => {
+		return ipcRenderer.invoke('getPreferences', ...preferenceIds)
+	},
+	savePreference: (preferenceId:string, newValue:any) => {
+		return ipcRenderer.invoke('savePreference', preferenceId, newValue)
+	},
+
+	mustacheRender: (templateName:string, context:any) => {
+		return ipcRenderer.invoke('mustacheRender', templateName, context)
+	},
+	onUpdatePreference: (cb:(preferenceId:string, newValue:any) => void) => {
+		updatePreferenceCb.push(cb);
+	},
+	onShowSection: (cb:(sectionName:string) => void) => {
+		showSectionCb.push(cb);
+	},
+	onThemeUpdate: (cb:(theme:string, background_color:string) => void) => {
+		themeUpdateCb.push(cb);
 	}
-);
+};
+
+contextBridge.exposeInMainWorld('znmApi', znmApi);

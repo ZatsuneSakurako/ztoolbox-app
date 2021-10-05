@@ -1,4 +1,4 @@
-import {SettingsConfig} from "./bo/settings-config";
+import {SettingsConfig} from "../../../classes/bo/settings";
 
 const settings:SettingsConfig = {
 	"theme": {

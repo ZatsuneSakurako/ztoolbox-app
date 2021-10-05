@@ -15,6 +15,7 @@ import frTranslation from "./locales/fr.json";
 import enTranslation from "./locales/en.json";
 import frPreferencesTranslation from "./locales/preferences/fr.json";
 import enPreferencesTranslation from "./locales/preferences/en.json";
+import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 
 
 
@@ -187,7 +188,22 @@ ipcMain.handle('i18n', async (event, key) => {
 	});
 });
 
-ipcMain.handle('getPreference', (e, preferenceId:string) => {
+ipcMain.handle('getPreference', (e, preferenceId:string, type?:PreferenceTypes) => {
+	if (!!type) {
+		switch (type) {
+			case "string":
+				return settings.getString(preferenceId);
+			case "number":
+				return settings.getNumber(preferenceId);
+			case "boolean":
+				return settings.getBoolean(preferenceId);
+			case "date":
+				return settings.getDate(preferenceId);
+			default:
+				throw new Error('UNHANDLED_TYPE');
+		}
+	}
+
 	return settings.get(preferenceId);
 });
 
@@ -409,7 +425,7 @@ function onReady() {
 			id: 'clipboardWatch',
 			label: 'Observer presse-papier',
 			type: 'checkbox',
-			checked: settings.get('clipboardWatch'),
+			checked: settings.getBoolean('clipboardWatch'),
 			click() {
 				settings.set('clipboardWatch', !settings.get('clipboardWatch'));
 				triggerBrowserWindowPreferenceUpdate('clipboardWatch', settings.get('clipboardWatch'));
@@ -453,7 +469,7 @@ function onReady() {
 	});
 	// tray.addListener('double-click', toggleWindow);
 
-	clipboard.toggle(settings.get('clipboardWatch'));
+	clipboard.toggle(settings.getBoolean('clipboardWatch') ?? false);
 	clipboard.on('text', (clipboardText:string) => {
 		if (urlRegexp.test(clipboardText)) {
 			openStreamlink(true)
@@ -482,9 +498,9 @@ function onReady() {
 			case 'clipboardWatch':
 				let menu = contextMenu?.getMenuItemById('clipboardWatch') ?? null;
 				if (menu) {
-					menu.checked = settings.get('clipboardWatch');
+					menu.checked = settings.getBoolean('clipboardWatch') ?? false;
 				}
-				clipboard.toggle(settings.get('clipboardWatch'));
+				clipboard.toggle(settings.getBoolean('clipboardWatch') ?? false);
 				break;
 			case 'theme':
 			case 'background_color':

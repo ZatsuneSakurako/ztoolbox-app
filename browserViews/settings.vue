@@ -28,7 +28,7 @@
 import settings from './js/settings/settings.js';
 import {BridgedWindow} from "./js/bridgedWindow";
 import Dict = NodeJS.Dict;
-import {SettingsConfig} from "./js/settings/bo/settings-config";
+import {SettingsConfig} from "../classes/bo/settings";
 
 declare var window : BridgedWindow;
 
