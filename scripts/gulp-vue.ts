@@ -6,7 +6,7 @@ import PluginError from "plugin-error";
 // @ts-ignore
 import templateEs2015 from "vue-template-es2015-compiler";
 import ts from "typescript";
-import gulpTs from "gulp-typescript";
+import * as Vinyl from 'vinyl';
 import fs from "fs-extra";
 
 const PLUGIN_NAME = 'gulp-vue';
@@ -20,7 +20,7 @@ export interface TsConfig {
 	compilerOptions?: ts.CompilerOptions;
 }
 
-function tsCompile(tsProject:TsConfig, inputFile:any, source: string, start:number): string {
+function tsCompile(tsProject:TsConfig, inputFile:Vinyl, source: string, start:number): string {
 	const options: TsConfig = JSON.parse(JSON.stringify(tsProject));
 	if (options === null) throw new Error('NO_TS_PROJECT')
 
@@ -29,11 +29,19 @@ function tsCompile(tsProject:TsConfig, inputFile:any, source: string, start:numb
 	}
 	options.compilerOptions.moduleResolution = ts.ModuleResolutionKind.NodeJs;
 
-	let rootDir:string = path.dirname(inputFile.path);
+	let rootDirs:string[] = [
+		inputFile.dirname
+	];
+	console.dir(rootDirs)
 	if (!!options.compilerOptions?.rootDir) {
-		rootDir = options.compilerOptions.rootDir;
+		let rootDir = path.resolve(options.compilerOptions.rootDir);
+		if (!path.isAbsolute(rootDir)) {
+			rootDir = path.relative(process.cwd(), rootDir);
+		}
+		rootDirs.push(rootDir);
 		delete options.compilerOptions.rootDir;
 	}
+	console.dir(rootDirs);
 	(<ts.TranspileOptions> options).reportDiagnostics = true;
 
 	const filename = path.basename(inputFile.path, path.extname(inputFile.path)) + '.vue.ts';
@@ -44,22 +52,26 @@ function tsCompile(tsProject:TsConfig, inputFile:any, source: string, start:numb
 	const defaultCompilerHost = ts.createCompilerHost(options.compilerOptions);
 	const customCompilerHost: ts.CompilerHost = {
 		getSourceFile: (name, languageVersion, onError) => {
-			// console.log(`getSourceFile ${name}`);
+			console.log(`getSourceFile ${name}`);
 
 			if (name === filename) {
 				return sourceFile;
 			} else {
 				if (!name.startsWith('nodes_modules') && !path.isAbsolute(name)) {
-					const testPath = path.resolve(rootDir, name);
-					if (fs.existsSync(testPath)) {
-						name = testPath;
-					}
-					const testTsPath = testPath
-						.replace(/\.js\.ts$/i, '.ts')
-						.replace(/\.js$/i, '.ts')
-					;
-					if (fs.existsSync(testTsPath)) {
-						name = testTsPath;
+					for (let rootDir of rootDirs) {
+						const testPath = path.resolve(rootDir, name);
+						if (fs.existsSync(testPath)) {
+							name = testPath;
+							break;
+						}
+						const testTsPath = testPath
+							.replace(/\.js\.ts$/i, '.ts')
+							.replace(/\.js$/i, '.ts')
+						;
+						if (fs.existsSync(testTsPath)) {
+							name = testTsPath;
+							break;
+						}
 					}
 				}
 				if (!name.startsWith('nodes_modules/') && !path.isAbsolute(name)) {
@@ -108,6 +120,9 @@ function tsCompile(tsProject:TsConfig, inputFile:any, source: string, start:numb
 			console.log(message);
 			continue;
 		}
+		if (!inputFile.contents) {
+			throw new Error('EMPTY_FILE_CONTENT');
+		}
 
 		/*const filename = file.fileName;
 		const lineAndChar = file.getLineAndCharacterOfPosition(
@@ -139,7 +154,11 @@ function transpile(fn:string|Function) {
 	})
 }
 
-function compileVue(file:any, options:any, tsProject?:TsConfig) {
+function compileVue(file:Vinyl, options:any, tsProject?:TsConfig) {
+	if (!file.contents) {
+		throw new Error('EMPTY_FILE_CONTENT');
+	}
+
 	let inputText = file.contents.toString('utf8'),
 		vueComponent = compiler.parseComponent(inputText),
 		content

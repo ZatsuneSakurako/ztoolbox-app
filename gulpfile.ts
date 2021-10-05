@@ -6,9 +6,8 @@ import * as nodeSass from "node-sass";
 import * as sourcemaps from "gulp-sourcemaps";
 import gulpPug from "gulp-pug";
 import gulpVue from "./scripts/gulp-vue.js";
-import {TsConfig} from "./scripts/gulp-vue.js";
 import gulpTs from "gulp-typescript";
-import ts from "typescript";
+import path from "path";
 
 const gulpSass = _gulpSass(nodeSass),
 	tsOptions = fs.readJsonSync('./tsconfig.json')
