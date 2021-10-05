@@ -10,11 +10,10 @@
 		p.grid-12(v-show='menu === \'code-tester\'')
 			button(class='mui-btn', v-on:click='reloadIframe') Run code !
 
-		p.grid-12(v-show='menu === \'streamlink\'')
-			// All of the Node.js APIs are available in this renderer process.
-			| We are using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}} (current i18next language :&nbsp;
+		p.grid-12(v-show='menu === \'streamlink\'') Using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}} (current i18next language :&nbsp;
 			span(data-translate-id='language')
 			| ).
+			span(v-if="!!versionState" ) Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.
 
 		p.grid-12(v-show='menu === \'settings\'')
 			settings(:menu='menu')

@@ -9,7 +9,7 @@ export interface IZnmApi {
 	openStreamlink(): Promise<void>
 	_(key: string): Promise<string>
 
-	getVersionState(): Promise<VersionState>
+	getVersionState(): Promise<VersionState|null>
 
 	getPreference(preferenceId: string): Promise<RandomJsonData|undefined>
 	getPreference(preferenceId: string, type?:'string'): Promise<string|undefined>

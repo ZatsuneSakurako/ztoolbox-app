@@ -8,20 +8,34 @@ import settingsTemplate from '../settings.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeCacheUpdate} from "./theme/theme.js";
 import {BridgedWindow} from "./bridgedWindow";
+import {VersionState} from "../../classes/bo/versionState";
 
 declare var window : BridgedWindow;
 
 
-
+interface IData {
+	menu: string;
+	message: string;
+	versions: NodeJS.ProcessVersions;
+	versionState: VersionState | null;
+}
 window.addEventListener("load", async function () {
-	const data = {
+	const data: IData = {
 		menu: 'streamlink',
 		message: 'Hello Vue!',
-		versions: window.process.versions
+		versions: window.process.versions,
+		versionState: null
 	};
 	if (location.hash.length > 1) {
 		data.menu = location.hash.substring(1);
 	}
+
+	window.znmApi.getVersionState()
+		.then(versionState => {
+			data.versionState = versionState;
+		})
+		.catch(console.error)
+
 	window.znmApi.onShowSection(function (sectionName:string) {
 		data.menu = sectionName;
 		setTimeout(() => {
