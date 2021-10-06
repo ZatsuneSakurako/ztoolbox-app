@@ -15,7 +15,7 @@ export async function versionState(gitDir=process.cwd()) {
 		[firstRemote] = (await dirGit.getRemotes(true))
 	;
 
-	if (!logs || !status.current) {
+	if (!logs || !status.current || !firstRemote) {
 		throw new Error('LATEST_COMMIT_ERROR');
 	}
 
