@@ -2,31 +2,75 @@ import {BridgedWindow} from "../bridgedWindow";
 import {Color} from "./color.js";
 
 declare var window : BridgedWindow;
-async function getPreferences() {
-	return {
-		'theme': await window.znmApi.getPreference('theme', 'string'),
-		'background_color': await window.znmApi.getPreference('background_color', 'string')
-	};
+
+interface IThemePreferences {
+	theme: string
+	background_color: string
+}
+const THEME_LS_PREF_CACHE_KEY = '__theme_pref_cache';
+const defaultThemePreferences : Readonly<IThemePreferences> = Object.freeze({
+	theme: 'dark',
+	background_color: '#000000',
+});
+
+
+
+async function getPreferences(): Promise<IThemePreferences> {
+	const theme = await window.znmApi.getPreference('theme', 'string'),
+		background_color = await window.znmApi.getPreference('background_color', 'string'),
+
+		output = {
+			theme: theme ?? defaultThemePreferences.theme,
+			background_color: background_color ?? defaultThemePreferences.background_color,
+		}
+	;
+
+	localStorage.setItem(THEME_LS_PREF_CACHE_KEY, JSON.stringify(output));
+	return output;
 }
 
 async function render(data:any) {
 	return window.znmApi.mustacheRender("backgroundTheme", data);
 }
 
+export async function themeOnLoad() {
+	const optionCache = localStorage.getItem(THEME_LS_PREF_CACHE_KEY);
+	if (!!optionCache) {
+		const _cache = JSON.parse(optionCache);
+		if (_cache.theme !== undefined && _cache.background_color !== undefined) {
+			const result = themeCacheUpdate(
+				_cache.theme,
+				_cache.background_color
+			);
+
+			getPreferences()
+				.then(preferences => {
+					if (preferences.theme !== _cache.theme || preferences.background_color !== _cache.background_color) {
+						themeCacheUpdate(
+							preferences.theme,
+							preferences.background_color
+						)
+							.catch(console.error)
+						;
+					}
+				})
+				.catch(console.error)
+			;
+
+			return await result;
+		}
+	}
+
+	const options = await getPreferences();
+	return await themeCacheUpdate(
+		options.theme,
+		options.background_color
+	);
+}
+
 const STYLE_NODE_ID = 'generated-color-stylesheet';
-export async function themeCacheUpdate(theme?: string, background_color?: string) {
+export async function themeCacheUpdate(theme: string, background_color: string) {
 	let colorStylesheetNode:HTMLElement|null = document.querySelector<HTMLElement>('#' + STYLE_NODE_ID) ?? null;
-
-	if (theme === undefined || background_color === undefined) {
-		const options = await getPreferences();
-		theme = options.theme ?? 'dark';
-		background_color = options.background_color ?? '#000000';
-	}
-
-	if (theme === undefined || background_color === undefined) {
-		throw new Error('SHOULD_NOT_HAPPEN');
-	}
-
 	if (colorStylesheetNode !== null && theme === colorStylesheetNode.dataset.theme && background_color === colorStylesheetNode.dataset.background_color) {
 		console.info("Loaded theme is already good");
 		return null;

@@ -6,7 +6,7 @@ import indexTemplate from '../index.js';
 // @ts-ignore
 import settingsTemplate from '../settings.js';
 import {loadTranslations} from "./translation-api.js";
-import {themeCacheUpdate} from "./theme/theme.js";
+import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
 import {BridgedWindow} from "./bridgedWindow";
 import {VersionState} from "../../classes/bo/versionState";
 
@@ -19,22 +19,44 @@ interface IData {
 	versions: NodeJS.ProcessVersions;
 	versionState: VersionState | null;
 }
-window.addEventListener("load", async function () {
-	const data: IData = {
-		menu: 'streamlink',
-		message: 'Hello Vue!',
-		versions: window.process.versions,
-		versionState: null
-	};
-	if (location.hash.length > 1) {
-		data.menu = location.hash.substring(1);
-	}
 
+const data: IData = {
+	menu: 'streamlink',
+	message: 'Hello Vue!',
+	versions: window.process.versions,
+	versionState: null
+};
+
+if (location.hash.length > 1) {
+	data.menu = location.hash.substring(1);
+}
+
+loadTranslations()
+	.catch(console.error)
+;
+
+themeOnLoad()
+	.then(styleTheme => {
+		if (styleTheme) {
+			document.head.append(styleTheme);
+		}
+	})
+	.catch(console.error)
+;
+
+window.znmApi.onThemeUpdate(function (theme, background_color) {
+	themeCacheUpdate(theme, background_color)
+		.catch(console.error)
+	;
+})
+
+window.addEventListener("load", async function () {
 	window.znmApi.getVersionState()
 		.then(versionState => {
 			data.versionState = versionState;
 		})
 		.catch(console.error)
+	;
 
 	window.znmApi.onShowSection(function (sectionName:string) {
 		data.menu = sectionName;
@@ -57,24 +79,6 @@ window.addEventListener("load", async function () {
 	app.$watch('menu', function (val:string) {
 		location.hash = val;
 	});
-
-	loadTranslations()
-		.catch(console.error)
-	;
-	themeCacheUpdate()
-		.then(styleTheme => {
-			if (styleTheme) {
-				document.head.append(styleTheme);
-			}
-		})
-		.catch(console.error)
-	;
-
-	window.znmApi.onThemeUpdate(function (theme, background_color) {
-		themeCacheUpdate(theme, background_color)
-			.catch(console.error)
-		;
-	})
 
 
 
