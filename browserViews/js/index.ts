@@ -20,8 +20,9 @@ interface IData {
 	versionState: VersionState | null;
 }
 
+const defaultMenu = 'streamlink';
 const data: IData = {
-	menu: 'streamlink',
+	menu: defaultMenu,
 	message: 'Hello Vue!',
 	versions: window.process.versions,
 	versionState: null
@@ -29,6 +30,9 @@ const data: IData = {
 
 if (location.hash.length > 1) {
 	data.menu = location.hash.substring(1);
+	if (data.menu === 'default') {
+		data.menu = defaultMenu;
+	}
 }
 
 loadTranslations()
@@ -59,7 +63,7 @@ window.addEventListener("load", async function () {
 	;
 
 	window.znmApi.onShowSection(function (sectionName:string) {
-		data.menu = sectionName;
+		data.menu = data.menu === 'default' ? defaultMenu : sectionName;
 		setTimeout(() => {
 			const $input = document.querySelector<HTMLInputElement>(`input[type="radio"][name="menu"][id="${sectionName}"]`);
 			if ($input) {

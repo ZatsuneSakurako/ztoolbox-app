@@ -576,6 +576,7 @@ function onOpen(commandLine:string[]) {
 				break;
 			case 'start':
 				console.info('start link');
+				showSection('default');
 				break;
 			default:
 				unsupported = true;
