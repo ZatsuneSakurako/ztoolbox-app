@@ -1,40 +1,47 @@
 const path = require('path'),
 	fs = require('fs-extra')
-;
+;const {promisified: regedit} = require("regedit");
+
+const filePath = path.normalize(`${__dirname}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);
 const json = {
 	"name": "eu.gitlab.zatsunenomokou.chromenativebridge",
 	"description": "Z-Toolbox integration with native messaging support",
-	"path": path.normalize(`${__dirname}/my_host.${process.platform === 'win32' ? 'bat' : 'sh'}`),
+	"path": (process.platform === 'win32' ? '' : 'node ') + JSON.stringify(filePath),
 	"type": "stdio",
 	"allowed_origins": [
 		"chrome-extension://ecgiibibekoebbdeieihohopccibchmg/"
 	]
+};
+
+/**
+ *
+ * @param {"chrome"|"chromium"|"firefox"} browser
+ * @return {string}
+ */
+function writeAndGetJsonFilePath(browser) {
+	const jsonFilePath = path.normalize(`${__dirname}/eu.gitlab.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`),
+		_json = JSON.parse(JSON.stringify(json))
+	;
+
+	if (browser === 'firefox') {
+		delete _json.allowed_origins;
+		_json.allowed_extensions = [
+			"ztoolbox_dev@zatsunenomokou.eu",
+		];
+	}
+
+	fs.writeJSONSync(
+		jsonFilePath,
+		_json,
+		{
+			encoding: 'utf8',
+			spaces: '\t',
+			EOL: '\n'
+		}
+	);
+
+	return jsonFilePath;
 }
-
-fs.writeJSONSync(
-	path.normalize(`${__dirname}/eu.gitlab.zatsunenomokou.chromenativebridge_${process.platform}.json`),
-	json,
-	{
-		encoding: 'utf8',
-		spaces: '\t',
-		EOL: '\n'
-	}
-);
-
-delete json.allowed_origins;
-json.allowed_extensions = [
-	"ztoolbox_dev@zatsunenomokou.eu",
-];
-
-fs.writeJSONSync(
-	path.normalize(`${__dirname}/eu.gitlab.zatsunenomokou.chromenativebridge_firefox_${process.platform}.json`),
-	json,
-	{
-		encoding: 'utf8',
-		spaces: '\t',
-		EOL: '\n'
-	}
-);
 
 /**
  *
@@ -48,6 +55,10 @@ function getInstallPath(browser='chrome', os='win32', type='user') {
 	const home = require('os').homedir(),
 		name = json.name
 	;
+	/*
+	 * HKLM => HKEY_LOCAL_MACHINE
+	 * HKCU => HKEY_CURRENT_USER
+	 */
 	const paths = {
 		"chrome": {
 			"darwin": {
@@ -55,8 +66,8 @@ function getInstallPath(browser='chrome', os='win32', type='user') {
 				"user": `${home}/Library/Application Support/Google/Chrome/NativeMessagingHosts/${name}.json`
 			},
 			"win32": {
-				"global": `HKEY_LOCAL_MACHINE\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\${name}`,
-				"user": `HKEY_CURRENT_USER\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\${name}`
+				"global": `HKLM\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\${name}`,
+				"user": `HKCU\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\${name}`
 			},
 			"linux": {
 				"global": `/etc/opt/chrome/native-messaging-hosts/${name}.json`,
@@ -69,8 +80,8 @@ function getInstallPath(browser='chrome', os='win32', type='user') {
 				"user": `${home}/Library/Application Support/Chromium/NativeMessagingHosts/${name}.json`
 			},
 			"win32": {
-				"global": `HKEY_LOCAL_MACHINE\\SOFTWARE\\Chromium\\NativeMessagingHosts\\${name}`,
-				"user": `HKEY_CURRENT_USER\\SOFTWARE\\Chromium\\NativeMessagingHosts\\${name}`
+				"global": `HKLM\\SOFTWARE\\Chromium\\NativeMessagingHosts\\${name}`,
+				"user": `HKCU\\SOFTWARE\\Chromium\\NativeMessagingHosts\\${name}`
 			},
 			"linux": {
 				"global": `/etc/chromium/native-messaging-hosts/${name}.json`,
@@ -83,8 +94,8 @@ function getInstallPath(browser='chrome', os='win32', type='user') {
 				"user": `${home}/Library/Application Support/Mozilla/NativeMessagingHosts/${name}.json`
 			},
 			"win32": {
-				"global": `HKEY_LOCAL_MACHINE\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\${name}`,
-				"user": `HKEY_CURRENT_USER\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\${name}`
+				"global": `HKLM\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\${name}`,
+				"user": `HKCU\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\${name}`
 			},
 			"linux": {
 				"global": `/usr/lib/mozilla/native-messaging-hosts/${name}.json`,
@@ -95,8 +106,67 @@ function getInstallPath(browser='chrome', os='win32', type='user') {
 	return paths[browser][os][type];
 }
 
-console.dir(getInstallPath('chrome'))
-console.dir(getInstallPath('chromium'))
-console.dir(getInstallPath('firefox'))
-console.error('WIP');
-process.exit(1)
+async function install(isUninstall=false) {
+	const browsers = ['chrome', 'chromium', 'firefox'];
+
+	const addRegEdit = {};
+	for (let browser of browsers) {
+		const manifestPath = writeAndGetJsonFilePath(browser),
+			installPath = getInstallPath(browser)
+		;
+
+		if (process.platform.startsWith('win')) {
+			const regedit = require('regedit').promisified,
+				regBaseDir = path.dirname(installPath)
+			;
+
+			let exists = false;
+			try {
+				const result = await regedit.list(regBaseDir);
+				exists = result[regBaseDir].exists;
+			} catch (e) {
+				console.error(e);
+			}
+			if (exists !== true) {
+				console.warn(`${browser} reg dir not found, skipping`);
+				continue;
+			}
+
+			if (isUninstall) {
+				await regedit.deleteKey(installPath);
+			} else {
+				addRegEdit[regBaseDir] = {
+					[json.name]: {
+						value: manifestPath,
+						type: 'REG_DEFAULT'
+					}
+				};
+			}
+		} else {
+			if (isUninstall) {
+				if (fs.existsSync(installPath)) {
+					fs.unlinkSync(installPath);
+				}
+			} else {
+				const baseDir = path.dirname(installPath);
+				if (!fs.existsSync(baseDir)) {
+					fs.mkdirSync(baseDir, {
+						recursive: true
+					});
+				}
+
+				fs.copySync(installPath, manifestPath, {
+					recursive: true
+				});
+			}
+		}
+	}
+
+	if (!isUninstall && process.platform.startsWith('win') && [...Object.values(addRegEdit)].length) {
+		await regedit.putValue(addRegEdit);
+	}
+}
+
+install()
+	.catch(console.error)
+;

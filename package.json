@@ -68,6 +68,7 @@
     "i18next": "^21.1.0",
     "mustache": "^4.2.0",
     "node-notifier": "^10.0.0",
+    "regedit": "^5.0.0",
     "simple-git": "^2.46.0",
     "string-strip-html": "^9.0.2",
     "vm2": "^3.8.1",
