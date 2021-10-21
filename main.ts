@@ -101,6 +101,8 @@ function createWindow(showSection?: string) {
 	const mainWindow = new BrowserWindow({
 		width: 1000,
 		height: 800,
+		minHeight: 400,
+		minWidth: 400,
 		icon: appIcon,
 		show: false,
 		webPreferences: {
