@@ -22,6 +22,10 @@ const settings:SettingsConfig = {
 		"group": "theme"
 	},
 
+	"autostart": {
+		"type": "bool",
+		"value": false
+	},
 	"hourlyNotification": {
 		"type": "bool",
 		"value": false

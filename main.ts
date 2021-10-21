@@ -36,7 +36,8 @@ if (app.requestSingleInstanceLock()) {
 
 
 
-const resourcePath = !app.isPackaged? __dirname : process.resourcesPath,
+const autoStartArgument = '--z-auto-start',
+	resourcePath = !app.isPackaged? __dirname : process.resourcesPath,
 
 	appIconPath = path.resolve(resourcePath, './images/icon.png'),
 	appIconPath_x3 = path.resolve(resourcePath, './images/icon@3x.png'),
@@ -501,6 +502,11 @@ function onReady() {
 			case 'quality':
 				refreshQualityChecked();
 				break;
+			case 'autostart':
+				updateAutoStart()
+					.catch(console.error)
+				;
+				break;
 			case 'clipboardWatch':
 				let menu = contextMenu?.getMenuItemById('clipboardWatch') ?? null;
 				if (menu) {
@@ -525,19 +531,45 @@ function onReady() {
 
 
 
-
-
 	// Check if currently opened for a ztoolbox://*
 	onOpen(process.argv);
+
+
+
+	updateAutoStart()
+		.catch(console.error)
+	;
+}
+
+async function updateAutoStart() {
+	// const exeName = path.basename(process.execPath);
+	const autostartOpts : Electron.Settings = {
+		name: "Z-Toolbox",
+		openAtLogin: settings.getBoolean('autostart', true)
+	}
+
+	if (!app.isPackaged) {
+		autostartOpts.args = [
+			JSON.stringify(__dirname)
+		];
+	}
+
+	app.setLoginItemSettings(autostartOpts);
 }
 
 
 
 function onOpen(commandLine:string[]) {
-	const requests = commandLine.filter(value => {
-		return value.indexOf('ztoolbox://') !== -1
-	});
+	const isAutoStarted = commandLine.includes(autoStartArgument),
+		requests = commandLine.filter(value => {
+			return value.indexOf('ztoolbox://') !== -1
+		})
+	;
 	let unsupported:boolean = false;
+
+	if (isAutoStarted) {
+		console.info('launch from autostart');
+	}
 
 	for (const value of requests) {
 		let url:URL;
