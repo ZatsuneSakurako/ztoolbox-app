@@ -22,6 +22,10 @@ const settings:SettingsConfig = {
 		"group": "theme"
 	},
 
+	"hourlyNotification": {
+		"type": "bool",
+		"value": false
+	},
 	"clipboardWatch": {
 		"type": "bool",
 		"value": false

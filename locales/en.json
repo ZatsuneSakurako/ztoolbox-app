@@ -3,5 +3,7 @@
 	"settings": "Settings",
 
 	"group_default": "Default",
-	"group_theme": "Theme"
+	"group_theme": "Theme",
+
+	"timeIsNow": "It is now {{currentTime}}"
 }

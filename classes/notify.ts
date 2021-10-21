@@ -1,4 +1,4 @@
-import notifier from "node-notifier";
+import notifier, {NotificationMetadata, NotificationCallback} from "node-notifier";
 import NotifySend from "node-notifier/notifiers/notifysend";
 import WindowsToaster from "node-notifier/notifiers/toaster";
 import NotificationCenter from "node-notifier/notifiers/notificationcenter";
@@ -6,7 +6,7 @@ import NotificationCenter from "node-notifier/notifiers/notificationcenter";
 
 
 let appIcon:string;
-function notify(options:{title:string, message:string, icon?:string, sound?:boolean}):Promise<any> {
+function notify(options:{id?: number, title:string, message:string, icon?:string, remove?:number, sound?:boolean}):Promise<{ response:string, metadata?: NotificationMetadata }> {
 	return new Promise((resolve, reject) => {
 		if (options === null || typeof options !== 'object') {
 			reject('WrongArgument');
@@ -14,9 +14,11 @@ function notify(options:{title:string, message:string, icon?:string, sound?:bool
 		}
 
 		let opts : notifier.Notification | NotifySend.Notification | WindowsToaster.Notification | NotificationCenter.Notification = <notifier.Notification>{
+			id: options.id,
 			title: options.title,
 			message: options.message,
 			icon: appIcon,
+			remove: options.remove,
 			wait: true,
 		};
 		if (process.platform === "win32") {
@@ -29,11 +31,14 @@ function notify(options:{title:string, message:string, icon?:string, sound?:bool
 			_opts.sound = options.sound ?? true;
 		}
 
-		notifier.notify(opts, function (error:any, response:any) {
+		notifier.notify(opts, <NotificationCallback>function (error:Error | null, response:string, metadata?: NotificationMetadata) {
 			if (!!error) {
 				reject(error);
 			} else if (!(typeof response === 'string' && response.indexOf('clicked'))) {
-				resolve(response);
+				resolve({
+					response,
+					metadata
+				});
 			}
 		});
 	})

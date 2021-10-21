@@ -3,6 +3,8 @@ import * as classUtils from "class-utils";
 import {EventEmitter} from "events";
 import * as fs from "fs";
 import {PrimitivesValues, RandomJsonData} from "./bo/settings";
+require = require("esm")(module/*, options*/);
+import settings from "../browserViews/js/settings/settings";
 
 
 interface Settings extends EventEmitter {
@@ -66,9 +68,18 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 		}
 	}
 
-	getString(key:string):string|undefined {
-		const value = this.get(key);
-		if (!value) return;
+	getDefaultValue(key: string): RandomJsonData | undefined {
+		const settingConf = settings[key];
+		if (!settingConf || settingConf?.type === 'button') return;
+		return settingConf.value;
+	}
+
+	getString(key: string, useDefault: boolean = true): string | undefined {
+		let value = this.get(key);
+		if (value === undefined && useDefault) {
+			value = this.getDefaultValue(key);
+		}
+		if (value === undefined) return;
 
 		if (typeof value !== 'string') {
 			throw new Error('TYPE_ERROR')
@@ -76,9 +87,13 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 
 		return value;
 	}
-	getNumber(key:string):number|undefined {
-		const value = this.get(key);
-		if (!value) return;
+
+	getNumber(key: string, useDefault: boolean = true): number | undefined {
+		let value = this.get(key);
+		if (value === undefined && useDefault) {
+			value = this.getDefaultValue(key);
+		}
+		if (value === undefined) return;
 
 		if (typeof value !== 'number') {
 			throw new Error('TYPE_ERROR')
@@ -86,9 +101,13 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 
 		return value;
 	}
-	getBoolean(key:string):boolean|undefined {
-		const value = this.get(key);
-		if (!value) return;
+
+	getBoolean(key: string, useDefault: boolean = true): boolean | undefined {
+		let value = this.get(key);
+		if (value === undefined && useDefault) {
+			value = this.getDefaultValue(key);
+		}
+		if (value === undefined) return;
 
 		if (typeof value !== 'boolean') {
 			throw new Error('TYPE_ERROR')
@@ -96,9 +115,13 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 
 		return value;
 	}
-	getDate(key:string):Date|undefined {
-		const value = this.get(key);
-		if (!value) return;
+
+	getDate(key: string, useDefault: boolean = true): Date | undefined {
+		let value = this.get(key);
+		if (value === undefined && useDefault) {
+			value = this.getDefaultValue(key);
+		}
+		if (value === undefined) return;
 
 		if (typeof value !== 'string') {
 			throw new Error('TYPE_ERROR')
