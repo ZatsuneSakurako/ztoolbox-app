@@ -6,7 +6,7 @@ const filePath = path.normalize(`${__dirname}/my_host.${process.platform === 'wi
 const json = {
 	"name": "eu.gitlab.zatsunenomokou.chromenativebridge",
 	"description": "Z-Toolbox integration with native messaging support",
-	"path": (process.platform === 'win32' ? '' : 'node ') + JSON.stringify(filePath),
+	"path": (process.platform === 'win32' ? filePath : 'node ' + JSON.stringify(filePath)),
 	"type": "stdio",
 	"allowed_origins": [
 		"chrome-extension://ecgiibibekoebbdeieihohopccibchmg/"

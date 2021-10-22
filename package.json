@@ -28,6 +28,7 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@types/codemirror": "^5.60.3",
+    "@types/dotenv": "^8.2.0",
     "@types/fs-extra": "^9.0.13",
     "@types/gulp": "^4.0.9",
     "@types/gulp-sass": "^5.0.0",
@@ -63,6 +64,7 @@
     "class-utils": "^0.3.6",
     "codemirror": "^5.60.0",
     "cron-parser": "^4.1.0",
+    "dotenv": "^10.0.0",
     "esm": "^3.2.25",
     "fs-extra": "^10.0.0",
     "i18next": "^21.1.0",

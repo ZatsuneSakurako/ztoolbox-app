@@ -76,21 +76,46 @@ const wss = new WebSocket.Server({
 	port: 42080
 });
 
-function onSocketMessage(rawData:RawData, socket:WebSocket) {
-	let msg:string|object = rawData.toString();
+async function onSocketMessage(rawData:RawData, socket:WebSocket):Promise<object | undefined> {
+	let msg:string| { type?: string, data: any } = rawData.toString();
 	try {
 		msg = JSON.parse(msg);
 	} catch (_) {}
-	console.dir(msg);
-	socket.send(JSON.stringify({
-		lorem: 'ipsum'
-	}));
+
+	if (typeof msg !== 'object' || msg === null) {
+		console.error(msg);
+		return {
+			error: 'WS Incoming message error'
+		}
+	}
+
+	switch (msg.type) {
+		case "ws open":
+			console.dir(msg);
+			return {
+				error: false,
+				message: "z-toolbox connected"
+			};
+		case "nativeMessage":
+			console.dir(msg);
+			return {
+				error: false,
+				message: "z-toolbox received the message"
+			};
+		default:
+			return {
+				error: `UNHANDLED_TYPE "${msg.type}"`
+			}
+	}
 }
 
 wss.on('connection', function(socket) {
 	// When you receive a message, send that message to every socket.
-	socket.on('message', function(msg) {
-		onSocketMessage(msg, socket);
+	socket.on('message', async function(msg) {
+		const response = await onSocketMessage(msg, socket);
+		if (!!response) {
+			socket.send(JSON.stringify(response));
+		}
 	});
 });
 

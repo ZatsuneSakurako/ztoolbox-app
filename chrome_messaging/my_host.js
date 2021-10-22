@@ -5,14 +5,28 @@
 
 const {ChromeNativeBridge} = require('@josephuspaye/chrome-native-bridge'),
     fs = require('fs'),
-    path = require('path'),
-    fd = fs.openSync(path.join(__dirname, `log${Math.floor(Math.random() * 6000)}.txt`), 'a'),
-    logFile = fs.createWriteStream(null, { fd })
+    path = require('path')
 ;
 
-function log(data, onDone) {
-    logFile.write(JSON.stringify(data, null, '  '));
-    logFile.write('\n', onDone);
+require('dotenv').config({
+    path: path.normalize(__dirname + '/../.env')
+});
+
+let fd, logFile;
+function log(data) {
+    return new Promise(onDone => {
+        if (process.env.NATIVE_LOGS) {
+            if (!logFile) {
+                fd = fs.openSync(path.normalize(__dirname + '/logs/' + `${Math.floor(Math.random() * 6000)}.log`), 'a');
+                logFile = fs.createWriteStream(null, { fd });
+            }
+
+            logFile.write(JSON.stringify(data));
+            logFile.write('\n', onDone);
+        } else {
+            onDone();
+        }
+    })
 }
 
 
@@ -30,11 +44,14 @@ let ws;
 function connect() {
     ws = new WebSocket(url);
     ws.addEventListener('open', function(port) {
-        log(['ws open', `WEBSOCKET_OPENED: client connected to server at port ${port.toString()}`]);
+        log(['ws open', `WEBSOCKET_OPENED: client connected to server at port ${JSON.stringify(port)}`])
+            .catch(() => {})
+        ;
 
         ws.send(JSON.stringify({
             type: 'ws open',
-            data: port
+            port,
+            bridge
         }));
     })
 
@@ -44,15 +61,16 @@ function connect() {
             data = JSON.parse(data)
         } catch (_) {}
 
-        log(['ws message', data]);
-        bridge.emit({
-            type: 'ws',
-            data: data
-        });
+        log(['ws message', data])
+            .catch(() => {})
+        ;
+        bridge.emit(data);
     });
 
     const onClose = function (e) {
-        log(['ws close', `Socket is closed. Reconnect will be attempted in ${timeInterval / 1000} second. Reason : ${e.reason}`]);
+        log(['ws close', `Socket is closed. Reconnect will be attempted in ${timeInterval / 1000} second. Reason : ${e.reason}`])
+            .catch(() => {})
+        ;
         setTimeout(function () {
             connect();
         }, timeInterval);
@@ -61,7 +79,9 @@ function connect() {
     ws.addEventListener('close', onClose);
 
     ws.addEventListener('error', function (err) {
-        log(['ws error', 'Socket encountered error: ' + err.message]);
+        log(['ws error', 'Socket encountered error: ' + err.message])
+            .catch(() => {})
+        ;
         ws.close();
     });
 }
@@ -76,10 +96,12 @@ const bridge = new ChromeNativeBridge(
     process.stdout, // The output stream that Chrome reads from
     {
         onMessage(message) {
-            log(message);
+            log(message)
+                .catch(() => {})
+            ;
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
-                    type: 'chrome',
+                    type: 'nativeMessage',
                     data: message
                 }));
             }
@@ -88,15 +110,19 @@ const bridge = new ChromeNativeBridge(
         onError(err) {
             // There's been an error parsing a received message.
             // Do something to handle it here...
-            log(['bridge error', err]);
+            log(['bridge error', err])
+                .catch(() => {})
+            ;
         },
 
         onEnd() {
             // End of `process.stdin` detected: it's likely Chrome wants
             // to end the native host process, so we exit here
-            log('stdin ended, exiting native host', () => {
-                process.exit();
-            });
+            log('stdin ended, exiting native host')
+                .finally(() => {
+                    process.exit();
+                })
+            ;
         },
     }
 );

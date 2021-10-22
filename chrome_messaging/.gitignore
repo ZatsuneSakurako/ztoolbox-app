@@ -1,2 +1,3 @@
-log.txt
+logs/*
+!logs/.keep
 eu.gitlab.zatsunenomokou.chromenativebridge_*.json
