@@ -3,6 +3,8 @@ import * as path from "path";
 import fs from "fs-extra";
 import crypto from "crypto";
 import WebSocket, {RawData} from "ws";
+import * as http from "http";
+import {Socket} from "net";
 import i18next from "i18next";
 import Mustache from "mustache";
 import Dict = NodeJS.Dict;
@@ -18,6 +20,7 @@ import enPreferencesTranslation from "./locales/preferences/en.json";
 import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
+import {string} from "yargs";
 
 
 
@@ -72,12 +75,46 @@ if (!app.isDefaultProtocolClient('ztoolbox')) {
 
 
 
+const server = http.createServer();
+server.on('upgrade', function upgrade(request, socket, head) {
+	// Do what you normally do in `verifyClient()` here and then use
+	// `WebSocketServer.prototype.handleUpgrade()`.
+
+	const token = request.headers.token;
+	if (!token || token !== 'VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c') {
+		socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+		socket.destroy();
+		return;
+	}
+
+	wss.handleUpgrade(request, <Socket>socket, head, function done(ws) {
+		wss.emit('connection', ws, request);
+	});
+});
+server.listen(42080);
 const wss = new WebSocket.Server({
-	port: 42080
+	noServer: true
 });
 
-async function onSocketMessage(rawData:RawData, socket:WebSocket):Promise<object | undefined> {
-	let msg:string| { type?: string, data: any } = rawData.toString();
+interface IChromeNativeMessage<T=any> {
+	type: string
+	command?: string
+	data?: T
+}
+
+interface IChromeNativeReply<T=any> {
+	error: string | false
+	command?: string
+	result?: T
+}
+
+/**
+ *
+ * @param rawData
+ * @param socket
+ */
+async function onSocketMessage(rawData:RawData, socket:WebSocket):Promise<IChromeNativeReply | undefined> {
+	let msg:string | IChromeNativeMessage = rawData.toString();
 	try {
 		msg = JSON.parse(msg);
 	} catch (_) {}
@@ -89,23 +126,65 @@ async function onSocketMessage(rawData:RawData, socket:WebSocket):Promise<object
 		}
 	}
 
-	switch (msg.type) {
-		case "ws open":
-			console.dir(msg);
-			return {
-				error: false,
-				message: "z-toolbox connected"
-			};
-		case "nativeMessage":
-			console.dir(msg);
-			return {
-				error: false,
-				message: "z-toolbox received the message"
-			};
-		default:
-			return {
-				error: `UNHANDLED_TYPE "${msg.type}"`
-			}
+	if (msg.type === "ws open") {
+		console.dir(msg);
+		return {
+			error: false,
+			result: "z-toolbox connected"
+		};
+	} else if (msg.type === "log") {
+		if (Array.isArray(msg.data)) {
+			console.log(...msg.data);
+		} else {
+			console.log(msg.data);
+		}
+		return;
+	} else if (msg.type === "nativeMessage") {
+		switch (msg.command) {
+			case 'getPreference':
+				return {
+					error: false,
+					command: msg.command,
+					result: {
+						id: msg.data.id,
+						value: settings.get(msg.data.id)
+					}
+				}
+			case 'getPreferences':
+				const result = [],
+					prefIds : string[] = Array.isArray(msg.data?.ids) ? msg.data.ids : [...settings.keys()]
+				;
+
+				for (let id of prefIds) {
+					result.push({
+						id: id,
+						value: settings.get(id)
+					})
+				}
+
+				return {
+					error: false,
+					command: msg.command,
+					result: result
+				}
+			case 'ping':
+				return {
+					error: false,
+					command: msg.command,
+					result: 'pong'
+				}
+			default:
+				console.dir(msg);
+				return {
+					error: 'UNKNOWN_COMMAND',
+					command: msg.command,
+					result: "z-toolbox received the message"
+				};
+		}
+	} else {
+		return {
+			error: `UNHANDLED_TYPE "${msg.type}"`
+		}
 	}
 }
 

@@ -15,7 +15,7 @@ require('dotenv').config({
 let fd, logFile;
 function log(data) {
     return new Promise(onDone => {
-        if (process.env.NATIVE_LOGS) {
+        if (process.env.NATIVE_LOG_FILE) {
             if (!logFile) {
                 fd = fs.openSync(path.normalize(__dirname + '/logs/' + `${Math.floor(Math.random() * 6000)}.log`), 'a');
                 logFile = fs.createWriteStream(null, { fd });
@@ -24,6 +24,13 @@ function log(data) {
             logFile.write(JSON.stringify(data));
             logFile.write('\n', onDone);
         } else {
+            if (ws) {
+                ws.send(JSON.stringify({
+                    type: 'log',
+                    data
+                }));
+            }
+
             onDone();
         }
     })
@@ -42,7 +49,11 @@ const WebSocket = require("ws"),
  */
 let ws;
 function connect() {
-    ws = new WebSocket(url);
+    ws = new WebSocket(url, {
+        headers : {
+            token: "VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c"
+        }
+    });
     ws.addEventListener('open', function(port) {
         log(['ws open', `WEBSOCKET_OPENED: client connected to server at port ${JSON.stringify(port)}`])
             .catch(() => {})
@@ -51,14 +62,15 @@ function connect() {
         ws.send(JSON.stringify({
             type: 'ws open',
             port,
-            bridge
+            bridge,
+            argv: process.argv
         }));
     })
 
     ws.addEventListener('message', function(e) {
         let data = e.data;
         try {
-            data = JSON.parse(data)
+            data = JSON.parse(data);
         } catch (_) {}
 
         log(['ws message', data])
@@ -100,10 +112,29 @@ const bridge = new ChromeNativeBridge(
                 .catch(() => {})
             ;
             if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'nativeMessage',
-                    data: message
-                }));
+                let output = message;
+
+                if (typeof message === 'object' && message !== null) {
+                    const command = message.command;
+                    delete message.command;
+                    output = {
+                        type: 'nativeMessage',
+                        command,
+                        data: message
+                    };
+                } else if (typeof message === 'string') {
+                    output = {
+                        type: 'nativeMessage',
+                        command: message
+                    }
+                } else {
+                    output = {
+                        type: 'nativeMessage',
+                        data: message
+                    }
+                }
+
+                ws.send(JSON.stringify(output));
             }
         },
 
