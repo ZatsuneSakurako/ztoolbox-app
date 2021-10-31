@@ -9,6 +9,7 @@ browserViews/js/**/*.js
 **/*.d.ts
 /*.js
 /scripts/*.js
+/chrome_messaging/*.js
 classes/bo/*.js
 classes/*.js
 

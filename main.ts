@@ -20,7 +20,6 @@ import enPreferencesTranslation from "./locales/preferences/en.json";
 import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
-import {string} from "yargs";
 
 
 
@@ -98,8 +97,7 @@ const wss = new WebSocket.Server({
 
 interface IChromeNativeMessage<T=any> {
 	type: string
-	command?: string
-	data?: T
+	data?: {command: string} & T
 }
 
 interface IChromeNativeReply<T=any> {
@@ -126,25 +124,13 @@ async function onSocketMessage(rawData:RawData, socket:WebSocket):Promise<IChrom
 		}
 	}
 
-	if (msg.type === "ws open") {
-		console.dir(msg);
-		return {
-			error: false,
-			result: "z-toolbox connected"
-		};
-	} else if (msg.type === "log") {
-		if (Array.isArray(msg.data)) {
-			console.log(...msg.data);
-		} else {
-			console.log(msg.data);
-		}
-		return;
-	} else if (msg.type === "nativeMessage") {
-		switch (msg.command) {
+	if (msg.type === "nativeMessage") {
+		const command = msg.data.command;
+		switch (command) {
 			case 'getPreference':
 				return {
 					error: false,
-					command: msg.command,
+					command,
 					result: {
 						id: msg.data.id,
 						value: settings.get(msg.data.id)
@@ -164,27 +150,43 @@ async function onSocketMessage(rawData:RawData, socket:WebSocket):Promise<IChrom
 
 				return {
 					error: false,
-					command: msg.command,
+					command,
 					result: result
 				}
 			case 'ping':
 				return {
 					error: false,
-					command: msg.command,
+					command,
 					result: 'pong'
 				}
 			default:
 				console.dir(msg);
 				return {
 					error: 'UNKNOWN_COMMAND',
-					command: msg.command,
+					command,
 					result: "z-toolbox received the message"
 				};
 		}
-	} else {
-		return {
-			error: `UNHANDLED_TYPE "${msg.type}"`
-		}
+	}
+
+	switch (msg.type) {
+		case "ws open":
+			console.dir(msg);
+			return {
+				error: false,
+				result: "z-toolbox connected"
+			};
+		case "log":
+			if (Array.isArray(msg.data)) {
+				console.log(...msg.data);
+			} else {
+				console.log(msg.data);
+			}
+			return;
+		default:
+			return {
+				error: `UNHANDLED_TYPE "${msg.type}"`
+			}
 	}
 }
 

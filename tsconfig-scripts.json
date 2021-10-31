@@ -8,6 +8,7 @@
 	"files": [],
 	"include": [
 		"./gulpfile.ts",
+		"./chrome_messaging/*.ts",
 		"./scripts/*.ts"
 	],
 	"exclude": [
