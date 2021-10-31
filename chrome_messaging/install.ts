@@ -1,6 +1,9 @@
-const path = require('path'),
-	fs = require('fs-extra')
-;const {promisified: regedit} = require("regedit");
+import path from "path";
+import fs from "fs-extra";
+import Dict = NodeJS.Dict;
+// @ts-ignore
+import {promisified as regedit} from "regedit";
+
 
 const filePath = path.normalize(`${__dirname}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);
 const json = {
@@ -13,12 +16,7 @@ const json = {
 	]
 };
 
-/**
- *
- * @param {"chrome"|"chromium"|"firefox"} browser
- * @return {string}
- */
-function writeAndGetJsonFilePath(browser) {
+function writeAndGetJsonFilePath(browser: "chrome" | "chromium" | "firefox"): string {
 	const jsonFilePath = path.normalize(`${__dirname}/eu.gitlab.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`),
 		_json = JSON.parse(JSON.stringify(json))
 	;
@@ -43,15 +41,19 @@ function writeAndGetJsonFilePath(browser) {
 	return jsonFilePath;
 }
 
+export type browsers = "chrome" | "chromium" | "firefox";
+export type osList = "darwin" | "win32" | "linux";
+
 /**
  *
  * @see https://unpkg.com/browse/native-installer@1.0.0/paths.json
- * @param {"chrome"|"chromium"|"firefox"} browser
- * @param {"darwin"|"win32"|"linux"} os
- * @param {'user'|'global'} type
+ * @param browser
+ * @param os
+ * @param type
  * @return {string}
  */
-function getInstallPath(browser='chrome', os='win32', type='user') {
+function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: 'user' | 'global' = 'user') :string
+{
 	const home = require('os').homedir(),
 		name = json.name
 	;
@@ -107,9 +109,9 @@ function getInstallPath(browser='chrome', os='win32', type='user') {
 }
 
 async function install(isUninstall=false) {
-	const browsers = ['chrome', 'chromium', 'firefox'];
+	const browsers : browsers[] = ['chrome', 'chromium', 'firefox'];
 
-	const addRegEdit = {};
+	const addRegEdit : Dict<Dict<{value: string, type: string}>> = {};
 	for (let browser of browsers) {
 		const manifestPath = writeAndGetJsonFilePath(browser),
 			installPath = getInstallPath(browser)
@@ -127,7 +129,7 @@ async function install(isUninstall=false) {
 			} catch (e) {
 				console.error(e);
 			}
-			if (exists !== true) {
+			if (!exists) {
 				console.warn(`${browser} reg dir not found, skipping`);
 				continue;
 			}

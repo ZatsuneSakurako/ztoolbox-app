@@ -1,28 +1,37 @@
 #!/usr/local/bin/node
-
 // Best to use a direct path on the shebang line in case node isn't in the
 // PATH when launched by Chrome.
 
-const {ChromeNativeBridge} = require('@josephuspaye/chrome-native-bridge'),
-    fs = require('fs'),
-    path = require('path')
-;
+import fs from "fs";
+import path from "path";
+import {ChromeNativeBridge} from "@josephuspaye/chrome-native-bridge";
 
-require('dotenv').config({
+import dotenv from "dotenv";
+import WebSocket from "ws";
+
+dotenv.config({
     path: path.normalize(__dirname + '/../.env')
 });
 
-let fd, logFile;
-function log(data) {
-    return new Promise(onDone => {
+let logFile: fs.WriteStream;
+function log(data:string|object) {
+    return new Promise<void>((onDone) => {
         if (process.env.NATIVE_LOG_FILE) {
             if (!logFile) {
-                fd = fs.openSync(path.normalize(__dirname + '/logs/' + `${Math.floor(Math.random() * 6000)}.log`), 'a');
-                logFile = fs.createWriteStream(null, { fd });
+                const logsDir = path.normalize(__dirname + '/logs');
+                if (!fs.existsSync(logsDir)) {
+                    fs.mkdirSync(logsDir)
+                }
+
+                logFile = fs.createWriteStream(__dirname + '/logs/' + `${Math.floor(Math.random() * 6000)}.log`, {
+                    flags: 'a'
+                });
             }
 
             logFile.write(JSON.stringify(data));
-            logFile.write('\n', onDone);
+            logFile.write('\n', () => {
+                onDone();
+            });
         } else {
             if (ws) {
                 ws.send(JSON.stringify({
@@ -38,16 +47,11 @@ function log(data) {
 
 
 
-const WebSocket = require("ws"),
-    url = 'ws://localhost:42080',
+const url = 'ws://localhost:42080',
     timeInterval = 5000
 ;
 
-/**
- *
- * @type {WebSocket|undefined}
- */
-let ws;
+let ws : WebSocket;
 function connect() {
     ws = new WebSocket(url, {
         headers : {
@@ -68,7 +72,7 @@ function connect() {
     })
 
     ws.addEventListener('message', function(e) {
-        let data = e.data;
+        let data = e.data.toString();
         try {
             data = JSON.parse(data);
         } catch (_) {}
@@ -79,7 +83,7 @@ function connect() {
         bridge.emit(data);
     });
 
-    const onClose = function (e) {
+    const onClose = function (e: WebSocket.CloseEvent) {
         log(['ws close', `Socket is closed. Reconnect will be attempted in ${timeInterval / 1000} second. Reason : ${e.reason}`])
             .catch(() => {})
         ;
@@ -115,18 +119,17 @@ const bridge = new ChromeNativeBridge(
                 let output = message;
 
                 if (typeof message === 'object' && message !== null) {
+                    const _id = message._id;
+                    delete message._id;
                     const command = message.command;
                     delete message.command;
+
                     output = {
                         type: 'nativeMessage',
+                        _id,
                         command,
                         data: message
                     };
-                } else if (typeof message === 'string') {
-                    output = {
-                        type: 'nativeMessage',
-                        command: message
-                    }
                 } else {
                     output = {
                         type: 'nativeMessage',
