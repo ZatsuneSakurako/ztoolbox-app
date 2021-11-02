@@ -1,8 +1,8 @@
 import path from "path";
 import fs from "fs-extra";
-import Dict = NodeJS.Dict;
-// @ts-ignore
-import {promisified as regedit} from "regedit";
+import {promisify} from "util";
+import * as Winreg from "winreg";
+import Registry = require('winreg');
 
 
 const filePath = path.normalize(`${__dirname}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);
@@ -43,17 +43,15 @@ function writeAndGetJsonFilePath(browser: "chrome" | "chromium" | "firefox"): st
 
 export type browsers = "chrome" | "chromium" | "firefox";
 export type osList = "darwin" | "win32" | "linux";
+export type install_types = 'user' | 'global';
 
 /**
  *
  * @see https://unpkg.com/browse/native-installer@1.0.0/paths.json
- * @param browser
- * @param os
- * @param type
- * @return {string}
  */
-function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: 'user' | 'global' = 'user') :string
-{
+function getInstallPath(browser: browsers, os?: Exclude<osList, 'win32'>, type?:'user'):string
+function getInstallPath(browser: browsers, os?: "win32", type?:'global'): Winreg.Registry
+function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: install_types = 'user'): string | Winreg.Registry {
 	const home = require('os').homedir(),
 		name = json.name
 	;
@@ -67,10 +65,7 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 				"global": `/Library/Google/Chrome/NativeMessagingHosts/${name}.json`,
 				"user": `${home}/Library/Application Support/Google/Chrome/NativeMessagingHosts/${name}.json`
 			},
-			"win32": {
-				"global": `HKLM\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\${name}`,
-				"user": `HKCU\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\${name}`
-			},
+			"win32": `\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\`,
 			"linux": {
 				"global": `/etc/opt/chrome/native-messaging-hosts/${name}.json`,
 				"user": `${home}/.config/google-chrome/NativeMessagingHosts/${name}.json`
@@ -81,10 +76,7 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 				"global": `/Library/Application Support/Chromium/NativeMessagingHosts/${name}.json`,
 				"user": `${home}/Library/Application Support/Chromium/NativeMessagingHosts/${name}.json`
 			},
-			"win32": {
-				"global": `HKLM\\SOFTWARE\\Chromium\\NativeMessagingHosts\\${name}`,
-				"user": `HKCU\\SOFTWARE\\Chromium\\NativeMessagingHosts\\${name}`
-			},
+			"win32": `\\SOFTWARE\\Chromium\\NativeMessagingHosts\\`,
 			"linux": {
 				"global": `/etc/chromium/native-messaging-hosts/${name}.json`,
 				"user": `${home}/.config/chromium/NativeMessagingHosts/${name}.json`
@@ -95,56 +87,83 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 				"global": `/Library/Application Support/Mozilla/NativeMessagingHosts/${name}.json`,
 				"user": `${home}/Library/Application Support/Mozilla/NativeMessagingHosts/${name}.json`
 			},
-			"win32": {
-				"global": `HKLM\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\${name}`,
-				"user": `HKCU\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\${name}`
-			},
+			"win32": `\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\`,
 			"linux": {
 				"global": `/usr/lib/mozilla/native-messaging-hosts/${name}.json`,
 				"user": `${home}/.mozilla/native-messaging-hosts/${name}.json`
 			}
 		}
 	};
+
+	if (os === 'win32') {
+		return new Registry({
+			hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
+			key: paths[browser][os]
+		});
+	}
 	return paths[browser][os][type];
 }
 
 async function install(isUninstall=false) {
 	const browsers : browsers[] = ['chrome', 'chromium', 'firefox'];
 
-	const addRegEdit : Dict<Dict<{value: string, type: string}>> = {};
-	for (let browser of browsers) {
-		const manifestPath = writeAndGetJsonFilePath(browser),
-			installPath = getInstallPath(browser)
-		;
+	if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
+		throw new Error('PLATFORM_NOT_SUPPORTED');
+	}
+	const platform : osList = process.platform,
+		promises : Promise<void>[] = []
+	;
 
-		if (process.platform.startsWith('win')) {
-			const regedit = require('regedit').promisified,
-				regBaseDir = path.dirname(installPath)
-			;
+	for (let browser of browsers) {
+		const manifestPath = writeAndGetJsonFilePath(browser);
+
+		if (platform === 'win32') {
+			const installPath = getInstallPath(browser, platform);
 
 			let exists = false;
 			try {
-				const result = await regedit.list(regBaseDir);
-				exists = result[regBaseDir].exists;
+				exists = await promisify(installPath.keyExists)();
 			} catch (e) {
 				console.error(e);
 			}
 			if (!exists) {
-				console.warn(`${browser} reg dir not found, skipping`);
+				console.warn(`${browser} reg key not found, skipping`);
 				continue;
 			}
 
 			if (isUninstall) {
-				await regedit.deleteKey(installPath);
+				const promise = new Promise<void>((resolve, reject) => {
+					installPath.remove(json.name,
+						err => {
+							if (err) {
+								reject(err);
+							} else {
+								resolve();
+							}
+						}
+					);
+				});
+				promises.push(promise);
 			} else {
-				addRegEdit[regBaseDir] = {
-					[json.name]: {
-						value: manifestPath,
-						type: 'REG_DEFAULT'
-					}
-				};
+				const promise = new Promise<void>((resolve, reject) => {
+					installPath.set(
+						json.name,
+						Registry.REG_SZ,
+						manifestPath,
+						err => {
+							if (err) {
+								reject(err);
+							} else {
+								resolve();
+							}
+						}
+					);
+				});
+				promises.push(promise);
 			}
 		} else {
+			const installPath = getInstallPath(browser, platform);
+
 			if (isUninstall) {
 				if (fs.existsSync(installPath)) {
 					fs.unlinkSync(installPath);
@@ -164,8 +183,8 @@ async function install(isUninstall=false) {
 		}
 	}
 
-	if (!isUninstall && process.platform.startsWith('win') && [...Object.values(addRegEdit)].length) {
-		await regedit.putValue(addRegEdit);
+	if (promises.length > 1) {
+		await Promise.allSettled(promises);
 	}
 }
 
