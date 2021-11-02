@@ -1,4 +1,4 @@
-import {app, BrowserWindow, nativeImage, MenuItem, Menu, Tray, ipcMain, session} from 'electron';
+import {app, BrowserWindow, MenuItem, Menu, Tray, ipcMain, session} from 'electron';
 import * as path from "path";
 import fs from "fs-extra";
 import crypto from "crypto";
@@ -8,6 +8,8 @@ import {Socket} from "net";
 import i18next from "i18next";
 import Mustache from "mustache";
 import Dict = NodeJS.Dict;
+import AutoLaunch from "auto-launch";
+import ProtocolRegistry from "protocol-registry";
 
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
@@ -20,6 +22,7 @@ import enPreferencesTranslation from "./locales/preferences/en.json";
 import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
+import {appIcon, appIconPath_x3, autoStartArgument, browserViewPath, zToolbox_protocol} from "./classes/constants";
 
 
 
@@ -38,22 +41,32 @@ if (app.requestSingleInstanceLock()) {
 
 
 
-const autoStartArgument = '--z-auto-start',
-	resourcePath = !app.isPackaged? __dirname : process.resourcesPath,
-
-	appIconPath = path.resolve(resourcePath, './images/icon.png'),
-	appIconPath_x3 = path.resolve(resourcePath, './images/icon@3x.png'),
-	appIcon = nativeImage.createFromPath(appIconPath)
-;
-
-
-
 app.setName('Z-ToolBox');
-if (app.isDefaultProtocolClient('ztoolbox')) {
-	app.removeAsDefaultProtocolClient('ztoolbox');
+if (app.isDefaultProtocolClient(zToolbox_protocol)) {
+	app.removeAsDefaultProtocolClient(zToolbox_protocol);
 }
 
-if (!app.isDefaultProtocolClient('ztoolbox')) {
+/*
+ * Arguments taken from :
+ * https://stackoverflow.com/questions/45570589/electron-protocol-handler-not-working-on-windows#53786254
+ */
+if (!process.platform.startsWith('win')) {
+	ProtocolRegistry.register({
+		protocol: zToolbox_protocol,
+		command: app.isPackaged ?
+			`${JSON.stringify(process.execPath)} $_URL_`
+			:
+			`"${process.execPath}" "${__dirname}" $_URL_`,
+		override: true,
+		terminal: false,
+		script: false,
+	})
+		.then(async () => {
+			console.log("Successfully registered protocol");
+		})
+		.catch(console.error)
+	;
+} else {
 	let result;
 	if (app.isPackaged) {
 		result = app.setAsDefaultProtocolClient('ztoolbox');
@@ -223,7 +236,7 @@ function createWindow(showSection?: string) {
 	}
 
 	// and load the index.html of the app.
-	mainWindow.loadFile(path.resolve(resourcePath, './browserViews/index.html'), opts)
+	mainWindow.loadFile(browserViewPath, opts)
 		.catch(console.error)
 	;
 
@@ -650,19 +663,82 @@ function onReady() {
 }
 
 async function updateAutoStart() {
+	const autoLaunchName = "Z-Toolbox",
+		autoStartPref = settings.getBoolean('autostart', true)
+	;
 	// const exeName = path.basename(process.execPath);
-	const autostartOpts : Electron.Settings = {
-		name: "Z-Toolbox",
-		openAtLogin: settings.getBoolean('autostart', true)
-	}
 
-	if (!app.isPackaged) {
-		autostartOpts.args = [
-			JSON.stringify(__dirname)
-		];
-	}
+	if (process.platform === 'linux') {
+		if (!app.isPackaged) {
+			// auto-launch trick to be able to use argument
+			// @ts-ignore
+			const fileBasedUtilities = await import('auto-launch/dist/fileBasedUtilities');
+			// @ts-ignore
+			const AutoLaunchLinux = await  import('auto-launch/dist/AutoLaunchLinux');
+			const targetFilePath = AutoLaunchLinux.getFilePath(autoLaunchName),
+				isEnabled = await fileBasedUtilities.isEnabled(targetFilePath)
+			;
 
-	app.setLoginItemSettings(autostartOpts);
+			if (isEnabled !== autoStartPref) {
+				if (autoStartPref) {
+					await AutoLaunchLinux.enable({
+						appName: autoLaunchName,
+						appPath: `${JSON.stringify(process.execPath)} ${JSON.stringify(__dirname)}`,
+						isHiddenOnLaunch: false
+					})
+						.then(() => {
+							console.info('autostart enabled');
+						})
+						.catch(console.error)
+					;
+				} else {
+					await fileBasedUtilities.removeFile(targetFilePath)
+						.then(() => {
+							console.info('autostart disabled');
+						})
+						.catch(console.error)
+					;
+				}
+			}
+			return;
+		}
+
+		const autoLaunch = new AutoLaunch({
+				name: autoLaunchName
+			}),
+			isEnabled = await autoLaunch.isEnabled()
+		;
+
+		if (isEnabled !== autoStartPref) {
+			if (autoStartPref) {
+				await autoLaunch.enable()
+					.then(() => {
+						console.info('autostart enabled');
+					})
+					.catch(console.error);
+			}
+			else {
+				await autoLaunch.disable()
+					.then(() => {
+						console.info('autostart disabled');
+					})
+					.catch(console.error);
+			}
+		}
+	} else {
+		const autostartOpts : Electron.Settings = {
+			name: autoLaunchName,
+			openAtLogin: autoStartPref
+		}
+
+		if (!app.isPackaged) {
+			autostartOpts.args = [
+				JSON.stringify(__dirname)
+			];
+		}
+
+		app.setLoginItemSettings(autostartOpts);
+	}
 }
 
 
@@ -670,7 +746,7 @@ async function updateAutoStart() {
 function onOpen(commandLine:string[]) {
 	const isAutoStarted = commandLine.includes(autoStartArgument),
 		requests = commandLine.filter(value => {
-			return value.indexOf('ztoolbox://') !== -1
+			return value.indexOf(zToolbox_protocol + '://') !== -1
 		})
 	;
 	let unsupported:boolean = false;

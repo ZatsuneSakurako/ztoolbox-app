@@ -2,9 +2,14 @@
 import * as classUtils from "class-utils";
 import {EventEmitter} from "events";
 import * as fs from "fs";
-import {PrimitivesValues, RandomJsonData} from "./bo/settings";
+import path from "path";
+
+import {PrimitivesValues, RandomJsonData, SettingsConfig} from "./bo/settings";
+import {resourcePath} from "./constants";
 require = require("esm")(module/*, options*/);
-import settings from "../browserViews/js/settings/settings";
+const settings : SettingsConfig = require(path.normalize(resourcePath + "/browserViews/js/settings/settings"));
+
+
 
 
 interface Settings extends EventEmitter {
