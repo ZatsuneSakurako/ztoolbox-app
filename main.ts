@@ -10,6 +10,7 @@ import Mustache from "mustache";
 import Dict = NodeJS.Dict;
 import AutoLaunch from "auto-launch";
 import ProtocolRegistry from "protocol-registry";
+import shell from 'shelljs';
 
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
@@ -51,6 +52,12 @@ if (app.isDefaultProtocolClient(zToolbox_protocol)) {
  * https://stackoverflow.com/questions/45570589/electron-protocol-handler-not-working-on-windows#53786254
  */
 if (!process.platform.startsWith('win')) {
+	/**
+	 * electron workaround
+	 * @see https://github.com/shelljs/shelljs/wiki/Electron-compatibility
+	 */
+	shell.config.execPath = shell.which('node').toString();
+
 	ProtocolRegistry.register({
 		protocol: zToolbox_protocol,
 		command: app.isPackaged ?
