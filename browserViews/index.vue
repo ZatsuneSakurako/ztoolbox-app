@@ -17,6 +17,9 @@
 					label(for="main_input", v-if="main_input_type === 'text'") Text&nbsp;:
 					label(for="main_input", v-if="main_input_type === 'url'") URL&nbsp;:
 					input#main_input(ref="main_input", type="url")
+				p.grid-4
+					label(for="main_textarea_output", data-translate-id="output") Output
+					textarea#main_textarea_output(readonly, ref="main_textarea_output")
 			div.grid.no-r-gap
 				p.grid-4
 					button.material-icons(v-on:click='onCopyTextArea') content_copy

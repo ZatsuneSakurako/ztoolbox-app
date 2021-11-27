@@ -12,5 +12,6 @@
 	"runCode": "Lancer le code !",
 
 	"textarea": "Zone de texte",
+	"output": "Sortie (lecture seule)",
 	"textarea_copied": "Zone de texte copiée !"
 }
