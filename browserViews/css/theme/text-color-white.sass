@@ -1,3 +1,6 @@
+$textColor: white
+$linkColor: rgb(50, 159, 255)
+
 /*			---- Primary text / Icons ----			*/
 body,
 header button,
@@ -8,7 +11,7 @@ input[type='checkbox'],
 input[type='radio'],
 select,
 #searchInput
-	color: #FFFFFF
+	color: $textColor
 
 select:hover
 	color: unset !important
@@ -22,15 +25,28 @@ input[type='url'],
 textarea,
 
 #tooltip
-	color: rgba(255, 255, 255, 0.8)
+	color: rgba($textColor, 0.8)
 
 /*			---- Disabled / Hint text ----			*/
 footer
-	color: rgba(255, 255, 255, 0.3)
+	color: rgba($textColor, 0.3)
 
 /*			---- Stream Title / Links ----			*/
 a
-	color: rgba(50, 159, 255, 0.8)
+	color: rgba($linkColor, 0.8)
+
+
+
+input,
+textarea
+	color: rgba($textColor, 0.8)
+
+input[disabled],
+input[readonly],
+textarea[disabled],
+textarea[readonly],
+button[disabled]
+	color: rgba($textColor, 0.5)
 
 
 footer [data-has-update="true"]

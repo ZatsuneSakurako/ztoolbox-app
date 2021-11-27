@@ -121,3 +121,13 @@ input[type='radio']:checked::before
 input[type='radio'] + label:not(.preference)::after
 	content: "\A"
 	white-space: pre
+
+input[disabled],
+input[readonly],
+textarea[disabled],
+textarea[readonly],
+button[disabled]
+		background: var(--bgLight2_Opacity50)
+
+button[disabled]
+	cursor: default
