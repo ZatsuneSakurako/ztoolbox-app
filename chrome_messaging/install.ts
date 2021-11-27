@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs-extra";
 import {promisify} from "util";
 import * as Winreg from "winreg";
+import {homedir} from "os";
 import Registry = require('winreg');
 
 
@@ -52,7 +53,7 @@ export type install_types = 'user' | 'global';
 function getInstallPath(browser: browsers, os?: Exclude<osList, 'win32'>, type?:'user'):string
 function getInstallPath(browser: browsers, os?: "win32", type?:'global'): Winreg.Registry
 function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: install_types = 'user'): string | Winreg.Registry {
-	const home = require('os').homedir(),
+	const home = homedir(),
 		name = json.name
 	;
 	/*
