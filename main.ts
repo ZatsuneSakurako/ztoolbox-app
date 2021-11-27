@@ -53,26 +53,34 @@ if (app.isDefaultProtocolClient(zToolbox_protocol)) {
  */
 if (!process.platform.startsWith('win')) {
 	/**
-	 * electron workaround
+	 * electron workaround (ProtocolRegistry use shelljs internally)
 	 * @see https://github.com/shelljs/shelljs/wiki/Electron-compatibility
 	 */
-	shell.config.execPath = shell.which('node').toString();
-
-	ProtocolRegistry.register({
-		protocol: zToolbox_protocol,
-		command: app.isPackaged ?
-			`${JSON.stringify(process.execPath)} $_URL_`
-			:
-			`"${process.execPath}" "${__dirname}" $_URL_`,
-		override: true,
-		terminal: false,
-		script: false,
-	})
-		.then(async () => {
-			console.log("Successfully registered protocol");
-		})
-		.catch(console.error)
+	const nodePath = shell.config.execPath = shell.which('node').toString(),
+		nodeVersion = !!nodePath ? shell.exec(JSON.stringify(nodePath) + ' --version').toString().trim() : ''
 	;
+	if (/^v1[46]\.$/.test(nodeVersion)) {
+		ProtocolRegistry.register({
+			protocol: zToolbox_protocol,
+			command: app.isPackaged ?
+				`${JSON.stringify(process.execPath)} $_URL_`
+				:
+				`"${process.execPath}" "${__dirname}" $_URL_`,
+			override: true,
+			terminal: false,
+			script: false,
+		})
+			.then(async () => {
+				console.log("Successfully registered protocol");
+			})
+			.catch(e => {
+				console.error(e);
+				console.error('ZToolbox protocol failed : Could not get node');
+			})
+		;
+	} else {
+		console.error('ZToolbox protocol failed : Could not get node');
+	}
 } else {
 	let result;
 	if (app.isPackaged) {
