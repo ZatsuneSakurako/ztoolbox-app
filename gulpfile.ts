@@ -2,14 +2,13 @@ import * as gulp from "gulp";
 import del from "del";
 import * as fs from "fs-extra";
 import _gulpSass from "gulp-sass";
-import * as nodeSass from "node-sass";
+import sass from "sass";
 import * as sourcemaps from "gulp-sourcemaps";
 import gulpPug from "gulp-pug";
 import gulpVue from "./scripts/gulp-vue.js";
 import gulpTs from "gulp-typescript";
-import path from "path";
 
-const gulpSass = _gulpSass(nodeSass),
+const gulpSass = _gulpSass(sass),
 	tsOptions = fs.readJsonSync('./tsconfig.json')
 ;
 
@@ -55,7 +54,7 @@ function _css() {
 	return gulp.src([paths.styles.src, '!**/_*.sass'])
 		.pipe(sourcemaps.init())
 		.pipe(
-			gulpSass({
+			gulpSass.sync({
 				indentedSyntax: true,
 				indentType: 'tab',
 				indentWidth: 1,
