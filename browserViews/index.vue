@@ -151,8 +151,9 @@
 					return;
 				}
 
-				// noinspection JSUnusedLocalSymbols
-				const notification = new Notification(await window.znmApi._('textarea_copied'));
+				window.znmApi.sendNotification(await window.znmApi._('textarea_copied'))
+					.catch(console.error)
+				;
 			},
 			onPasteTextArea() {
 				navigator.clipboard.readText()

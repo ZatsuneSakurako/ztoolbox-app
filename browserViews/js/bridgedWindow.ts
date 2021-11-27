@@ -1,6 +1,7 @@
 import Dict = NodeJS.Dict;
 import {VersionState} from "../../classes/bo/versionState";
 import {RandomJsonData} from "../../classes/bo/settings";
+import {NotificationResponse} from "../../classes/bo/notify";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -19,6 +20,8 @@ export interface IZnmApi {
 	getPreference(preferenceId: string, type?:PreferenceTypes): Promise<RandomJsonData|undefined>
 	getPreferences(...preferenceIds: string[]): Promise<Dict<RandomJsonData|undefined>>
 	savePreference(preferenceId: string, newValue: RandomJsonData): Promise<boolean>
+
+	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse>
 
 	mustacheRender(templateName: string, context: any): Promise<string>
 	onUpdatePreference(cb: (preferenceId: string, newValue: any) => void): void

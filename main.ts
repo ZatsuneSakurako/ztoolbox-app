@@ -15,7 +15,7 @@ import shell from 'shelljs';
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
 import {Streamlink} from './classes/Streamlink';
-import Notify from "./classes/notify";
+import {notifyElectron} from "./classes/notify";
 import frTranslation from "./locales/fr.json";
 import enTranslation from "./locales/en.json";
 import frPreferencesTranslation from "./locales/preferences/fr.json";
@@ -23,7 +23,7 @@ import enPreferencesTranslation from "./locales/preferences/en.json";
 import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
-import {appIcon, appIconPath_x3, autoStartArgument, browserViewPath, zToolbox_protocol} from "./classes/constants";
+import {appIcon, autoStartArgument, browserViewPath, zToolbox_protocol} from "./classes/constants";
 
 
 
@@ -369,6 +369,14 @@ ipcMain.handle('savePreference', (e, preferenceId:string, newValue:any) => {
 	return true;
 });
 
+ipcMain.handle('sendNotification', async (e, message: string, title?: string, sound?: boolean) => {
+	return await notifyElectron({
+		message,
+		title: title || app.name,
+		sound
+	});
+});
+
 const mstCache:Map<string, string> = new Map();
 ipcMain.handle('mustacheRender', async (e, templateName:string, context:any) => {
 	let template = mstCache.get(templateName);
@@ -417,8 +425,7 @@ app.on('activate', function () {
 
 
 
-const {notify} = Notify(appIconPath_x3),
-	urlRegexp = /https?:\/\/*/,
+const urlRegexp = /https?:\/\/*/,
 	clipboard = new ZClipboard(5000, false)
 ;
 
@@ -449,7 +456,7 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:string|UR
 	}
 
 	if (url == null) {
-		notify({
+		notifyElectron({
 			title: 'Erreur',
 			message: 'Pas d\'url dans le presse-papier'
 		})
@@ -471,7 +478,7 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:string|UR
 	;
 
 	if (isAvailable === false || maxQuality === undefined) {
-		notify({
+		notifyElectron({
 			title: 'Information',
 			message: 'Vérifiez l\'url (flux en ligne, qualités, ...)'
 		})
@@ -490,7 +497,7 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:string|UR
 	if (useConfirmNotification) {
 		let notificationConfirmed: boolean;
 		try {
-			await notify({
+			await notifyElectron({
 				title: 'Lien détecté',
 				message: 'Cliquer pour ouvrir le lien avec streamlink'
 			});
@@ -823,7 +830,7 @@ function onOpen(commandLine:string[]) {
 
 
 	if (unsupported) {
-		notify({
+		notifyElectron({
 			title: 'Erreur',
 			message: 'Lien non supporté'
 		})
@@ -843,7 +850,7 @@ const zAlarm = ZAlarm.start('0 * * * *', function (date:Date) {
 			currentTime: new Intl.DateTimeFormat(i18next.t('language'), { timeStyle: 'short' }).format(new Date(date))
 		});
 
-		notify({
+		notifyElectron({
 			title: 'Z-Toolbox - Hourly alarm',
 			message: msg,
 			sound: false

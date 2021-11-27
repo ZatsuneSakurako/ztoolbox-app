@@ -1,5 +1,6 @@
 import {contextBridge, ipcRenderer} from "electron";
 import {IZnmApi, PreferenceTypes} from "../browserViews/js/bridgedWindow";
+import {NotificationResponse} from "./bo/notify";
 
 // https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
 
@@ -49,6 +50,10 @@ const znmApi:IZnmApi = {
 	},
 	savePreference: (preferenceId:string, newValue:any) => {
 		return ipcRenderer.invoke('savePreference', preferenceId, newValue)
+	},
+
+	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse> {
+		return ipcRenderer.invoke('sendNotification', message, title, sound);
 	},
 
 	mustacheRender: (templateName:string, context:any) => {
