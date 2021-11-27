@@ -4,15 +4,15 @@ extends _layout
 
 block header
 	header
-		label.tab(for='streamlink')
-			i.material-icons play_circle_filled
-			span Streamlink
+		label.tab(for='main')
+			i.material-icons home_repair_service
+			span(data-translate-id="main") Main
 		label.tab(for='codeTester')
 			i.material-icons code
-			span Code tester
+			span(data-translate-id="codeTester") Code tester
 		label.tab(for='settings')
 			i.material-icons settings
-			span(data-translate-id="settings")
+			span(data-translate-id="settings") Settings
 
 block head-css
 	link(rel='stylesheet', href='lib/codemirror/lib/codemirror.css')

@@ -64,6 +64,24 @@ button,
 	min-height: 42px
 	font-weight: 700
 
+	&:first-child
+		margin-left: 0
+
+label.button
+	display: inline-block
+	vertical-align: middle
+	line-height: 42px
+	&.checkable
+		border: 2px solid transparent
+		line-height: 38px
+		min-height: 38px
+		input[type="radio"]:checked + &,
+		input[type="checkbox"]:checked + &
+			border-bottom-color: var(--InvColor)
+	&.material-icons
+		font-weight: normal
+		&.checkable
+			padding: 0 7px
 .tab
 	border: 2px solid transparent
 	margin: -5px 0
@@ -90,3 +108,13 @@ button,
 main
 	grid-auto-rows: minmax(min-content, max-content)
 	padding: 1rem
+
+#main_input,
+#main_textarea_input
+	min-width: 100%
+	margin-top: 0.3rem
+	max-width: 100%
+
+#main_textarea_input
+	max-height: 50vh
+	min-height: 3.2rem

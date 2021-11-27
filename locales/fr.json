@@ -5,5 +5,12 @@
 	"group_default": "Général",
 	"group_theme": "Thème",
 
-	"timeIsNow": "Il est maintenant {{currentTime}}"
+	"timeIsNow": "Il est maintenant {{currentTime}}",
+
+	"main": "Principal",
+	"codeTester": "Testeur de code",
+	"runCode": "Lancer le code !",
+
+	"textarea": "Zone de texte",
+	"textarea_copied": "Zone de texte copiée !"
 }

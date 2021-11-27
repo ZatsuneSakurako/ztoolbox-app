@@ -14,14 +14,16 @@ declare var window : BridgedWindow;
 
 
 interface IData {
+	main_input_type: string;
 	menu: string;
 	message: string;
 	versions: NodeJS.ProcessVersions;
 	versionState: VersionState | null;
 }
 
-const defaultMenu = 'streamlink';
+const defaultMenu = 'main';
 const data: IData = {
+	main_input_type: 'url',
 	menu: defaultMenu,
 	message: 'Hello Vue!',
 	versions: window.process.versions,

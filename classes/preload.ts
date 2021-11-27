@@ -36,7 +36,7 @@ contextBridge.exposeInMainWorld(
 
 const znmApi:IZnmApi = {
 	nonce: () => ipcRenderer.invoke('nonce-ipc'),
-	openStreamlink: () => ipcRenderer.invoke('openStreamlink'),
+	openStreamlink: (url?: string) => ipcRenderer.invoke('openStreamlink', url),
 	_: (key:string) => ipcRenderer.invoke('i18n', key),
 
 	getVersionState: () => ipcRenderer.invoke('getVersionState'),

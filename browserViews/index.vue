@@ -1,16 +1,33 @@
 <template lang="pug">
 	main.grid.no-c-gap.no-r-gap
-		input#streamlink.hidden(type='radio', name="menu", v-model='menu', value='streamlink')
+		input#main.hidden(type='radio', name="menu", v-model='menu', value='main')
 		input#codeTester.hidden(type='radio', name="menu", v-model='menu', value='code-tester')
 		input#settings.hidden(type='radio', name="menu", v-model='menu', value='settings')
 
-		p.grid-12(v-show='menu === \'streamlink\'')
-			button(class='mui-btn', v-on:click='onStreamLink') Ouvrir streamlink
+		div.grid-12(v-show='menu === \'main\'')
+			div.grid.no-r-gap
+				p.grid-4
+					label(for="main_textarea_input", data-translate-id="textarea") Text area
+					textarea#main_textarea_input(ref="main_textarea_input")
+				p.grid-4
+					input#main_input_type_text.hidden(name="main_input_type", v-model="main_input_type", value="text", type="radio")
+					label.button.checkable.material-icons(for="main_input_type_text") text_fields
+					input#main_input_type_url.hidden(name="main_input_type", v-model="main_input_type", value="url", type="radio")
+					label.button.checkable.material-icons(for="main_input_type_url") link
+					label(for="main_input", v-if="main_input_type === 'text'") Text&nbsp;:
+					label(for="main_input", v-if="main_input_type === 'url'") URL&nbsp;:
+					input#main_input(ref="main_input", type="url")
+			div.grid.no-r-gap
+				p.grid-4
+					button.material-icons(v-on:click='onCopyTextArea') content_copy
+					button.material-icons(v-on:click='onPasteTextArea') content_paste
+				p.grid-4
+					button(v-on:click='onStreamLink', v-if="main_input_type === 'url'") Ouvrir streamlink
 
 		p.grid-12(v-show='menu === \'code-tester\'')
-			button(class='mui-btn', v-on:click='reloadIframe') Run code !
+			button(v-on:click='reloadIframe', data-translate-id="runCode") Run code !
 
-		p.grid-12(v-show='menu === \'streamlink\'') Using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}} (current i18next language :&nbsp;
+		p.grid-12(v-show='menu === \'main\'') Using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}} (current i18next language :&nbsp;
 			span(data-translate-id='language')
 			| ).
 			span(v-if="!!versionState" ) Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.
@@ -126,10 +143,29 @@
 			nextTick() {
 				return this.constructor.nextTick()
 			},
-			onStreamLink: function () {
-				window.znmApi.openStreamlink();
+			async onCopyTextArea() {
+				try {
+					await navigator.clipboard.writeText(this.$refs.main_textarea_input.value)
+				} catch (e) {
+					console.error(e);
+					return;
+				}
+
+				// noinspection JSUnusedLocalSymbols
+				const notification = new Notification(await window.znmApi._('textarea_copied'));
 			},
-			reloadIframe: function () {
+			onPasteTextArea() {
+				navigator.clipboard.readText()
+					.then(value => {
+						this.$refs.main_textarea_input.value = value
+					})
+					.catch(console.error)
+				;
+			},
+			onStreamLink() {
+				window.znmApi.openStreamlink(this.$refs.main_input.value);
+			},
+			reloadIframe() {
 				this.$refs.iframe.contentWindow.location.reload();
 			}
 		},

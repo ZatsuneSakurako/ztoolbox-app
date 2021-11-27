@@ -6,7 +6,7 @@ export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
 export interface IZnmApi {
 	nonce(): Promise<string>
-	openStreamlink(): Promise<void>
+	openStreamlink(url?: string): Promise<void>
 	_(key: string): Promise<string>
 
 	getVersionState(): Promise<VersionState|null>

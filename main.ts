@@ -283,10 +283,16 @@ ipcMain.handle('nonce-ipc', async (event, ...args) => {
 	return nonce;
 });
 
-ipcMain.handle('openStreamlink', async () => {
-	return openStreamlink(false)
-		.catch(console.error)
-	;
+ipcMain.handle('openStreamlink', async (event, url?: string) => {
+	if (!!url) {
+		return openStreamlink(false, url)
+			.catch(console.error)
+		;
+	} else {
+		return openStreamlink(false)
+			.catch(console.error)
+		;
+	}
 });
 
 const i18n = i18next
