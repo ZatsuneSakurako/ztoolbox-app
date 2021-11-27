@@ -64,7 +64,8 @@ button,
 	min-height: 42px
 	font-weight: 700
 
-	&:first-child
+	&:first-child,
+	.hidden:first-child + &
 		margin-left: 0
 
 label.button
@@ -118,3 +119,6 @@ main
 #main_textarea_input
 	max-height: 50vh
 	min-height: 3.2rem
+
+label[for='main_input']
+	margin-left: .6rem
