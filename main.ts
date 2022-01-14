@@ -96,6 +96,11 @@ if (!process.platform.startsWith('win')) {
 	if (!result) {
 		console.error('ZToolbox protocol failed');
 	}
+
+	/**
+	 * https://www.electronjs.org/fr/docs/latest/tutorial/notifications#windows
+	 */
+	app.setAppUserModelId(process.execPath);
 }
 
 
