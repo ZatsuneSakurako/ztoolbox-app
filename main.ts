@@ -23,7 +23,8 @@ import enPreferencesTranslation from "./locales/preferences/en.json";
 import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
-import {appIcon, autoStartArgument, browserViewPath, zToolbox_protocol} from "./classes/constants";
+import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants";
+import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 
 
 
@@ -234,48 +235,6 @@ wss.on('connection', function(socket) {
 });
 
 
-
-function createWindow(showSection?: string) {
-	// Create the browser window.
-	const mainWindow = new BrowserWindow({
-		width: 1000,
-		height: 800,
-		minHeight: 400,
-		minWidth: 400,
-		icon: appIcon,
-		show: false,
-		webPreferences: {
-			nodeIntegration: true,
-			preload: path.resolve(__dirname, './classes/preload.js')
-		}
-	});
-
-	const opts : Electron.LoadFileOptions = {};
-	if (showSection) {
-		opts.hash = showSection;
-	}
-
-	// and load the index.html of the app.
-	mainWindow.loadFile(browserViewPath, opts)
-		.catch(console.error)
-	;
-
-	// Open the DevTools.
-	// mainWindow.webContents.openDevTools()
-
-	mainWindow.once('ready-to-show', () => {
-		mainWindow?.show()
-	});
-
-	// Emitted when the window is closed.
-	/*mainWindow.on('closed', function () {
-		// Dereference the window object, usually you would store windows
-		// in an array if your app supports multi windows, this is the time
-		// when you should delete the corresponding element.
-		mainWindow = null;
-	});*/
-}
-
 const nonce = crypto.randomBytes(16).toString('base64');
 app.on('ready', function () {
 	session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
@@ -400,17 +359,6 @@ function triggerBrowserWindowPreferenceUpdate(preferenceId: string, newValue: an
 	}
 }
 
-function showSection(sectionName: string) {
-	const allWindows = BrowserWindow.getAllWindows();
-	if (allWindows.length === 0) {
-		createWindow(sectionName);
-	} else {
-		for (let browserWindow of allWindows) {
-			browserWindow.webContents.send('showSection', sectionName);
-		}
-	}
-}
-
 
 
 // Quit when all windows are closed.
@@ -423,7 +371,7 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
 	// On macOS it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
-	if (BrowserWindow.getAllWindows().length === 0) {
+	if (getMainWindow() === null) {
 		createWindow();
 	}
 });
@@ -523,24 +471,6 @@ async function openStreamlink(useConfirmNotification:boolean=true, url:string|UR
 		.catch(console.error)
 	;
 
-}
-
-function showWindow() {
-	const [firstWindow] = BrowserWindow.getAllWindows();
-	if (firstWindow) {
-		firstWindow.show();
-	} else {
-		createWindow();
-	}
-}
-
-function toggleWindow() {
-	const [firstWindow] = BrowserWindow.getAllWindows();
-	if (firstWindow) {
-		firstWindow.close();
-	} else {
-		createWindow();
-	}
 }
 
 
