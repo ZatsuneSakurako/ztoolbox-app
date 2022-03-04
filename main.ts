@@ -24,6 +24,7 @@ import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
 import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants";
+import {server} from "./classes/chromeNative";
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 
 
@@ -105,133 +106,11 @@ if (!process.platform.startsWith('win')) {
 }
 
 
-
-
-
-const server = http.createServer();
-server.on('upgrade', function upgrade(request, socket, head) {
-	// Do what you normally do in `verifyClient()` here and then use
-	// `WebSocketServer.prototype.handleUpgrade()`.
-
-	const token = request.headers.token;
-	if (!token || token !== 'VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c') {
-		socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-		socket.destroy();
-		return;
-	}
-
-	wss.handleUpgrade(request, <Socket>socket, head, function done(ws) {
-		wss.emit('connection', ws, request);
-	});
-});
-server.listen(42080);
-const wss = new WebSocket.Server({
-	noServer: true
-});
-
-interface IChromeNativeMessage<T=any> {
-	type: string
-	data?: {command: string} & T
-}
-
-interface IChromeNativeReply<T=any> {
-	error: string | false
-	command?: string
-	result?: T
-}
-
-/**
- *
- * @param rawData
- * @param socket
- */
-async function onSocketMessage(rawData:RawData, socket:WebSocket):Promise<IChromeNativeReply | undefined> {
-	let msg:string | IChromeNativeMessage = rawData.toString();
-	try {
-		msg = JSON.parse(msg);
-	} catch (_) {}
-
-	if (typeof msg !== 'object' || msg === null) {
-		console.error(msg);
-		return {
-			error: 'WS Incoming message error'
-		}
-	}
-
-	if (msg.type === "nativeMessage") {
-		const command = msg.data.command;
-		switch (command) {
-			case 'getPreference':
-				return {
-					error: false,
-					command,
-					result: {
-						id: msg.data.id,
-						value: settings.get(msg.data.id)
-					}
-				}
-			case 'getPreferences':
-				const result = [],
-					prefIds : string[] = Array.isArray(msg.data?.ids) ? msg.data.ids : [...settings.keys()]
-				;
-
-				for (let id of prefIds) {
-					result.push({
-						id: id,
-						value: settings.get(id)
-					})
-				}
-
-				return {
-					error: false,
-					command,
-					result: result
-				}
-			case 'ping':
-				return {
-					error: false,
-					command,
-					result: 'pong'
-				}
-			default:
-				console.dir(msg);
-				return {
-					error: 'UNKNOWN_COMMAND',
-					command,
-					result: "z-toolbox received the message"
-				};
-		}
-	}
-
-	switch (msg.type) {
-		case "ws open":
-			console.dir(msg);
-			return {
-				error: false,
-				result: "z-toolbox connected"
-			};
-		case "log":
-			if (Array.isArray(msg.data)) {
-				console.log(...msg.data);
-			} else {
-				console.log(msg.data);
-			}
-			return;
-		default:
-			return {
-				error: `UNHANDLED_TYPE "${msg.type}"`
-			}
-	}
-}
-
-wss.on('connection', function(socket) {
-	// When you receive a message, send that message to every socket.
-	socket.on('message', async function(msg) {
-		const response = await onSocketMessage(msg, socket);
-		if (!!response) {
-			socket.send(JSON.stringify(response));
-		}
-	});
+server.listen({
+	hostname: 'localhost',
+	port: 42080,
+}, () => {
+	console.log('Listening at localhost:42080');
 });
 
 

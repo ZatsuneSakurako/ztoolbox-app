@@ -77,22 +77,18 @@ function connect() {
             data = JSON.parse(data);
         } catch (_) {}
 
-        log(['ws message', data])
-            .catch(() => {})
-        ;
         bridge.emit(data);
     });
 
-    const onClose = function (e: WebSocket.CloseEvent) {
+    ws.addEventListener('close', function (e: WebSocket.CloseEvent) {
         log(['ws close', `Socket is closed. Reconnect will be attempted in ${timeInterval / 1000} second. Reason : ${e.reason}`])
             .catch(() => {})
         ;
+        ws.removeAllListeners();
         setTimeout(function () {
             connect();
         }, timeInterval);
-    };
-
-    ws.addEventListener('close', onClose);
+    });
 
     ws.addEventListener('error', function (err) {
         log(['ws error', 'Socket encountered error: ' + err.message])
@@ -119,21 +115,16 @@ const bridge = new ChromeNativeBridge(
                 let output = message;
 
                 if (typeof message === 'object' && message !== null) {
-                    const _id = message._id;
-                    delete message._id;
-                    const command = message.command;
-                    delete message.command;
-
                     output = {
                         type: 'nativeMessage',
-                        _id,
-                        command,
                         data: message
                     };
                 } else {
                     output = {
                         type: 'nativeMessage',
-                        data: message
+                        data: {
+                            command: message
+                        }
                     }
                 }
 
@@ -162,7 +153,9 @@ const bridge = new ChromeNativeBridge(
 );
 
 // This is the origin of the caller, usually chrome-extension://[ID of allowed extension]
+// noinspection JSUnusedLocalSymbols
 const origin = bridge.origin;
 
 // This is the decimal handle value of the calling Chrome window. Available on Windows only.
+// noinspection JSUnusedLocalSymbols
 const parentWindow = bridge.parentWindow;
