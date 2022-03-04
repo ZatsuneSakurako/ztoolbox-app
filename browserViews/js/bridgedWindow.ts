@@ -8,6 +8,7 @@ export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 export interface IZnmApi {
 	nonce(): Promise<string>
 	openStreamlink(url?: string): Promise<void>
+	digCmd(domain: string): Promise<string>
 	_(key: string): Promise<string>
 
 	getVersionState(): Promise<VersionState|null>

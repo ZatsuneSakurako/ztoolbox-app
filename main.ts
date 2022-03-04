@@ -26,6 +26,7 @@ import {ZAlarm} from "./classes/ZAlarm";
 import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants";
 import {server} from "./classes/chromeNative";
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
+import {execSync} from "child_process";
 
 
 
@@ -144,6 +145,22 @@ ipcMain.handle('openStreamlink', async (event, url?: string) => {
 			.catch(console.error)
 		;
 	}
+});
+
+ipcMain.handle('digCmd', (event, domain: string) => {
+	let result:string = '';
+	try {
+		result = execSync(`dig ${domain} +noall +answer`, {
+			encoding: "utf-8"
+		});
+	} catch (e) {
+		console.error(e);
+	}
+	return result
+		.split(/\r?\n/)
+		.filter(s => s.length && s[0] !== ';')
+		.join('')
+	;
 });
 
 const i18n = i18next

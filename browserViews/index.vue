@@ -14,9 +14,12 @@
 					label.button.checkable.material-icons(for="main_input_type_text") text_fields
 					input#main_input_type_url.hidden(name="main_input_type", v-model="main_input_type", value="url", type="radio")
 					label.button.checkable.material-icons(for="main_input_type_url") link
+					input#main_input_type_dns.hidden(name="main_input_type", v-model="main_input_type", value="dns", type="radio")
+					label.button.checkable.material-icons(for="main_input_type_dns") dns
 					label(for="main_input", v-if="main_input_type === 'text'") Text&nbsp;:
 					label(for="main_input", v-if="main_input_type === 'url'") URL&nbsp;:
-					input#main_input(ref="main_input", type="url")
+					label(for="main_input", v-if="main_input_type === 'dns'") DNS / IP&nbsp;:
+					input#main_input(ref="main_input", :type="main_input_type === 'url' ? 'url' : 'text'")
 				p.grid-4
 					label(for="main_textarea_output", data-translate-id="output") Output
 					textarea#main_textarea_output(readonly, ref="main_textarea_output")
@@ -26,6 +29,7 @@
 					button.material-icons(v-on:click='onPasteTextArea') content_paste
 				p.grid-4
 					button(v-on:click='onStreamLink', v-if="main_input_type === 'url'") Ouvrir streamlink
+					button(v-on:click='onDigCmd', v-if="main_input_type === 'dns'") Dig domain
 
 		p.grid-12(v-show='menu === \'code-tester\'')
 			button(v-on:click='reloadIframe', data-translate-id="runCode") Run code !
@@ -168,6 +172,14 @@
 			},
 			onStreamLink() {
 				window.znmApi.openStreamlink(this.$refs.main_input.value);
+			},
+			onDigCmd() {
+				window.znmApi.digCmd(this.$refs.main_input.value)
+					.then(result => {
+						this.$refs.main_textarea_output.value = result;
+					})
+					.catch(console.error)
+				;
 			},
 			reloadIframe() {
 				this.$refs.iframe.contentWindow.location.reload();
