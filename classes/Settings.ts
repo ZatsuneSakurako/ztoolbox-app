@@ -3,16 +3,18 @@ import * as classUtils from "class-utils";
 import {EventEmitter} from "events";
 import * as fs from "fs";
 import path from "path";
+import debounce from "lodash.debounce";
 
-import {PrimitivesValues, RandomJsonData, SettingsConfig} from "./bo/settings";
+import {PrimitivesValues, RandomJsonData, SettingsConfig, SettingValues} from "./bo/settings";
 import {resourcePath} from "./constants";
+import {app} from "electron";
+import Dict = NodeJS.Dict;
 require = require("esm")(module/*, options*/);
-const settings : SettingsConfig = require(path.normalize(resourcePath + "/browserViews/js/settings/settings"));
+const settings : SettingsConfig = require(path.normalize(resourcePath + "/browserViews/js/settings/settings")).default;
 
 
 
-
-interface Settings extends EventEmitter {
+interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
 	get(key:string):RandomJsonData|undefined;
 
 	getString(key:string):string|undefined;
@@ -24,53 +26,155 @@ interface Settings extends EventEmitter {
 	set(key:string, value:RandomJsonData):this;
 	delete(key:string):boolean;
 	clear():void;
-	toJSON():string;
+	toJSON():RandomJsonData;
 	// @ts-ignore
-	forEach(callbackfn: (value:PrimitivesValues, key:string, map:Map<string, PrimitivesValues>) => void, thisArgs?:any)
+	forEach(callbackFn: (value:RandomJsonData, key:string, map:Map<string, RandomJsonData>) => void, thisArgs?:any)
 }
 
-class Settings extends Map<string, RandomJsonData> implements Settings {
+export const keysStoredInApp = Object.freeze(['storagePath']);
+export class Settings extends EventEmitter implements ISettings {
+	readonly #defaultStoragePath: string;
 	storagePath:string;
+	#cache:Map<string,RandomJsonData>|undefined;
+	readonly #debouncedSaved:(storagePath:string, data:RandomJsonData) => void;
 
 	/**
 	 * @inheritDoc
 	 */
-	constructor(storagePath:string) {
+	constructor() {
 		super();
 
-		this.storagePath = storagePath;
+		this.#defaultStoragePath = path.resolve(app.getPath('userData'), './settings.json');
 
-		let settings:RandomJsonData|null = null;
+		const _storagePath = Settings.#loadFile(this.#defaultStoragePath)?.get('storagePath');
+		this.storagePath = typeof _storagePath === 'string' ? _storagePath : this.#defaultStoragePath;
+
+		this.#load();
+		this.#debouncedSaved = debounce((storagePath:string, data:RandomJsonData) => {
+			const clonedData = JSON.parse(JSON.stringify(data));
+
+			if (this.storagePath !== this.#defaultStoragePath) {
+				const settings = Settings.#loadFile(this.#defaultStoragePath),
+					dataInApp:RandomJsonData = {}
+				;
+
+				if (settings) {
+					let dataFound:boolean = false;
+					for (let key of keysStoredInApp) {
+						const value:RandomJsonData|undefined = settings?.get(key);
+						if (!!value) {
+							dataInApp[key] = value;
+							delete clonedData[key];
+							dataFound = true;
+						}
+					}
+				}
+
+				Settings.#saveFile(this.#defaultStoragePath, dataInApp);
+			}
+
+			const result = Settings.#saveFile(storagePath, clonedData);
+			if (result) {
+				this.#cache = undefined;
+			}
+		}, 100, {
+			maxWait: 500
+		});
+	}
+
+	static #loadFile(filePath:string):Map<string, RandomJsonData>|null {
+		let data:RandomJsonData = null;
 		try {
-			settings = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
+			data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 		} catch (e) {
 			console.error(e)
 		}
 
-		if (!Array.isArray(settings) && !!settings) {
-			for (let [settingsKey, value] of Object.entries(settings)) {
-				if (value === undefined) continue;
-
-				super.set(settingsKey, value);
-			}
-		} else {
-			// Default settings
-			super.set("quality", "best");
-			super.set("clipboardWatch", false);
-			this._save();
+		if (!data || typeof data !== 'object' || Array.isArray(data)) {
+			return null;
 		}
 
-		if (this.has('shortcutsWindow')) {
-			this.delete('shortcutsWindow');
+		let output = new Map<string, RandomJsonData>();
+
+		delete data.shortcutsWindow;
+		for (let [settingsKey, value] of Object.entries(data)) {
+			if (value !== undefined) {
+				output.set(settingsKey, value);
+			}
+		}
+
+		return output;
+	}
+
+	/**
+	 *
+	 * @param storagePath
+	 * @param data
+	 * @return Saved with no error
+	 */
+	static #saveFile(storagePath:string, data:RandomJsonData):boolean {
+		try {
+			fs.writeFileSync(storagePath, JSON.stringify(data), "utf8");
+			return true;
+		} catch (e) {
+			console.error(e)
+			return false;
 		}
 	}
 
-	private _save() {
-		try {
-			fs.writeFileSync(this.storagePath, JSON.stringify(this.toJSON()), "utf8");
-		} catch (e) {
-			console.error(e)
+	#load():Map<string, RandomJsonData> {
+		if (this.#cache !== undefined) {
+			return this.#cache;
 		}
+
+		const output = Settings.#loadFile(this.storagePath ?? this.#defaultStoragePath)
+			??
+			new Map<string, RandomJsonData>()
+		;
+
+		if (this.storagePath !== this.#defaultStoragePath) {
+			// Settings to store in the app data, if another storage path specified
+			const data = Settings.#loadFile(this.#defaultStoragePath);
+			if (data) {
+				for (let [key, value] of data) {
+					output.set(key, value);
+				}
+			}
+		}
+
+		this.#cache = output;
+		setTimeout(() => {
+			this.#cache = undefined;
+		});
+		return output;
+	}
+
+	#save() {
+		this.#debouncedSaved(this.storagePath, this.toJSON());
+	}
+
+	get(key: string, useDefault: boolean = false): RandomJsonData | undefined {
+		const value = this.#load().get(key);
+		if (value === undefined && useDefault) {
+			return this.getDefaultValue(key);
+		}
+		return value;
+	}
+
+	has(key: string): boolean {
+		const cache = this.#load();
+		return cache.has(key);
+	}
+
+	getDefaultValues(): SettingsConfig {
+		const output : Dict<SettingValues> = {};
+
+		for (const [name, settingConf] of Object.entries(settings)) {
+			if (!settingConf || settingConf.type === 'button') continue;
+			output[name] = settingConf.value;
+		}
+
+		return JSON.parse(JSON.stringify(output));
 	}
 
 	getDefaultValue(key: string): RandomJsonData | undefined {
@@ -80,24 +184,18 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 	}
 
 	getString(key: string, useDefault: boolean = true): string | undefined {
-		let value = this.get(key);
-		if (value === undefined && useDefault) {
-			value = this.getDefaultValue(key);
-		}
+		let value = this.get(key, useDefault);
 		if (value === undefined) return;
 
 		if (typeof value !== 'string') {
-			throw new Error('TYPE_ERROR')
+			throw new Error('TYPE_ERROR');
 		}
 
 		return value;
 	}
 
 	getNumber(key: string, useDefault: boolean = true): number | undefined {
-		let value = this.get(key);
-		if (value === undefined && useDefault) {
-			value = this.getDefaultValue(key);
-		}
+		let value = this.get(key, useDefault);
 		if (value === undefined) return;
 
 		if (typeof value !== 'number') {
@@ -108,10 +206,7 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 	}
 
 	getBoolean(key: string, useDefault: boolean = true): boolean | undefined {
-		let value = this.get(key);
-		if (value === undefined && useDefault) {
-			value = this.getDefaultValue(key);
-		}
+		let value = this.get(key, useDefault);
 		if (value === undefined) return;
 
 		if (typeof value !== 'boolean') {
@@ -122,10 +217,7 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 	}
 
 	getDate(key: string, useDefault: boolean = true): Date | undefined {
-		let value = this.get(key);
-		if (value === undefined && useDefault) {
-			value = this.getDefaultValue(key);
-		}
+		let value = this.get(key, useDefault);
 		if (value === undefined) return;
 
 		if (typeof value !== 'string') {
@@ -139,21 +231,23 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 	 * @inheritDoc
 	 */
 	set(key:string, value:PrimitivesValues):this {
-		const oldValue = this.get(key);
-		super.set(key, value);
+		const cache = this.#load();
+		const oldValue = cache.get(key);
+		cache.set(key, value);
 		this.emit('change', key, oldValue, value);
-		this._save();
+		this.#save();
 
 		return this;
 	}
 
 	delete(key:string):boolean {
-		const oldValue = this.get(key),
-			result = super.delete(key)
+		const cache = this.#load(),
+			oldValue = cache.get(key),
+			result = cache.delete(key)
 		;
 
 		this.emit('change', key, oldValue, undefined);
-		this._save();
+		this.#save();
 
 		return result;
 	}
@@ -162,16 +256,18 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 	 * @inheritDoc
 	 */
 	clear() {
-		super.clear();
+		const cache = this.#load();
+		cache.clear();
 		this.emit('clear');
-		this._save();
+		this.#save();
 	}
 
-	/**
-	 *
-	 * @return {JSON}
-	 */
-	toJSON():Object {
+	forEach(callbackFn: (value:RandomJsonData, key: string, map: Map<string, RandomJsonData>) => void, thisArg?: any) {
+		const cache = this.#load();
+		cache.forEach(callbackFn, thisArg);
+	}
+
+	toJSON():RandomJsonData {
 		const json:RandomJsonData = {};
 
 		this.forEach((value:PrimitivesValues, key:string) => {
@@ -180,13 +276,29 @@ class Settings extends Map<string, RandomJsonData> implements Settings {
 
 		return json;
 	}
-}
-
-// https://www.npmjs.com/package/class-utils
-classUtils.inherit(Settings, EventEmitter, []);
 
 
-
-export {
-	Settings
+	get [Symbol.toStringTag](): string {
+		return 'Settings';
+	}
+	get size(): number {
+		const cache = this.#load();
+		return cache.size;
+	}
+	[Symbol.iterator](): IterableIterator<[string,RandomJsonData]> {
+		const cache = this.#load();
+		return cache[Symbol.iterator]();
+	}
+	entries(): IterableIterator<[string,RandomJsonData]> {
+		const cache = this.#load();
+		return cache.entries();
+	}
+	keys(): IterableIterator<string> {
+		const cache = this.#load();
+		return cache.keys();
+	}
+	values(): IterableIterator<RandomJsonData> {
+		const cache = this.#load();
+		return cache.values();
+	}
 }

@@ -1,16 +1,13 @@
-import {app, BrowserWindow, MenuItem, Menu, Tray, ipcMain, session} from 'electron';
+import {app, BrowserWindow, ipcMain, Menu, MenuItem, session, Tray} from 'electron';
 import * as path from "path";
 import fs from "fs-extra";
 import crypto from "crypto";
-import WebSocket, {RawData} from "ws";
-import * as http from "http";
-import {Socket} from "net";
 import i18next from "i18next";
 import Mustache from "mustache";
-import Dict = NodeJS.Dict;
 import AutoLaunch from "auto-launch";
 import ProtocolRegistry from "protocol-registry";
-import shell from 'shelljs';
+import shell, {which} from 'shelljs';
+import Dict = NodeJS.Dict;
 
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
@@ -380,7 +377,7 @@ interface IZMenuItem extends MenuItem {
 	id: string;
 	type: 'normal' | 'separator' | 'submenu' | 'checkbox' | 'radio';
 }
-const settings = new Settings(path.resolve(app.getPath('userData'), './settings.json'));
+export const settings = new Settings();
 function onReady() {
 	contextMenu = Menu.buildFromTemplate([
 		{

@@ -39,10 +39,11 @@ interface IJsonConfig extends IConfigBase<Dict<string|boolean|number|null>> {
 	type: 'json'
 }
 
-type SettingConfig = IButtonConfig|IStringConfig|IColorConfig|IMenuListConfig|IIntegerConfig|IBooleanConfig|IJsonConfig;
+export type SettingConfig = IButtonConfig|IStringConfig|IColorConfig|IMenuListConfig|IIntegerConfig|IBooleanConfig|IJsonConfig;
+export type SettingValues = string|number|boolean|Dict<string|boolean|number|null>
 export type SettingsConfig = Dict<SettingConfig>;
 
 
 
 export type PrimitivesValues = string | number | boolean | null;
-export type RandomJsonData = PrimitivesValues | Dict<PrimitivesValues> | PrimitivesValues[];
+export type RandomJsonData = PrimitivesValues | Dict<RandomJsonData|PrimitivesValues> | PrimitivesValues[];
