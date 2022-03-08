@@ -1,6 +1,6 @@
 {
 	"autostart_title": "Launch on login",
-	"storagePath_title": "Z-Toolbox settings storage",
+	"storagePath_title": "Settings storage",
 	"storagePath_description": "Directory to use",
 	"hourlyNotification_title": "Hourly notification",
 	"clipboardWatch_title": "Observe clipboard",

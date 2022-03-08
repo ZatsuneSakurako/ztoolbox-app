@@ -1,6 +1,6 @@
 {
 	"autostart_title": "Lancer au démarrage",
-	"storagePath_title": "Stockage des options de Z-Toolbox",
+	"storagePath_title": "Stockage des options",
 	"storagePath_description": "Dossier à utiliser",
 	"hourlyNotification_title": "Notification par heure",
 	"clipboardWatch_title": "Observer le presse-papier",
