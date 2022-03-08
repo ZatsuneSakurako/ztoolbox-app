@@ -1,6 +1,6 @@
 import Dict = NodeJS.Dict;
 import {VersionState} from "../../classes/bo/versionState";
-import {RandomJsonData} from "../../classes/bo/settings";
+import {IPathConfigFilter, RandomJsonData} from "../../classes/bo/settings";
 import {NotificationResponse} from "../../classes/bo/notify";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
@@ -9,6 +9,7 @@ export interface IZnmApi {
 	nonce(): Promise<string>
 	openStreamlink(url?: string): Promise<void>
 	digCmd(domain: string): Promise<string>
+	preferenceFileDialog(prefId:string): Promise<{ canceled: boolean, filePaths: string[] }|string>
 	_(key: string): Promise<string>
 
 	getVersionState(): Promise<VersionState|null>

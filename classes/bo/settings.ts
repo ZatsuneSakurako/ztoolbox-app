@@ -5,7 +5,7 @@ interface IButtonConfig {
 	group?: string
 }
 
-interface IConfigBase<T> {
+interface IConfigBase<T extends SettingValues> {
 	value: T,
 	group?: string
 }
@@ -39,8 +39,36 @@ interface IJsonConfig extends IConfigBase<Dict<string|boolean|number|null>> {
 	type: 'json'
 }
 
-export type SettingConfig = IButtonConfig|IStringConfig|IColorConfig|IMenuListConfig|IIntegerConfig|IBooleanConfig|IJsonConfig;
-export type SettingValues = string|number|boolean|Dict<string|boolean|number|null>
+export type IPathConfigFilter = {
+	name: string
+	extensions: string[]
+};
+interface IPathConfig extends IConfigBase<string> {
+	type: 'path',
+	opts: {
+		asText?: boolean
+		asFile?: IPathConfigFilter[]|boolean // file filter for file input, true for path input
+	}
+}
+interface IPathsConfig extends IConfigBase<string[]> {
+	type: 'paths',
+	opts: {
+		asFile?: IPathConfigFilter[]|boolean // file filter for file input, true for path input
+	}
+}
+
+export type SettingConfig =
+	IButtonConfig |
+	IStringConfig |
+	IColorConfig |
+	IMenuListConfig |
+	IIntegerConfig |
+	IBooleanConfig |
+	IJsonConfig |
+	IPathConfig |
+	IPathsConfig
+;
+export type SettingValues = string|string[]|number|boolean|Dict<string|boolean|number|null>
 export type SettingsConfig = Dict<SettingConfig>;
 
 

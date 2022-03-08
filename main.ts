@@ -1,4 +1,4 @@
-import {app, BrowserWindow, ipcMain, Menu, MenuItem, session, Tray} from 'electron';
+import {app, BrowserWindow, ipcMain, Menu, MenuItem, session, Tray, dialog} from 'electron';
 import * as path from "path";
 import fs from "fs-extra";
 import crypto from "crypto";
@@ -24,6 +24,7 @@ import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants
 import {server} from "./classes/chromeNative";
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
+import {IPathConfigFilter, SettingConfig} from "./classes/bo/settings";
 
 
 
@@ -158,6 +159,52 @@ ipcMain.handle('digCmd', (event, domain: string) => {
 		.filter(s => s.length && s[0] !== ';')
 		.join('')
 	;
+});
+
+ipcMain.handle('preferenceFileDialog', async function (event, prefId:string): Promise<{ canceled: boolean, filePaths: string[] }|string> {
+	const mainWindow = getMainWindow();
+	if (!mainWindow) return 'NO_MAIN_WINDOW';
+
+	const conf:SettingConfig|undefined = settings.getSettingConfig(prefId);
+	let title:string|undefined = undefined,
+		buttonLabel:string|undefined = undefined
+	;
+
+	if (!conf || !(conf.type === 'path' || conf.type === 'paths')) {
+		return 'SETTINGS_TYPE';
+	}
+
+	const _ = await i18n;
+	title = _(`preferences.${prefId}_WTitle`, {
+		nsSeparator: '.',
+		defaultValue: ''
+	});
+	buttonLabel = _(`preferences.${prefId}_WButton`, {
+		nsSeparator: '.',
+		defaultValue: ''
+	});
+
+	const opts : Electron.OpenDialogOptions = {
+		title,
+		buttonLabel,
+		properties: [
+			(conf.opts.asFile === true ? 'openDirectory' : 'openFile'),
+			'dontAddToRecent',
+			'promptToCreate'
+		]
+	};
+	if (Array.isArray(conf.opts.asFile)) {
+		opts.filters = conf.opts.asFile;
+	}
+	if (conf.type === 'paths') {
+		if (opts.properties === undefined) throw new Error('SHOULD_NOT_HAPPEN');
+		opts.properties.push('multiSelections');
+	}
+	const result = await dialog.showOpenDialog(mainWindow, opts);
+	return {
+		canceled: result.canceled,
+		filePaths: result.filePaths
+	}
 });
 
 const i18n = i18next

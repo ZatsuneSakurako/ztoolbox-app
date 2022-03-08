@@ -39,6 +39,7 @@ const znmApi:IZnmApi = {
 	nonce: () => ipcRenderer.invoke('nonce-ipc'),
 	openStreamlink: (url?: string) => ipcRenderer.invoke('openStreamlink', url),
 	digCmd: (domain: string) => ipcRenderer.invoke('digCmd', domain),
+	preferenceFileDialog: (prefId) => ipcRenderer.invoke('preferenceFileDialog', prefId),
 	_: (key:string) => ipcRenderer.invoke('i18n', key),
 
 	getVersionState: () => ipcRenderer.invoke('getVersionState'),

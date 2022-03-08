@@ -13,5 +13,8 @@
 
 	"textarea": "Zone de texte",
 	"output": "Sortie (lecture seule)",
-	"textarea_copied": "Zone de texte copiée !"
+	"textarea_copied": "Zone de texte copiée !",
+
+	"select_file": "Sélectionner un fichier",
+	"select_path": "Sélectionner un dossier"
 }

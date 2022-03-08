@@ -5,12 +5,14 @@
 
 		div.pref-group(v-show="group === selected_group", v-for="(list, group) in settingsByGroup")
 			div.pref-container(v-for="(conf, id) in list")
-				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="conf.type === 'json'")
+				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="['button', 'color', 'string', 'integer', 'json', 'path', 'paths'].includes(conf.type)")
+				input(:type="conf.type === 'string' ? 'text' : conf.type", :id='"pref-" + id', :name='id', v-if="['button', 'color', 'string'].includes(conf.type)", @change="onChange", disabled)
+				input(type="text", :id='"pref-" + id', :name='id', v-if="conf.type === 'path' && conf.opts.asText", @change="onChange", disabled)
+				input(:type="conf.rangeInput ? 'range' : 'number'", :min="conf.minValue === undefined ? false : conf.minValue", :max="conf.maxValue === undefined ? false : conf.maxValue", :step="conf.stepValue === undefined ? false : conf.stepValue", :id='"pref-" + id', :name='id', v-if="conf.type === 'integer'", @change="onChange", disabled)
 				textarea(:id='"pref-" + id', :name='id', v-if="conf.type === 'json'", @change="onChange", disabled)
 
-				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="['button', 'color', 'string', 'integer'].includes(conf.type)")
-				input(:type="conf.type === 'string' ? 'text' : conf.type", :id='"pref-" + id', :name='id', v-if="['button', 'color', 'string'].includes(conf.type)", @change="onChange", disabled)
-				input(:type="conf.rangeInput ? 'range' : 'number'", :min="conf.minValue === undefined ? false : conf.minValue", :max="conf.maxValue === undefined ? false : conf.maxValue", :step="conf.stepValue === undefined ? false : conf.stepValue", :id='"pref-" + id', :name='id', v-if="conf.type === 'integer'", @change="onChange", disabled)
+				label.button.small(:for='"pref-" + id + "_file"', :data-translate-id="Array.isArray(conf.opts.asFile) ? 'select_file' : 'select_path'", v-if="['path', 'paths'].includes(conf.type) && conf.opts.asFile")
+				input.hidden(type="button", :id='"pref-" + id + "_file"', :name='id', v-if="['path', 'paths'].includes(conf.type) && conf.opts.asFile", @click="onPathSettingClick(id, conf)")
 
 				input(type="checkbox", :id='"pref-" + id', :name='id', v-if="conf.type === 'bool'", @change="onChange", disabled)
 				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="conf.type === 'bool'")
@@ -28,7 +30,7 @@
 import settings from './js/settings/settings.js';
 import {BridgedWindow} from "./js/bridgedWindow";
 import Dict = NodeJS.Dict;
-import {SettingsConfig} from "../classes/bo/settings";
+import {SettingConfig, SettingsConfig} from "../classes/bo/settings";
 
 declare var window : BridgedWindow;
 
@@ -80,12 +82,16 @@ function setInputValue($input:HTMLInputElement, newValue:any) {
 		case 'range':
 		case 'select':
 		case 'textarea':
+		case 'text':
 			$input.value = newValue;
 			$input.disabled = false;
 			break;
 		case 'radio':
 			$input.checked = $input.value === newValue;
 			$input.disabled = false;
+			break;
+		case 'button':
+			// No value to write
 			break;
 		default:
 			console.error('Unhandled value loading', $input);
@@ -131,13 +137,13 @@ export default {
 		}
 	},
 	methods: {
-		onGroupChange: function () {
+		onGroupChange() {
 			const $input = document.querySelector<HTMLInputElement>('input[type="radio"][name="setting-group"]:checked');
 			if ($input) {
 				this.$data.selected_group = $input.value;
 			}
 		},
-		onChange: function (e:Event) {
+		onChange(e:Event) {
 			const $input = <HTMLInputElement|null> e.target;
 			if (!$input) return;
 
@@ -177,7 +183,54 @@ export default {
 				;
 			}
 		},
-		onSubmit: function () {
+		/**
+		 *
+		 * @param prefId
+		 * @param conf
+		 */
+		async onPathSettingClick(prefId:string, conf:SettingConfig):Promise<void> {
+			if (!conf) return;
+			if (conf.type !== 'path' && conf.type !== 'paths') return;
+
+			const result = await window.znmApi.preferenceFileDialog(prefId);
+			if (typeof result === 'string') {
+				console.error(result);
+				return;
+			}
+			if (result.canceled) {
+				console.info('fileDialog canceled');
+				return;
+			}
+
+			switch (conf.type) {
+				case "path":
+					const [first] = result.filePaths;
+					if (first === undefined || result.filePaths.length > 1) {
+						console.error(`onPathSettingClick: Unexpected nb file list ${result.filePaths.length}`);
+						return;
+					}
+
+					window.znmApi.savePreference(prefId, first)
+						.then(() => {
+							console.info('saved :', prefId);
+						})
+						.catch(console.error)
+					;
+					break;
+				case "paths":
+					window.znmApi.savePreference(prefId, result.filePaths)
+						.then(() => {
+							console.info('saved :', prefId);
+						})
+						.catch(console.error)
+					;
+					break;
+				default:
+					// @ts-ignore
+					console.error(`onPathSettingClick: Unexpected type ${conf.type}`);
+			}
+		},
+		onSubmit() {
 			console.debug('onSubmit');
 		}
 	},
