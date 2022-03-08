@@ -22,7 +22,7 @@ const settings:SettingsConfig = {
 		"group": "theme"
 	},
 
-	"storagePath": {
+	"storageDir": {
 		"type": "path",
 		"value": "",
 		"opts": {

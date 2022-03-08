@@ -1,7 +1,7 @@
 {
 	"autostart_title": "Launch on login",
-	"storagePath_title": "Settings storage",
-	"storagePath_description": "Directory to use",
+	"storageDir_title": "Settings storage",
+	"storageDir_description": "Directory to use",
 	"hourlyNotification_title": "Hourly notification",
 	"clipboardWatch_title": "Observe clipboard",
 	"quality_title": "Quality",

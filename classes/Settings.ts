@@ -32,10 +32,11 @@ interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
 }
 
 export const defaultStorageFilename = '/settings.json';
-export const keysStoredInApp = Object.freeze(['storagePath']);
+export const storageDirKey = 'storageDir';
+export const keysStoredInApp = Object.freeze([storageDirKey]);
 export class Settings extends EventEmitter implements ISettings {
 	readonly #defaultStorageDir: string;
-	storagePath:string;
+	storageDir:string;
 	#cache:Map<string,RandomJsonData>|undefined;
 	readonly #debouncedSaved:(storagePath:string, data:RandomJsonData) => void;
 
@@ -47,22 +48,38 @@ export class Settings extends EventEmitter implements ISettings {
 
 		this.#defaultStorageDir = path.normalize(app.getPath('userData'));
 
-		const _storagePath = Settings.#loadFile(this.#defaultStoragePath)?.get('storagePath');
-		this.storagePath = path.normalize((typeof _storagePath === 'string' && _storagePath.length > 0 ? (_storagePath + defaultStorageFilename ): this.#defaultStoragePath));
+		const _storagePath = Settings.#loadFile(this.#defaultStoragePath)?.get(storageDirKey);
+		this.storageDir = typeof _storagePath === 'string' && _storagePath.length > 0 ? _storagePath: this.#defaultStorageDir;
 
 		this.#load();
-		this.#debouncedSaved = debounce((storagePath:string, data:RandomJsonData) => {
-			const clonedData = JSON.parse(JSON.stringify(data));
+		this.#debouncedSaved = debounce((storageDir:string, data:Dict<RandomJsonData>) => {
+			const clonedData:Dict<RandomJsonData> = JSON.parse(JSON.stringify(data));
 
-			if (this.storagePath !== this.#defaultStoragePath) {
-				const settings = Settings.#loadFile(this.#defaultStoragePath),
-					dataInApp:RandomJsonData = {}
-				;
+			let newStorageDir = data[storageDirKey];
+			if (typeof newStorageDir === 'string' && newStorageDir.length === 0) {
+				newStorageDir = clonedData[storageDirKey] = undefined;
+			}
+			if (typeof newStorageDir === 'string' || newStorageDir === undefined) {
+				if (newStorageDir && newStorageDir !== this.storageDir) {
+					const newData = Settings.#loadFile(path.normalize(`${newStorageDir}/${defaultStorageFilename}`));
+					if (newData) {
+						for (let [prefId, value] of newData) {
+							clonedData[prefId] = value;
+						}
+					}
+				}
+				storageDir = newStorageDir ?? this.#defaultStorageDir;
+			}
 
-				if (settings) {
+
+
+			if (storageDir !== this.#defaultStorageDir) {
+				const dataInApp:RandomJsonData = {};
+
+				if (clonedData) {
 					let dataFound:boolean = false;
 					for (let key of keysStoredInApp) {
-						const value:RandomJsonData|undefined = settings?.get(key);
+						const value = clonedData[key];
 						if (!!value) {
 							dataInApp[key] = value;
 							delete clonedData[key];
@@ -71,12 +88,15 @@ export class Settings extends EventEmitter implements ISettings {
 					}
 				}
 
-				Settings.#saveFile(this.#defaultStoragePath, dataInApp);
+				Settings.#saveFile(path.normalize(this.#defaultStoragePath), dataInApp);
 			}
 
-			const result = Settings.#saveFile(storagePath, clonedData);
+			const result = Settings.#saveFile(path.normalize(`${storageDir}/${defaultStorageFilename}`), clonedData);
 			if (result) {
 				this.#cache = undefined;
+				if (this.storageDir !== storageDir) {
+					this.storageDir = storageDir;
+				}
 			}
 		}, 100, {
 			maxWait: 500
@@ -87,6 +107,9 @@ export class Settings extends EventEmitter implements ISettings {
 
 	get #defaultStoragePath(): string {
 		return path.normalize(`${this.#defaultStorageDir}${defaultStorageFilename}`);
+	}
+	get storagePath() {
+		return path.normalize(`${this.storageDir}/${defaultStorageFilename}`);
 	}
 
 
@@ -254,10 +277,21 @@ export class Settings extends EventEmitter implements ISettings {
 	 * @inheritDoc
 	 */
 	set(key:string, value:PrimitivesValues):this {
+		let _value:PrimitivesValues|undefined = value;
+		if (key === storageDirKey && typeof _value === 'string') {
+			if (_value.length === 0 || (_value.length > 0 && !fs.existsSync(_value))) {
+				_value = undefined;
+			}
+		}
+
 		const cache = this.#load();
 		const oldValue = cache.get(key);
-		cache.set(key, value);
-		this.emit('change', key, oldValue, value);
+		if (_value !== undefined) {
+			cache.set(key, _value);
+		} else {
+			cache.delete(key);
+		}
+		this.emit('change', key, oldValue, _value);
 		this.#save();
 
 		return this;

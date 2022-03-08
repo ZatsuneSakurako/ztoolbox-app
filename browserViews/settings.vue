@@ -161,6 +161,7 @@ export default {
 				case 'string':
 					newValue = $input.value;
 					break;
+				case 'text':
 				case 'number':
 				case 'range':
 				case 'select':
