@@ -196,10 +196,24 @@ ipcMain.handle('preferenceFileDialog', async function (event, prefId:string): Pr
 	if (Array.isArray(conf.opts.asFile)) {
 		opts.filters = conf.opts.asFile;
 	}
-	if (conf.type === 'paths') {
-		if (opts.properties === undefined) throw new Error('SHOULD_NOT_HAPPEN');
-		opts.properties.push('multiSelections');
+	switch (conf.type) {
+		case 'path':
+			opts.defaultPath = settings.getString(prefId);
+			break;
+		case 'paths':
+			if (opts.properties === undefined) throw new Error('SHOULD_NOT_HAPPEN');
+			opts.properties.push('multiSelections');
+
+			const val = settings.getArray(prefId);
+			if (val && val.length) {
+				const [first] = val;
+				if (typeof first === 'string') {
+					opts.defaultPath = first;
+				}
+			}
+			break;
 	}
+
 	const result = await dialog.showOpenDialog(mainWindow, opts);
 	return {
 		canceled: result.canceled,
