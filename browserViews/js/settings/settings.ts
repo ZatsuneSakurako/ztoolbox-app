@@ -22,6 +22,14 @@ const settings:SettingsConfig = {
 		"group": "theme"
 	},
 
+	"storagePath": {
+		"type": "path",
+		"value": "",
+		"opts": {
+			"asText": true,
+			"asFile": true
+		}
+	},
 	"autostart": {
 		"type": "bool",
 		"value": false

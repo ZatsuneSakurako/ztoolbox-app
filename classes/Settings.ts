@@ -5,7 +5,7 @@ import * as fs from "fs";
 import path from "path";
 import debounce from "lodash.debounce";
 
-import {PrimitivesValues, RandomJsonData, SettingsConfig, SettingValues} from "./bo/settings";
+import {PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings";
 import {resourcePath} from "./constants";
 import {app} from "electron";
 import Dict = NodeJS.Dict;
@@ -31,9 +31,10 @@ interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
 	forEach(callbackFn: (value:RandomJsonData, key:string, map:Map<string, RandomJsonData>) => void, thisArgs?:any)
 }
 
+export const defaultStorageFilename = '/settings.json';
 export const keysStoredInApp = Object.freeze(['storagePath']);
 export class Settings extends EventEmitter implements ISettings {
-	readonly #defaultStoragePath: string;
+	readonly #defaultStorageDir: string;
 	storagePath:string;
 	#cache:Map<string,RandomJsonData>|undefined;
 	readonly #debouncedSaved:(storagePath:string, data:RandomJsonData) => void;
@@ -44,10 +45,10 @@ export class Settings extends EventEmitter implements ISettings {
 	constructor() {
 		super();
 
-		this.#defaultStoragePath = path.resolve(app.getPath('userData'), './settings.json');
+		this.#defaultStorageDir = path.normalize(app.getPath('userData'));
 
 		const _storagePath = Settings.#loadFile(this.#defaultStoragePath)?.get('storagePath');
-		this.storagePath = typeof _storagePath === 'string' ? _storagePath : this.#defaultStoragePath;
+		this.storagePath = path.normalize((typeof _storagePath === 'string' && _storagePath.length > 0 ? (_storagePath + defaultStorageFilename ): this.#defaultStoragePath));
 
 		this.#load();
 		this.#debouncedSaved = debounce((storagePath:string, data:RandomJsonData) => {
@@ -81,6 +82,14 @@ export class Settings extends EventEmitter implements ISettings {
 			maxWait: 500
 		});
 	}
+
+
+
+	get #defaultStoragePath(): string {
+		return path.normalize(`${this.#defaultStorageDir}${defaultStorageFilename}`);
+	}
+
+
 
 	static #loadFile(filePath:string):Map<string, RandomJsonData>|null {
 		let data:RandomJsonData = null;
@@ -135,10 +144,9 @@ export class Settings extends EventEmitter implements ISettings {
 		if (this.storagePath !== this.#defaultStoragePath) {
 			// Settings to store in the app data, if another storage path specified
 			const data = Settings.#loadFile(this.#defaultStoragePath);
-			if (data) {
-				for (let [key, value] of data) {
-					output.set(key, value);
-				}
+			for (let [key, value] of data ?? new Map()) {
+				if (output.has(key)) continue; // avoid overriding data in output map
+				output.set(key, value);
 			}
 		}
 
@@ -177,10 +185,25 @@ export class Settings extends EventEmitter implements ISettings {
 		return JSON.parse(JSON.stringify(output));
 	}
 
+	getSettingConfig(key:string):SettingConfig|undefined {
+		return settings[key];
+	}
+
 	getDefaultValue(key: string): RandomJsonData | undefined {
-		const settingConf = settings[key];
+		const settingConf = this.getSettingConfig(key);
 		if (!settingConf || settingConf?.type === 'button') return;
 		return settingConf.value;
+	}
+
+	getArray(key: string, useDefault: boolean = true): PrimitivesValues[] | undefined {
+		let value = this.get(key, useDefault);
+		if (value === undefined) return;
+
+		if (!Array.isArray(value)) {
+			throw new Error('TYPE_ERROR');
+		}
+
+		return value;
 	}
 
 	getString(key: string, useDefault: boolean = true): string | undefined {
