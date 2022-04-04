@@ -1,6 +1,6 @@
 <template lang="pug">
 	form(@submit.prevent="onSubmit")
-		input.hidden(v-for="group in groups", type='radio', name="setting-group", :value="group", :id="'setting-group-' + group", @change="onGroupChange")
+		input.hidden(v-for="group in groups", type='radio', name="setting-group", :value="group", :id="'setting-group-' + group", @change="onGroupChange", :checked="group === 'default'")
 		label.tab.setting-group(v-for="group in groups", :for="'setting-group-' + group", :data-translate-id="'group_' + group")
 
 		div.pref-group(v-show="group === selected_group", v-for="(list, group) in settingsByGroup")
@@ -28,16 +28,14 @@
 
 <script lang="ts">
 import settings from './js/settings/settings.js';
-import {BridgedWindow} from "./js/bridgedWindow";
+import {BridgedWindow} from "./js/bridgedWindow.js";
 import Dict = NodeJS.Dict;
-import {SettingConfig, SettingsConfig} from "../classes/bo/settings";
+import {SettingConfig, SettingsConfig} from "../classes/bo/settings.js";
+import {ShowSectionEvent} from "./js/bo/showSectionEvent.js";
 
 declare var window : BridgedWindow;
 
-let settingsLoaded = false;
 async function settingsLoader() {
-	settingsLoaded = true;
-
 	const $inputs = [...document.querySelectorAll<HTMLInputElement>('[id^="pref-"]')],
 		names = new Set($inputs.map(el => el.name)),
 		preferenceValues = await window.znmApi.getPreferences(...names)
@@ -103,7 +101,18 @@ window.znmApi.onUpdatePreference(function (preferenceId:string, newValue:any) {
 	for (let input of inputs) {
 		setInputValue(input, newValue);
 	}
-})
+});
+
+window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
+	if (e.detail.newSection !== 'settings') {
+		return;
+	}
+
+	window.removeEventListener('showSection', fn, false);
+	settingsLoader()
+		.catch(console.error)
+	;
+});
 
 export default {
 	name: "settings",
@@ -237,32 +246,6 @@ export default {
 	},
 	props: [
 		"menu"
-	],
-	watch: {
-		menu: function (val:any) {
-			if (val === 'settings' && !settingsLoaded) {
-				settingsLoader()
-					.catch(console.error)
-				;
-			}
-		}
-	},
-	mounted() {
-		if (!document.querySelector('[name="setting-group"]:checked')) {
-			const defaultGroup = document.querySelector<HTMLInputElement>('#setting-group-default');
-			if (defaultGroup) {
-				defaultGroup.checked = true
-			}
-		}
-		this.$nextTick(function () {
-			// Code that will run only after the
-			// entire view has been rendered
-			if (this.menu === 'settings' && !settingsLoaded) {
-				settingsLoader()
-					.catch(console.error)
-				;
-			}
-		});
-	},
+	]
 };
 </script>

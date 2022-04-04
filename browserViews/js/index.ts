@@ -8,18 +8,12 @@ import settingsTemplate from '../settings.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
 import {BridgedWindow} from "./bridgedWindow";
-import {VersionState} from "../../classes/bo/versionState";
+import {ShowSectionEvent} from "./bo/showSectionEvent";
+import {IData} from "./bo/IData";
 
 declare var window : BridgedWindow;
 
 
-interface IData {
-	main_input_type: string;
-	menu: string;
-	message: string;
-	versions: NodeJS.ProcessVersions;
-	versionState: VersionState | null;
-}
 
 const defaultMenu = 'main';
 const data: IData = {
@@ -27,6 +21,7 @@ const data: IData = {
 	menu: defaultMenu,
 	message: 'Hello Vue!',
 	versions: window.process.versions,
+	internetAddress: null,
 	versionState: null
 };
 
@@ -36,6 +31,7 @@ if (location.hash.length > 1) {
 		data.menu = defaultMenu;
 	}
 }
+window.data = data;
 
 loadTranslations()
 	.catch(console.error)
@@ -57,13 +53,6 @@ window.znmApi.onThemeUpdate(function (theme, background_color) {
 })
 
 window.addEventListener("load", async function () {
-	window.znmApi.getVersionState()
-		.then(versionState => {
-			data.versionState = versionState;
-		})
-		.catch(console.error)
-	;
-
 	window.znmApi.onShowSection(function (sectionName:string) {
 		data.menu = data.menu === 'default' ? defaultMenu : sectionName;
 		setTimeout(() => {
@@ -77,13 +66,29 @@ window.addEventListener("load", async function () {
 
 
 	window.Vue.component('settings', settingsTemplate);
-	const app = new window.Vue(Object.assign({
+	// @ts-ignore
+	const app = new window.Vue({
 		el: 'main',
-		data: data
-	}, indexTemplate));
+		data: data,
+		...indexTemplate
+	});
 
-	app.$watch('menu', function (val:string) {
-		location.hash = val;
+
+
+	function triggerMenu(newSection:string, oldSection?:string) {
+		const event:ShowSectionEvent = new CustomEvent('showSection', {
+			detail: {
+				oldSection: oldSection,
+				newSection,
+				app
+			}
+		});
+		window.dispatchEvent(event);
+	}
+	triggerMenu(data.menu);
+	app.$watch('menu', function (newSection:string, oldSection:string) {
+		location.hash = newSection;
+		triggerMenu(newSection, oldSection);
 	});
 
 

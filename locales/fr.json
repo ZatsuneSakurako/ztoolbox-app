@@ -16,5 +16,7 @@
 	"textarea_copied": "Zone de texte copiée !",
 
 	"select_file": "Sélectionner un fichier",
-	"select_path": "Sélectionner un dossier"
+	"select_path": "Sélectionner un dossier",
+
+	"infos_section": "Infos"
 }

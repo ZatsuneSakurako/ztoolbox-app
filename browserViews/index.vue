@@ -3,6 +3,7 @@
 		input#main.hidden(type='radio', name="menu", v-model='menu', value='main')
 		input#codeTester.hidden(type='radio', name="menu", v-model='menu', value='code-tester')
 		input#settings.hidden(type='radio', name="menu", v-model='menu', value='settings')
+		input#infos.hidden(type='radio', name="menu", v-model='menu', value='infos')
 
 		div.grid-12(v-show='menu === \'main\'')
 			div.grid.no-r-gap
@@ -34,10 +35,12 @@
 		p.grid-12(v-show='menu === \'code-tester\'')
 			button(v-on:click='reloadIframe', data-translate-id="runCode") Run code !
 
-		p.grid-12(v-show='menu === \'main\'') Using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}} (current i18next language :&nbsp;
-			span(data-translate-id='language')
-			| ).
-			span(v-if="!!versionState" ) Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.
+		div.grid-12(v-show='menu === \'infos\'')
+			p Using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}} (current i18next language :&nbsp;
+				span(data-translate-id='language')
+				| ).
+			p(v-if="!!versionState" ) Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.
+			p(v-if="!!internetAddress") Addresse ip : {{internetAddress}}
 
 		p.grid-12(v-show='menu === \'settings\'')
 			settings(:menu='menu')
@@ -50,163 +53,176 @@
 </template>
 
 <script lang="ts">
-	import {BridgedWindow} from "./js/bridgedWindow";
+import {BridgedWindow} from "./js/bridgedWindow.js";
+import {ShowSectionEvent} from "./js/bo/showSectionEvent.js";
+import ddgWhatIsMyIp from "./js/ddgWhatIsMyIp.js";
 
-	declare var CodeMirror : any;
-	declare var window : BridgedWindow;
+declare var CodeMirror : any;
+declare var window : BridgedWindow;
 
-	const editors = {
-		html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
-		css: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}',
-		js: 'function test(){return true;}\ndocument.body.classList.add(\'red\');console.info("test console")'
+const editors = {
+	html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
+	css: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}',
+	js: 'function test(){return true;}\ndocument.body.classList.add(\'red\');console.info("test console")'
+};
+
+
+
+const nonce = window.znmApi.nonce();
+let codeTesterLoaded = false;
+function codeTesterLoader() {
+	codeTesterLoaded = true;
+	const defaultOptions = {
+		indentWithTabs: true,
+		lineNumbers: true,
+		lineSeparator: "\n",
+		lineWrapping: true,
+		theme: 'monokai'
 	};
 
-
-
-	const nonce = window.znmApi.nonce();
-	let codeTesterLoaded = false;
-	function codeTesterLoader() {
-		codeTesterLoaded = true;
-		const defaultOptions = {
-			indentWithTabs: true,
-			lineNumbers: true,
-			lineSeparator: "\n",
-			lineWrapping: true,
-			theme: 'monokai'
-		};
-
-		const htmlEditor = CodeMirror(this.$refs.input1, Object.assign({
-			value: editors.html,
-			mode: 'htmlmixed'
-		}, defaultOptions));
-		const cssEditor = CodeMirror(this.$refs.input2, Object.assign({
-			value: editors.css,
-			mode: 'css'
-		}, defaultOptions));
-		const jsEditor = CodeMirror(this.$refs.input3, Object.assign({
-			value: editors.js,
-			mode: 'javascript'
-		}, defaultOptions));
+	const htmlEditor = CodeMirror(this.$refs.input1, Object.assign({
+		value: editors.html,
+		mode: 'htmlmixed'
+	}, defaultOptions));
+	const cssEditor = CodeMirror(this.$refs.input2, Object.assign({
+		value: editors.css,
+		mode: 'css'
+	}, defaultOptions));
+	const jsEditor = CodeMirror(this.$refs.input3, Object.assign({
+		value: editors.js,
+		mode: 'javascript'
+	}, defaultOptions));
 
 
 
-		const iframe: HTMLIFrameElement = this.$refs.iframe;
-		iframe.addEventListener('load', async function () {
-			// const {VM} = require('vm2');
+	const iframe: HTMLIFrameElement = this.$refs.iframe;
+	iframe.addEventListener('load', async function () {
+		// const {VM} = require('vm2');
 
-			const iframeWin = iframe.contentWindow;
-			// iframeWin.VM = VM;
+		const iframeWin = iframe.contentWindow;
+		// iframeWin.VM = VM;
 
+		iframeWin?.postMessage({
+			type: 'init',
+			nonce: await nonce
+		}, location.href);
+
+
+
+		try {
+			editors.html = htmlEditor.getValue();
 			iframeWin?.postMessage({
-				type: 'init',
-				nonce: await nonce
+				type: 'html',
+				html: editors.html
 			}, location.href);
+		} catch (e) {
+			console.error(e);
+		}
+
+		try {
+			editors.css = cssEditor.getValue();
+			iframeWin?.postMessage({
+				type: 'css',
+				css: editors.css
+			}, location.href);
+		} catch (e) {
+			console.error(e);
+		}
+
+		try {
+			editors.js = jsEditor.getValue();
+			iframeWin?.postMessage({
+				type: 'js',
+				js: editors.js
+			}, location.href);
+		} catch (e) {
+			console.error(e);
+		}
+	});
 
 
 
-			try {
-				editors.html = htmlEditor.getValue();
-				iframeWin?.postMessage({
-					type: 'html',
-					html: editors.html
-				}, location.href);
-			} catch (e) {
-				console.error(e);
-			}
-
-			try {
-				editors.css = cssEditor.getValue();
-				iframeWin?.postMessage({
-					type: 'css',
-					css: editors.css
-				}, location.href);
-			} catch (e) {
-				console.error(e);
-			}
-
-			try {
-				editors.js = jsEditor.getValue();
-				iframeWin?.postMessage({
-					type: 'js',
-					js: editors.js
-				}, location.href);
-			} catch (e) {
-				console.error(e);
-			}
-		});
+	iframe.contentWindow?.location.reload();
+}
 
 
 
-		iframe.contentWindow?.location.reload();
+
+
+window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
+	if (e.detail.newSection !== 'infos') {
+		return;
 	}
+	window.removeEventListener('showSection', fn, false);
 
+	window.znmApi.getVersionState()
+		.then(versionState => {
+			window.data.versionState = versionState;
+		})
+		.catch(console.error)
+	;
+	ddgWhatIsMyIp(true)
+		.then(result => {
+			window.data.internetAddress = result;
+		})
+		.catch(console.error)
+	;
+});
 
-
-
-
-	export default {
-		name: "index",
-		methods: {
-			nextTick() {
-				return this.constructor.nextTick()
-			},
-			async onCopyTextArea() {
-				try {
-					await navigator.clipboard.writeText(this.$refs.main_textarea_input.value)
-				} catch (e) {
-					console.error(e);
-					return;
-				}
-
-				window.znmApi.sendNotification(await window.znmApi._('textarea_copied'))
-					.catch(console.error)
-				;
-			},
-			onPasteTextArea() {
-				navigator.clipboard.readText()
-					.then(value => {
-						this.$refs.main_textarea_input.value = value
-					})
-					.catch(console.error)
-				;
-			},
-			onStreamLink() {
-				window.znmApi.openStreamlink(this.$refs.main_input.value);
-			},
-			onDigCmd() {
-				window.znmApi.digCmd(this.$refs.main_input.value)
-					.then(result => {
-						this.$refs.main_textarea_output.value = result;
-					})
-					.catch(console.error)
-				;
-			},
-			reloadIframe() {
-				this.$refs.iframe.contentWindow.location.reload();
-			}
-		},
-		watch: {
-			menu: function (val:string) {
-				if (val === 'code-tester' && !codeTesterLoaded) {
-					this.nextTick()
-						.then(() => {
-							codeTesterLoader.call(this);
-						})
-						.catch(console.error)
-					;
-				}
-			}
-		},
-		mounted() {
-			this.$nextTick(function () {
-				// Code that will run only after the
-				// entire view has been rendered
-				if (this.menu === 'code-tester' && !codeTesterLoaded) {
-					codeTesterLoader.call(this);
-				}
-			});
-		},
+window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
+	const val = e.detail.newSection;
+	if (val === 'code-tester' && !codeTesterLoaded) {
+		window.removeEventListener('showSection', fn, false);
+		codeTesterLoader.call(e.detail.app);
 	}
+}, false);
+
+
+
+
+
+export default {
+	name: "index",
+	methods: {
+		nextTick() {
+			return this.constructor.nextTick()
+		},
+		async onCopyTextArea() {
+			try {
+				await navigator.clipboard.writeText(this.$refs.main_textarea_input.value)
+			} catch (e) {
+				console.error(e);
+				return;
+			}
+
+			window.znmApi.sendNotification(await window.znmApi._('textarea_copied'))
+				.catch(console.error)
+			;
+		},
+		onPasteTextArea() {
+			navigator.clipboard.readText()
+				.then(value => {
+					this.$refs.main_textarea_input.value = value
+				})
+				.catch(console.error)
+			;
+		},
+		onStreamLink() {
+			window.znmApi.openStreamlink(this.$refs.main_input.value);
+		},
+		onDigCmd() {
+			window.znmApi.digCmd(this.$refs.main_input.value)
+				.then(result => {
+					this.$refs.main_textarea_output.value = result;
+				})
+				.catch(console.error)
+			;
+		},
+		reloadIframe() {
+			this.$refs.iframe.contentWindow.location.reload();
+		}
+	}
+}
 </script>
 
 <style scoped>

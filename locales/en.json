@@ -16,5 +16,7 @@
 	"textarea_copied": "Text area copied !",
 
 	"select_file": "Select file",
-	"select_path": "Select directory"
+	"select_path": "Select directory",
+
+	"infos_section": "Infos"
 }
