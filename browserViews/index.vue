@@ -67,8 +67,9 @@ const editors = {
 document.body.classList.add('red');
 console.info("test console");
 
-console.dir(locutus.php.var.serialize(['test']));
-console.dir(locutus.php.var.unserialize('a:1:{i:0;s:4:"test";}'));`
+const {serialize, unserialize} = locutus.php.var;
+console.dir(serialize(['test']));
+console.dir(unserialize('a:1:{i:0;s:4:"test";}'));`
 };
 
 
