@@ -29,6 +29,10 @@ const paths = {
 		src: 'browserViews/js/**/*.ts',
 		dest: 'browserViews/js/'
 	},
+	jsNoModule: {
+		src: 'browserViews/js/**/_*.ts',
+		dest: 'browserViews/js/'
+	},
 	mainJs: {
 		src: './*.ts',
 		dest: '.'
@@ -161,7 +165,20 @@ function _js() {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(paths.js.dest))
 }
-export const js = gulp.series(clearJs, _js);
+const browserViewsTsProject_noModule:any = JSON.parse(JSON.stringify(tsOptions));
+browserViewsTsProject_noModule.compilerOptions.module = 'none';
+delete browserViewsTsProject_noModule.compilerOptions.moduleResolution;
+browserViewsTsProject_noModule.compilerOptions.resolveJsonModule = false;
+function _jsNoModule() {
+	return gulp.src([paths.jsNoModule.src])
+		.pipe(sourcemaps.init())
+
+		.pipe(gulpTs(browserViewsTsProject_noModule.compilerOptions))
+
+		.pipe(sourcemaps.write('.'))
+		.pipe(gulp.dest(paths.js.dest))
+}
+export const js = gulp.series(clearJs, _js, _jsNoModule);
 
 
 
@@ -169,13 +186,14 @@ export const js = gulp.series(clearJs, _js);
 
 export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs, clearMainJs);
 
-export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js, _mainJs));
+export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js, _jsNoModule, _mainJs));
 
 function _watch() {
 	gulp.watch(paths.styles.src, _css);
 	gulp.watch(paths.html.src, _html);
 	gulp.watch(paths.vue.src, _vue);
 	gulp.watch(paths.js.src, _js);
+	gulp.watch(paths.jsNoModule.src, _jsNoModule);
 	gulp.watch(paths.mainJs.src, _mainJs);
 	gulp.watch(paths.mainClassJs.src, _mainJs);
 }

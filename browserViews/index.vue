@@ -63,12 +63,16 @@ declare var window : BridgedWindow;
 const editors = {
 	html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
 	css: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}',
-	js: 'function test(){return true;}\ndocument.body.classList.add(\'red\');console.info("test console")'
+	js: `function test(){return true;}
+document.body.classList.add('red');
+console.info("test console");
+
+console.dir(locutus.php.var.serialize(['test']));
+console.dir(locutus.php.var.unserialize('a:1:{i:0;s:4:"test";}'));`
 };
 
 
 
-const nonce = window.znmApi.nonce();
 let codeTesterLoaded = false;
 function codeTesterLoader() {
 	codeTesterLoaded = true;
@@ -96,49 +100,37 @@ function codeTesterLoader() {
 
 
 	const iframe: HTMLIFrameElement = this.$refs.iframe;
-	iframe.addEventListener('load', async function () {
-		// const {VM} = require('vm2');
+	window.addEventListener('message', function (e) {
+		if (e.data.type === 'iframe-loaded') {
+			// @ts-ignore
+			const znm_init : (object:object)=>void = iframe.contentWindow?.znm_init;
 
-		const iframeWin = iframe.contentWindow;
-		// iframeWin.VM = VM;
+			try {
+				editors.html = htmlEditor.getValue();
+			} catch (e) {
+				console.error(e);
+			}
 
-		iframeWin?.postMessage({
-			type: 'init',
-			nonce: await nonce
-		}, location.href);
+			try {
+				editors.css = cssEditor.getValue();
+			} catch (e) {
+				console.error(e);
+			}
 
+			try {
+				editors.js = jsEditor.getValue();
+			} catch (e) {
+				console.error(e);
+			}
 
-
-		try {
-			editors.html = htmlEditor.getValue();
-			iframeWin?.postMessage({
-				type: 'html',
-				html: editors.html
-			}, location.href);
-		} catch (e) {
-			console.error(e);
-		}
-
-		try {
-			editors.css = cssEditor.getValue();
-			iframeWin?.postMessage({
-				type: 'css',
-				css: editors.css
-			}, location.href);
-		} catch (e) {
-			console.error(e);
-		}
-
-		try {
-			editors.js = jsEditor.getValue();
-			iframeWin?.postMessage({
-				type: 'js',
+			znm_init({
+				type: 'init',
+				html: editors.html,
+				css: editors.css,
 				js: editors.js
-			}, location.href);
-		} catch (e) {
-			console.error(e);
+			});
 		}
-	});
+	}, false);
 
 
 

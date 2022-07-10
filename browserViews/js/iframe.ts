@@ -1,4 +1,9 @@
 import {stripHtml as _stripHtml} from 'string-strip-html';
+import 'locutus';
+
+import {BridgedWindow} from "./bridgedWindow";
+// @ts-ignore
+const parentWindow : BridgedWindow = window.parent;
 
 const stripHtml:typeof _stripHtml = (window as any).stringStripHtml.stripHtml;
 
@@ -10,54 +15,50 @@ function clearAllSelect(sel: string) {
 	})
 }
 
-let nonce:string|undefined;
-function init(e: any) {
-	if (e.origin.startsWith('file://') === false) {
-		throw 'SomethingWrong';
+async function init(data: { type:'init', js: string, css: string, html: string }) {
+	const nonce = await parentWindow.znmApi.nonce();
+	if (data.type !== 'init') {
+		return;
 	}
 
-	if (typeof e.data !== 'object' || typeof e.type !== 'string') {
-		throw 'SomethingWrong';
+	console.info('init');
+	if (!!data.js) {
+		const keys = new Set(['Function', ...Object.keys(globalThis)]),
+			js = 'var ' +
+				[...keys]
+					.filter(n => {
+						return !['document', 'console', 'Math', 'setTimout', 'setInterval', 'clearTimeout', 'clearInterval', 'locutus'].includes(n);
+					})
+					.map(n => n + ' = void 0')
+					.join(",")
+				+ ';'
+		;
+
+		clearAllSelect('head script.onMessage');
+		const script = document.createElement('script');
+		script.nonce = nonce;
+		script.textContent = `(function(){ 'use strict'; ${js}; ${data.js} }.bind(null))()`;
+		script.classList.add('onMessage');
+		document.head.append(script);
 	}
-
-	switch (e.data.type) {
-		case 'init':
-			console.info('init');
-			nonce = e.data.nonce;
-			break;
-		case 'js':
-			const keys = new Set(['Function', ...Object.keys(globalThis)]),
-				js = 'var ' +
-					[...keys]
-						.filter(n => {
-							return !['document', 'console', 'Math', 'setTimout', 'setInterval', 'clearTimeout', 'clearInterval'].includes(n);
-						})
-						.map(n => n + ' = void 0')
-						.join(",")
-					+ ';'
-			;
-
-			clearAllSelect('head script.onMessage');
-			const script = document.createElement('script');
-			script.nonce = nonce;
-			script.textContent = `(function(){ 'use strict'; ${js}; ${ e.data.js } }.bind(null))()`;
-			script.classList.add('onMessage');
-			document.head.append(script);
-			break;
-		case 'css':
-			clearAllSelect('head style.onMessage');
-			const css = document.createElement('style');
-			css.nonce = nonce;
-			css.textContent = e.data.css;
-			css.classList.add('onMessage');
-			document.head.appendChild(css);
-			break;
-		case 'html':
-			document.body.textContent = '';
-			document.body.innerHTML = stripHtml(e.data.html, {
-				skipHtmlDecoding: true,
-				onlyStripTags: ['html', 'head', 'script']
-			}).result;
+	if (!!data.css) {
+		clearAllSelect('head style.onMessage');
+		const css = document.createElement('style');
+		css.nonce = nonce;
+		css.textContent = data.css;
+		css.classList.add('onMessage');
+		document.head.appendChild(css);
+	}
+	if (!!data.html) {
+		document.body.textContent = '';
+		document.body.innerHTML = stripHtml(data.html, {
+			skipHtmlDecoding: true,
+			onlyStripTags: ['html', 'head', 'script']
+		}).result;
 	}
 }
-window.addEventListener('message', init, false);
+// @ts-ignore
+window.znm_init = init;
+window.parent.postMessage({
+	type: 'iframe-loaded'
+}, window.parent.location.href);
