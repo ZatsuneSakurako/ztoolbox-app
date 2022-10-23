@@ -12,7 +12,8 @@ const json = {
 	"path": (process.platform === 'win32' ? filePath : 'node ' + JSON.stringify(filePath)),
 	"type": "stdio",
 	"allowed_origins": [
-		"chrome-extension://ecgiibibekoebbdeieihohopccibchmg/"
+		"chrome-extension://ecgiibibekoebbdeieihohopccibchmg/",
+		"chrome-extension://gojepdjljocnjlifemonhphjnafigcfe/"
 	]
 };
 
