@@ -1,6 +1,5 @@
 import path from "path";
 import fs from "fs-extra";
-import {promisify} from "util";
 import * as Winreg from "winreg";
 import {homedir} from "os";
 import Registry = require('winreg');
@@ -51,8 +50,8 @@ export type install_types = 'user' | 'global';
  * @see https://unpkg.com/browse/native-installer@1.0.0/paths.json
  */
 function getInstallPath(browser: browsers, os?: Exclude<osList, 'win32'>, type?:'user'):string
-function getInstallPath(browser: browsers, os?: "win32", type?:'global'): Winreg.Registry
-function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: install_types = 'user'): string | Winreg.Registry {
+function getInstallPath(browser: browsers, os?: "win32", type?:'global'): { container: Winreg.Registry, target: Winreg.Registry }
+function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: install_types = 'user'): string | { container: Winreg.Registry, target: Winreg.Registry } {
 	const home = homedir(),
 		name = json.name
 	;
@@ -97,10 +96,16 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 	};
 
 	if (os === 'win32') {
-		return new Registry({
-			hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
-			key: paths[browser][os]
-		});
+		return {
+			container: new Registry({
+				hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
+				key: paths[browser][os]
+			}),
+			target: new Registry({
+				hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
+				key: paths[browser][os] + name
+			})
+		}
 	}
 	return paths[browser][os][type];
 }
@@ -123,7 +128,15 @@ async function install(isUninstall=false) {
 
 			let exists = false;
 			try {
-				exists = await promisify(installPath.keyExists)();
+				exists = await new Promise<boolean>((resolve, reject) => {
+					installPath.container.keyExists((err, exists) => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(exists);
+						}
+					})
+				});
 			} catch (e) {
 				console.error(e);
 			}
@@ -134,32 +147,32 @@ async function install(isUninstall=false) {
 
 			if (isUninstall) {
 				const promise = new Promise<void>((resolve, reject) => {
-					installPath.remove(json.name,
-						err => {
-							if (err) {
-								reject(err);
-							} else {
-								resolve();
-							}
+					installPath.target.remove(json.name, err => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve();
 						}
-					);
+					});
 				});
+				promise
+					.catch(console.error)
+				;
 				promises.push(promise);
 			} else {
+				console.warn(`${browser} reg key found, installing`);
 				const promise = new Promise<void>((resolve, reject) => {
-					installPath.set(
-						json.name,
-						Registry.REG_SZ,
-						manifestPath,
-						err => {
-							if (err) {
-								reject(err);
-							} else {
-								resolve();
-							}
+					installPath.target.set('', Registry.REG_SZ, manifestPath, err => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve();
 						}
-					);
+					});
 				});
+				promise
+					.catch(console.error)
+				;
 				promises.push(promise);
 			}
 		} else {
@@ -185,7 +198,9 @@ async function install(isUninstall=false) {
 	}
 
 	if (promises.length > 1) {
-		await Promise.allSettled(promises);
+		await Promise.allSettled(promises)
+			.catch(console.error)
+		;
 	}
 }
 
