@@ -32,6 +32,12 @@ function log(data:string|object) {
             logFile.write('\n', () => {
                 onDone();
             });
+        } else if (process.env.CHROME_BRIDGE_LOG) {
+            bridge.emit({
+                type: 'log',
+                data
+            });
+            onDone();
         } else {
             if (ws) {
                 ws.send(JSON.stringify({
