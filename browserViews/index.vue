@@ -41,7 +41,7 @@
 				| ).
 			p(v-if="!!versionState" ) Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.
 			p(v-if="!!internetAddress") Addresse ip : {{internetAddress}}
-			p(v-if="!!wsClientNames") Ws clients :
+			p(v-if="!!wsClientNames") Web extensions :
 				ul.list-style-inside.list-style-disc
 					li(v-for="client in wsClientNames") {{client}}
 
