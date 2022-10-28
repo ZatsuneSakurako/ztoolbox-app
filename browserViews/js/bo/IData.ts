@@ -6,5 +6,6 @@ export interface IData {
 	message: string;
 	versions: NodeJS.ProcessVersions;
 	internetAddress: string | null;
+	wsClientNames: string[];
 	versionState: VersionState | null;
 }

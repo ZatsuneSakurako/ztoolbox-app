@@ -129,10 +129,14 @@ const bridge = new ChromeNativeBridge(
                 let output = message;
 
                 if (typeof message === 'object' && message !== null) {
-                    output = {
-                        type: 'nativeMessage',
-                        data: message
-                    };
+                    if (!!message.type && !!message.data) {
+                        output = message;
+                    } else {
+                        output = {
+                            type: 'nativeMessage',
+                            data: message
+                        };
+                    }
                 } else {
                     output = {
                         type: 'nativeMessage',

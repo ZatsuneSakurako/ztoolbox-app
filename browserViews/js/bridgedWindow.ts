@@ -12,6 +12,7 @@ export interface IZnmApi {
 	digCmd(domain: string): Promise<string>
 	preferenceFileDialog(prefId:string): Promise<{ canceled: boolean, filePaths: string[] }|string>
 	_(key: string): Promise<string>
+	getWsClientNames(): Promise<string[]>
 
 	getVersionState(): Promise<VersionState|null>
 

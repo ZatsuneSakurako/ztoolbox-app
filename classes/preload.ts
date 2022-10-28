@@ -41,6 +41,7 @@ const znmApi:IZnmApi = {
 	digCmd: (domain: string) => ipcRenderer.invoke('digCmd', domain),
 	preferenceFileDialog: (prefId) => ipcRenderer.invoke('preferenceFileDialog', prefId),
 	_: (key:string) => ipcRenderer.invoke('i18n', key),
+	getWsClientNames: () => ipcRenderer.invoke('getWsClientNames'),
 
 	getVersionState: () => ipcRenderer.invoke('getVersionState'),
 

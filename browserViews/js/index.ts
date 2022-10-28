@@ -22,7 +22,8 @@ const data: IData = {
 	message: 'Hello Vue!',
 	versions: window.process.versions,
 	internetAddress: null,
-	versionState: null
+	versionState: null,
+	wsClientNames: []
 };
 
 if (location.hash.length > 1) {

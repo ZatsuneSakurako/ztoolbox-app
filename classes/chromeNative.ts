@@ -1,6 +1,6 @@
 import http from "http";
 import WebSocket, {RawData} from "ws";
-import {IChromeCommand, IChromeNativeMessage, IChromeNativeReply} from "./bo/chromeNative";
+import {IChromeCommand, IChromeNativeMessage, IChromeNativeReply, IChromeExtensionName} from "./bo/chromeNative";
 import {settings} from "../main";
 import {Socket} from "net";
 import {showSection, showWindow} from "./windowManager";
@@ -8,6 +8,7 @@ import {showSection, showWindow} from "./windowManager";
 export const server = http.createServer(),
 	wss = new WebSocket.Server({noServer: true})
 ;
+const clientsData = new WeakMap<WebSocket, Partial<IChromeExtensionName['data']> & {}>();
 
 
 server.on('upgrade', function upgrade(request, socket, head) {
@@ -48,6 +49,20 @@ wss.on('connection', function(socket) {
 	});
 });
 
+export function getWsClientNames(): string[] {
+	const output : string[] = [];
+
+	for (let client of wss.clients) {
+		const data = clientsData.get(client);
+		if (data) {
+			output.push(data.extensionId + ' - ' + data.userAgent);
+		} else {
+			output.push('Unknown');
+		}
+	}
+
+	return output;
+}
 
 /**
  *
@@ -159,6 +174,14 @@ async function onMessageHandle<T extends object>(msg: IChromeNativeMessage<T>, s
 					connected: "z-toolbox"
 				}
 			};
+		case "extensionName":
+			const currentData = clientsData.get(socket);
+			clientsData.set(socket, {
+				...(currentData ?? {}),
+				userAgent: msg.data.userAgent,
+				extensionId: msg.data.extensionId
+			});
+			return;
 		case "log":
 			if (Array.isArray(msg.data)) {
 				console.log(...msg.data);

@@ -41,6 +41,9 @@
 				| ).
 			p(v-if="!!versionState" ) Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.
 			p(v-if="!!internetAddress") Addresse ip : {{internetAddress}}
+			p(v-if="!!wsClientNames") Ws clients :
+				ul(v-for="client in wsClientNames")
+					li {{client}}
 
 		p.grid-12(v-show='menu === \'settings\'')
 			settings(:menu='menu')
@@ -157,6 +160,12 @@ window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	ddgWhatIsMyIp(true)
 		.then(result => {
 			window.data.internetAddress = result;
+		})
+		.catch(console.error)
+	;
+	window.znmApi.getWsClientNames()
+		.then(wsClientNames => {
+			window.data.wsClientNames = wsClientNames;
 		})
 		.catch(console.error)
 	;
