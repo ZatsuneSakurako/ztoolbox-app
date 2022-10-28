@@ -21,7 +21,7 @@ import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
 import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants";
-import {server} from "./classes/chromeNative";
+import {getWsClientNames, server} from "./classes/chromeNative";
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
 import {IPathConfigFilter, SettingConfig} from "./classes/bo/settings";
@@ -35,7 +35,10 @@ if (app.requestSingleInstanceLock()) {
 		onOpen(commandLine);
 	});
 
-	app.on('ready', onReady);
+	app.whenReady()
+		.then(onReady)
+		.catch(console.error)
+	;
 } else {
 	app.quit();
 	process.exit();
@@ -114,19 +117,22 @@ server.listen({
 
 
 const nonce = crypto.randomBytes(16).toString('base64');
-app.on('ready', function () {
-	session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-		callback({
-			responseHeaders: {
-				...details.responseHeaders,
-				'Content-Security-Policy': [
-					// 'default-src \'none\'; script-src \'self\'; object-src \'none\'; style-src \'self\' \'unsafe-inline\'; img-src \'self\'; media-src \'self\'; frame-src \'self\'; font-src \'self\'; connect-src \'none\'"',
-					`default-src 'none'; script-src 'self' https://unpkg.com/ 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src https://api.duckduckgo.com`
-				]
-			}
-		})
-	});
-});
+app.whenReady()
+	.then(function () {
+		session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+			callback({
+				responseHeaders: {
+					...details.responseHeaders,
+					'Content-Security-Policy': [
+						// 'default-src \'none\'; script-src \'self\'; object-src \'none\'; style-src \'self\' \'unsafe-inline\'; img-src \'self\'; media-src \'self\'; frame-src \'self\'; font-src \'self\'; connect-src \'none\'"',
+						`default-src 'none'; script-src 'self' https://unpkg.com/ 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src https://api.duckduckgo.com`
+					]
+				}
+			})
+		});
+	})
+	.catch(console.error)
+;
 
 // noinspection JSUnusedLocalSymbols
 ipcMain.handle('nonce-ipc', async (event, ...args) => {
