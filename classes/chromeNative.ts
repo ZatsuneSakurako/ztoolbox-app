@@ -26,7 +26,19 @@ server.on('upgrade', function upgrade(request, socket, head) {
 	});
 });
 
+async function handleConnectionOpen(socket: WebSocket) {
+	return await onMessageHandle({
+		type: 'ws open'
+	}, socket);
+}
 wss.on('connection', function(socket) {
+	handleConnectionOpen(socket)
+		.then(result => {
+			socket.send(JSON.stringify(result));
+		})
+		.catch(console.error)
+	;
+
 	// When you receive a message, send that message to every socket.
 	socket.on('message', async function(msg) {
 		const response = await onSocketMessage(msg, socket);
@@ -57,6 +69,9 @@ export async function onSocketMessage(rawData: RawData, socket: WebSocket): Prom
 		}
 	}
 
+	return await onMessageHandle(msg, socket);
+}
+async function onMessageHandle<T extends object>(msg: IChromeNativeMessage<T>, socket: WebSocket): Promise<IChromeNativeReply | undefined> {
 	if (msg.type === "nativeMessage") {
 		switch (msg.data.command) {
 			case 'getPreference':

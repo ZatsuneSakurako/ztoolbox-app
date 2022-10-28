@@ -57,7 +57,9 @@ const url = 'ws://localhost:42080',
     timeInterval = 5000
 ;
 
-let ws : WebSocket;
+let ws : WebSocket,
+    messageReceived = false
+;
 function connect() {
     ws = new WebSocket(url, {
         headers : {
@@ -68,16 +70,10 @@ function connect() {
         log(['ws open', `WEBSOCKET_OPENED: client connected to server at port ${JSON.stringify(port)}`])
             .catch(() => {})
         ;
-
-        ws.send(JSON.stringify({
-            type: 'ws open',
-            port,
-            bridge,
-            argv: process.argv
-        }));
-    })
+    });
 
     ws.addEventListener('message', function(e) {
+        messageReceived = true;
         let data = e.data.toString();
         try {
             data = JSON.parse(data);
@@ -90,6 +86,18 @@ function connect() {
         log(['ws close', `Socket is closed. Reconnect will be attempted in ${timeInterval / 1000} second. Reason : ${e.reason}`])
             .catch(() => {})
         ;
+
+        if (messageReceived) {
+            bridge.emit({
+                error: false,
+                type: 'ws close',
+                result: {
+                    disconnected: "z-toolbox"
+                }
+            });
+        }
+        messageReceived = false;
+
         ws.removeAllListeners();
         setTimeout(function () {
             connect();
