@@ -57,7 +57,7 @@ if (!process.platform.startsWith('win')) {
 	 * electron workaround (ProtocolRegistry use shelljs internally)
 	 * @see https://github.com/shelljs/shelljs/wiki/Electron-compatibility
 	 */
-	const nodePath = shell.config.execPath = shell.which('node').toString(),
+	const nodePath = shell.config.execPath = shell.which('node')?.toString() ?? null,
 		nodeVersion = !!nodePath ? shell.exec(JSON.stringify(nodePath) + ' --version').toString().trim() : ''
 	;
 	if (/^v1[46]\.$/.test(nodeVersion)) {
@@ -734,10 +734,12 @@ const zAlarm = ZAlarm.start('0 * * * *', function (date:Date) {
 	console.info(date.toLocaleString('fr'));
 
 	if (settings.getBoolean('hourlyNotification', true)) {
-		const msg = i18next.t('timeIsNow', {
-			// currentTime: new Date(date).toLocaleTimeString()
-			currentTime: new Intl.DateTimeFormat(i18next.t('language'), { timeStyle: 'short' }).format(new Date(date))
-		});
+		const language = i18next.t('language'),
+			msg = i18next.t('timeIsNow', {
+				// currentTime: new Date(date).toLocaleTimeString()
+				currentTime: new Intl.DateTimeFormat(language, { timeStyle: 'short' }).format(new Date(date))
+			})
+		;
 
 		notifyElectron({
 			title: 'Z-Toolbox - Hourly alarm',
@@ -748,7 +750,6 @@ const zAlarm = ZAlarm.start('0 * * * *', function (date:Date) {
 		;
 	}
 });
-
 
 
 export {};
