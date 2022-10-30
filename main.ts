@@ -21,7 +21,7 @@ import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
 import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants";
-import {getWsClientNames, server} from "./classes/chromeNative";
+import {getWsClientNames, server, io} from "./classes/chromeNative";
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
 import {IPathConfigFilter, SettingConfig} from "./classes/bo/settings";
@@ -107,13 +107,13 @@ if (!process.platform.startsWith('win')) {
 	app.setAppUserModelId(process.execPath);
 }
 
-
 server.listen({
 	hostname: 'localhost',
 	port: 42080,
 }, () => {
 	console.log('Listening at localhost:42080');
 });
+io.listen(server);
 
 
 const nonce = crypto.randomBytes(16).toString('base64');

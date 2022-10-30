@@ -1,31 +1,28 @@
-export type IChromeNativeMessage<T = unknown & object> = IChromeCommand<T> | IChromeWsOpen | IChromeLog | IChromeExtensionName;
+import {RandomJsonData, SettingsConfig} from "./settings";
 
-export interface IChromeCommand<T = unknown & object> {
-	type: 'nativeMessage'
-	data: { command: string } & T
+export type SocketMessage<T> = {error: false} & {result: T} | {error: true|string};
+export type ResponseCallback<T> = (response:SocketMessage<T>) => void;
+
+export interface ServerToClientEvents {
+	'ws open': (data: SocketMessage<{ connected: string }>) => void;
+	log: (...data: any[]) => void;
 }
 
-export interface IChromeWsOpen {
-	type: 'ws open'
+export interface ClientToServerEvents {
+	getPreference: (id: string, cb: ResponseCallback<{ id: string, value: undefined|RandomJsonData }>) => void;
+	getPreferences: (ids: string[], cb: ResponseCallback<{ id: string, value: undefined|RandomJsonData }[]>) => void;
+	getDefaultValues: (cb: ResponseCallback<SettingsConfig>) => void;
+	ping: (cb: ResponseCallback<'pong'>) => void;
+	showSection: (sectionName: string, cb: ResponseCallback<'success'>) => void;
+	log: (...data: any[]) => void;
+	extensionName: (extensionName: IChromeExtensionName) => void;
 }
+export interface InterServerEvents {}
 
-export interface IChromeLog {
-	type: 'log'
-	data: unknown[] | unknown
+export interface SocketData extends Partial<IChromeExtensionName> {
 }
 
 export interface IChromeExtensionName {
-	type: 'extensionName'
-	data: {
-		userAgent: string,
-		extensionId: string
-	}
-}
-
-
-export interface IChromeNativeReply<O = (unknown & object) | string, I = (unknown & object) | undefined> {
-	error: string | false
-	type: string
-	data?: { command: string } & I
-	result?: O
+	userAgent: string,
+	extensionId: string
 }

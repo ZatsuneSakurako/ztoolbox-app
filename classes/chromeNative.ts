@@ -1,198 +1,105 @@
 import http from "http";
-import WebSocket, {RawData} from "ws";
-import {IChromeCommand, IChromeNativeMessage, IChromeNativeReply, IChromeExtensionName} from "./bo/chromeNative";
+import {
+	ClientToServerEvents,
+	InterServerEvents,
+	ServerToClientEvents,
+	SocketData
+} from "./bo/chromeNative";
 import {settings} from "../main";
-import {Socket} from "net";
-import {showSection, showWindow} from "./windowManager";
+import {showSection} from "./windowManager";
+import {Server} from "socket.io";
+
+
 
 export const server = http.createServer(),
-	wss = new WebSocket.Server({noServer: true})
+	io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server)
 ;
-const clientsData = new WeakMap<WebSocket, Partial<IChromeExtensionName['data']> & {}>();
 
 
-server.on('upgrade', function upgrade(request, socket, head) {
-	// Do what you normally do in `verifyClient()` here and then use
-	// `WebSocketServer.prototype.handleUpgrade()`.
-
-	const token = request.headers.token;
+io.use((socket, next) => {
+	const token = socket.request.headers.token;
 	if (!token || token !== 'VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c') {
-		socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-		socket.destroy();
-		return;
+		next(new Error("invalid"));
+	} else {
+		next();
 	}
-
-	wss.handleUpgrade(request, <Socket>socket, head, function done(ws) {
-		wss.emit('connection', ws, request);
-	});
 });
 
-async function handleConnectionOpen(socket: WebSocket) {
-	return await onMessageHandle({
-		type: 'ws open'
-	}, socket);
-}
-wss.on('connection', function(socket) {
-	handleConnectionOpen(socket)
-		.then(result => {
-			socket.send(JSON.stringify(result));
-		})
-		.catch(console.error)
-	;
+io.on("connection", (socket) => {
+	console.dir(socket.request.headers["user-agent"]);
 
-	// When you receive a message, send that message to every socket.
-	socket.on('message', async function(msg) {
-		const response = await onSocketMessage(msg, socket);
-		if (!!response) {
-			socket.send(JSON.stringify(response));
+	socket.emit('ws open', {
+		error: false,
+		result: {
+			connected: "z-toolbox"
 		}
 	});
+
+	socket.on('getPreference', function (id:string, cb) {
+		cb({
+			error: false,
+			result: {
+				id,
+				value: settings.get(id)
+			}
+		});
+	});
+
+	socket.on('getPreferences', function (ids:string[], cb) {
+		cb({
+			error: false,
+			result: ids.map(id => {
+				return {
+					id,
+					value: settings.get(id)
+				}
+			})
+		});
+	});
+
+	socket.on('getDefaultValues', function (cb) {
+		cb({
+			error: false,
+			result: settings.getDefaultValues()
+		});
+	});
+
+	socket.on('ping', function (cb) {
+		cb({
+			error: false,
+			result: 'pong'
+		});
+	})
+
+	socket.on('showSection', function (sectionName, cb) {
+		showSection(sectionName);
+		cb({
+			error: false,
+			result: 'success'
+		});
+	});
+
+	socket.on('log', function (...data) {
+		console.log(...data);
+	});
+
+	socket.on('extensionName', function (extensionName) {
+		socket.data.extensionId = extensionName.extensionId;
+		socket.data.userAgent = extensionName.userAgent;
+	});
 });
 
-export function getWsClientNames(): string[] {
+export async function getWsClientNames(): Promise<string[]> {
 	const output : string[] = [];
 
-	for (let client of wss.clients) {
-		const data = clientsData.get(client);
-		if (data) {
-			output.push(data.extensionId + ' - ' + data.userAgent);
+	const sockets = await io.fetchSockets();
+	for (let client of sockets) {
+		if (client.data) {
+			output.push(client.data.extensionId + ' - ' + client.data.userAgent);
 		} else {
 			output.push('Unknown');
 		}
 	}
 
 	return output;
-}
-
-/**
- *
- * @param rawData
- * @param socket
- */
-export async function onSocketMessage(rawData: RawData, socket: WebSocket): Promise<IChromeNativeReply | undefined> {
-	let msg: string | IChromeNativeMessage = rawData.toString();
-	try {
-		msg = JSON.parse(msg);
-	} catch (_) {
-	}
-
-	if (typeof msg !== 'object' || msg === null) {
-		console.error(msg);
-		return {
-			error: 'WS Incoming message error',
-			type: 'error'
-		}
-	}
-
-	return await onMessageHandle(msg, socket);
-}
-async function onMessageHandle<T extends object>(msg: IChromeNativeMessage<T>, socket: WebSocket): Promise<IChromeNativeReply | undefined> {
-	if (msg.type === "nativeMessage") {
-		switch (msg.data.command) {
-			case 'getPreference':
-				const getPreference_msg = <IChromeCommand<{ id: string }>>msg;
-				return <IChromeNativeReply<{ id: string, value: string }>>{
-					error: false,
-					type: 'commandReply',
-					data: msg.data,
-					result: {
-						id: getPreference_msg.data.id,
-						value: settings.get(getPreference_msg.data.id)
-					}
-				}
-			case 'getPreferences':
-				const getPreferences_msg = <IChromeCommand<{ ids: string[] }>>msg;
-				const result = [],
-					prefIds: string[] = Array.isArray(getPreferences_msg.data.ids) ?
-						getPreferences_msg.data.ids
-						:
-						[...settings.keys()]
-				;
-
-				for (let id of prefIds) {
-					result.push({
-						id: id,
-						value: settings.get(id)
-					})
-				}
-
-				return {
-					error: false,
-					type: 'commandReply',
-					data: msg.data,
-					result: result
-				}
-			case 'getDefaultValues':
-				return {
-					error: false,
-					type: 'commandReply',
-					data: msg.data,
-					result: settings.getDefaultValues()
-				}
-			case 'ping':
-				return {
-					error: false,
-					type: 'commandReply',
-					data: msg.data,
-					result: 'pong'
-				}
-			case 'showSection':
-				const showSection_msg = <IChromeCommand<{ sectionName?: string }>>msg;
-				if (typeof showSection_msg.data.sectionName !== 'string' || !showSection_msg.data.sectionName) {
-					return {
-						error: 'sectionName invalid',
-						type: 'commandReply',
-						data: msg.data
-					}
-				} else {
-					showSection(showSection_msg.data.sectionName);
-					return {
-						error: false,
-						type: 'commandReply',
-						data: msg.data,
-						result: 'success'
-					}
-				}
-			default:
-				console.dir(msg);
-				return <IChromeNativeReply<string>>{
-					error: 'UNKNOWN_COMMAND',
-					type: 'error',
-					data: msg.data,
-					result: "z-toolbox received the message"
-				};
-		}
-	}
-
-	switch (msg.type) {
-		case "ws open":
-			console.dir(msg);
-			return <IChromeNativeReply<{ connected: string }>>{
-				error: false,
-				type: 'ws open',
-				result: {
-					connected: "z-toolbox"
-				}
-			};
-		case "extensionName":
-			const currentData = clientsData.get(socket);
-			clientsData.set(socket, {
-				...(currentData ?? {}),
-				userAgent: msg.data.userAgent,
-				extensionId: msg.data.extensionId
-			});
-			return;
-		case "log":
-			if (Array.isArray(msg.data)) {
-				console.log(...msg.data);
-			} else {
-				console.log(msg.data);
-			}
-			return;
-		default:
-			return {
-				error: `UNHANDLED_TYPE "${(<any>msg).type}"`,
-				type: 'error'
-			}
-	}
 }

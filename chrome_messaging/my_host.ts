@@ -7,7 +7,8 @@ import path from "path";
 import {ChromeNativeBridge} from "@josephuspaye/chrome-native-bridge";
 
 import dotenv from "dotenv";
-import WebSocket from "ws";
+import { io, Socket } from "socket.io-client";
+import {ClientToServerEvents, ServerToClientEvents, SocketMessage} from "../classes/bo/chromeNative";
 
 dotenv.config({
     path: path.normalize(__dirname + '/../.env')
@@ -39,13 +40,9 @@ function log(data:string|object) {
             });
             onDone();
         } else {
-            if (ws) {
-                ws.send(JSON.stringify({
-                    type: 'log',
-                    data
-                }));
+            if (socket.active) {
+                socket.send('log', data);
             }
-
             onDone();
         }
     })
@@ -53,68 +50,66 @@ function log(data:string|object) {
 
 
 
-const url = 'ws://localhost:42080',
-    timeInterval = 5000
-;
+const url = 'ws://localhost:42080';
 
-let ws : WebSocket,
-    messageReceived = false
-;
-function connect() {
-    ws = new WebSocket(url, {
-        headers : {
-            token: "VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c"
+// please note that the types are reversed
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(url, {
+    extraHeaders: {
+        token: "VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c"
+    }
+});
+
+socket.on('connect', function () {
+    log(['ws open', 'WEBSOCKET_OPENED: client connected to server'])
+        .catch(() => {})
+    ;
+});
+
+socket.on('connect_error', function (err) {
+    log(['ws error', 'Socket encountered error: ' + err.message])
+        .catch(() => {})
+    ;
+});
+
+socket.on('ws open', function (err) {
+    bridge.emit({
+        error: false,
+        type: 'ws open',
+        data: err
+    });
+});
+
+socket.on('log', function (...args) {
+    bridge.emit({
+        error: false,
+        type: 'log',
+        data: args
+    });
+});
+
+socket.on('disconnect', function (reason, description) {
+    log(['ws close', `Socket is closed. Reason : ${reason}`, JSON.stringify(description)])
+        .catch(() => {})
+    ;
+
+    bridge.emit({
+        error: false,
+        type: 'ws close',
+        result: {
+            disconnected: "z-toolbox"
         }
     });
-    ws.addEventListener('open', function(port) {
-        log(['ws open', `WEBSOCKET_OPENED: client connected to server at port ${JSON.stringify(port)}`])
-            .catch(() => {})
-        ;
-    });
+})
 
-    ws.addEventListener('message', function(e) {
-        messageReceived = true;
-        let data = e.data.toString();
-        try {
-            data = JSON.parse(data);
-        } catch (_) {}
 
-        bridge.emit(data);
-    });
 
-    ws.addEventListener('close', function (e: WebSocket.CloseEvent) {
-        log(['ws close', `Socket is closed. Reconnect will be attempted in ${timeInterval / 1000} second. Reason : ${e.reason}`])
-            .catch(() => {})
-        ;
-
-        if (messageReceived) {
-            bridge.emit({
-                error: false,
-                type: 'ws close',
-                result: {
-                    disconnected: "z-toolbox"
-                }
-            });
-        }
-        messageReceived = false;
-
-        ws.removeAllListeners();
-        setTimeout(function () {
-            connect();
-        }, timeInterval);
-    });
-
-    ws.addEventListener('error', function (err) {
-        log(['ws error', 'Socket encountered error: ' + err.message])
-            .catch(() => {})
-        ;
-        ws.close();
+function onReply(message: any, ...args: unknown[]) {
+    bridge.emit({
+        _id: message._id,
+        type: 'commandReply',
+        result: args.length === 1 ? args.at(0) : args
     });
 }
-
-connect();
-
-
 
 const bridge = new ChromeNativeBridge(
     process.argv, // The arguments to the current process
@@ -125,28 +120,28 @@ const bridge = new ChromeNativeBridge(
             log(message)
                 .catch(() => {})
             ;
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                let output = message;
 
-                if (typeof message === 'object' && message !== null) {
-                    if (!!message.type && !!message.data) {
-                        output = message;
-                    } else {
-                        output = {
-                            type: 'nativeMessage',
-                            data: message
-                        };
-                    }
-                } else {
-                    output = {
-                        type: 'nativeMessage',
-                        data: {
-                            command: message
-                        }
-                    }
+            if (socket.active && typeof message === 'object' && message !== null && !!message.type) {
+                const emitData = !!message.data && Array.isArray(message.data) ?
+                    message.data
+                    :
+                    (!!message.data ? [message.data] : [])
+                ;
+
+                if (message._id) {
+                    emitData.push((...args: unknown[]) => {
+                        log([...args]);
+                        onReply(message, ...args);
+                    });
                 }
 
-                ws.send(JSON.stringify(output));
+                socket.emit(message.type, ...emitData);
+            } else {
+                log(['UNEXPECTED_MESSAGE', JSON.stringify(message)]);
+                bridge.emit({
+                    type: 'log',
+                    data: 'UNEXPECTED_MESSAGE'
+                });
             }
         },
 
