@@ -122,10 +122,11 @@ const bridge = new ChromeNativeBridge(
             ;
 
             if (socket.active && typeof message === 'object' && message !== null && !!message.type) {
-                const emitData = !!message.data && Array.isArray(message.data) ?
-                    message.data
-                    :
-                    (!!message.data ? [message.data] : [])
+                const emitData = !message.data ? [] :
+                    (Array.isArray(message.data) ?
+                        message.data
+                        :
+                        [message.data])
                 ;
 
                 if (message._id) {

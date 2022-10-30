@@ -228,8 +228,8 @@ ipcMain.handle('preferenceFileDialog', async function (event, prefId:string): Pr
 });
 
 // noinspection JSUnusedLocalSymbols
-ipcMain.handle('getWsClientNames', function (event, args) {
-	return getWsClientNames();
+ipcMain.handle('getWsClientNames', async function (event, args) {
+	return await getWsClientNames();
 })
 
 const i18n = i18next
