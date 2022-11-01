@@ -7,10 +7,11 @@ import {
 } from "./bo/chromeNative";
 import {settings} from "../main";
 import {showSection} from "./windowManager";
-import {Server} from "socket.io";
+import {Server, Socket} from "socket.io";
 
 
 
+export type socket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
 export const server = http.createServer(),
 	io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server)
 ;
@@ -25,7 +26,7 @@ io.use((socket, next) => {
 	}
 });
 
-io.on("connection", (socket) => {
+io.on("connection", (socket: socket) => {
 	console.dir(socket.request.headers["user-agent"]);
 
 	socket.emit('ws open', {
@@ -84,6 +85,18 @@ io.on("connection", (socket) => {
 		socket.data.userAgent = extensionName.userAgent;
 	});
 });
+
+export function ping(socket: socket): Promise<'pong'> {
+	return new Promise((resolve, reject) => {
+		socket.emit('ping', function (response) {
+			if (response.error === false) {
+				resolve(response.result);
+			} else {
+				reject('Error : ' + response.error);
+			}
+		});
+	})
+}
 
 export async function getWsClientNames(): Promise<string[]> {
 	const output : string[] = [];

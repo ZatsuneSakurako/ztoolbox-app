@@ -5,17 +5,18 @@
 import fs from "fs";
 import path from "path";
 import {ChromeNativeBridge} from "@josephuspaye/chrome-native-bridge";
+import {EventEmitter} from "events";
 
 import dotenv from "dotenv";
 import { io, Socket } from "socket.io-client";
-import {ClientToServerEvents, ServerToClientEvents, SocketMessage} from "../classes/bo/chromeNative";
+import {ClientToServerEvents, ServerToClientEvents} from "../classes/bo/chromeNative";
 
 dotenv.config({
     path: path.normalize(__dirname + '/../.env')
 });
 
 let logFile: fs.WriteStream;
-function log(data:string|object) {
+function log(...data:any[]) {
     return new Promise<void>((onDone) => {
         if (process.env.NATIVE_LOG_FILE) {
             if (!logFile) {
@@ -33,16 +34,11 @@ function log(data:string|object) {
             logFile.write('\n', () => {
                 onDone();
             });
-        } else if (process.env.CHROME_BRIDGE_LOG) {
+        } else {
             bridge.emit({
                 type: 'log',
                 data
             });
-            onDone();
-        } else {
-            if (socket.active) {
-                socket.send('log', data);
-            }
             onDone();
         }
     })
@@ -60,13 +56,13 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(url, {
 });
 
 socket.on('connect', function () {
-    log(['ws open', 'WEBSOCKET_OPENED: client connected to server'])
+    log('ws open', 'WEBSOCKET_OPENED: client connected to server')
         .catch(() => {})
     ;
 });
 
 socket.on('connect_error', function (err) {
-    log(['ws error', 'Socket encountered error: ' + err.message])
+    log('ws error', 'Socket encountered error: ' + err.message)
         .catch(() => {})
     ;
 });
@@ -87,8 +83,39 @@ socket.on('log', function (...args) {
     });
 });
 
+function randomId(): string {
+    let output = '';
+    // noinspection SpellCheckingInspection
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
+    for (let i = 0; i <= 16; i++) {
+        characters.sort(() => {
+            return Math.random() * 2 - 1;
+        });
+        output += characters[Math.round(Math.random() * characters.length - 1)];
+    }
+    return output;
+}
+
+socket.on('ping', function (cb) {
+    const _id = randomId();
+    bridge.emit({
+        error: false,
+        _id,
+        type: 'ping'
+    });
+    bridgeEventEmitter.on('commandReply', function listener(message) {
+        if (!message || message._id !== _id) return;
+
+        bridgeEventEmitter.off('commandReply', listener);
+        cb({
+            error: false,
+            result: 'pong'
+        });
+    });
+})
+
 socket.on('disconnect', function (reason, description) {
-    log(['ws close', `Socket is closed. Reason : ${reason}`, JSON.stringify(description)])
+    log('ws close', `Socket is closed. Reason : ${reason}`, description)
         .catch(() => {})
     ;
 
@@ -111,37 +138,44 @@ function onReply(message: any, ...args: unknown[]) {
     });
 }
 
+const bridgeEventEmitter = new EventEmitter();
 const bridge = new ChromeNativeBridge(
     process.argv, // The arguments to the current process
     process.stdin, // The input stream that Chrome writes to
     process.stdout, // The output stream that Chrome reads from
     {
         onMessage(message) {
-            log(message)
-                .catch(() => {})
-            ;
+            let result = false;
+            if (!!message && typeof message === 'object' && !!message.type) {
+                result = bridgeEventEmitter.emit(message.type, message);
 
-            if (socket.active && typeof message === 'object' && message !== null && !!message.type) {
-                const emitData = !message.data ? [] :
-                    (Array.isArray(message.data) ?
-                        message.data
-                        :
-                        [message.data])
-                ;
+                if (socket.active && message.type !== 'commandReply') {
+                    result = true;
+                    const emitData = !message.data ? [] :
+                        (Array.isArray(message.data) ?
+                            message.data
+                            :
+                            [message.data])
+                    ;
 
-                if (message._id) {
-                    emitData.push((...args: unknown[]) => {
-                        log([...args]);
-                        onReply(message, ...args);
-                    });
+                    if (message._id) {
+                        emitData.push((...args: unknown[]) => {
+                            log(...args)
+                                .catch(console.error)
+                            ;
+                            onReply(message, ...args);
+                        });
+                    }
+
+                    socket.emit(message.type, ...emitData);
                 }
+            }
 
-                socket.emit(message.type, ...emitData);
-            } else {
-                log(['UNEXPECTED_MESSAGE', JSON.stringify(message)]);
+            if (!result) {
                 bridge.emit({
                     type: 'log',
-                    data: 'UNEXPECTED_MESSAGE'
+                    data: 'UNEXPECTED_MESSAGE',
+                    message
                 });
             }
         },
@@ -149,7 +183,7 @@ const bridge = new ChromeNativeBridge(
         onError(err) {
             // There's been an error parsing a received message.
             // Do something to handle it here...
-            log(['bridge error', err])
+            log('bridge error', err)
                 .catch(() => {})
             ;
         },

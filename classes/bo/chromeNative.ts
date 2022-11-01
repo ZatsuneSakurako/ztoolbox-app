@@ -6,6 +6,7 @@ export type ResponseCallback<T> = (response:SocketMessage<T>) => void;
 export interface ServerToClientEvents {
 	'ws open': (data: SocketMessage<{ connected: string }>) => void;
 	log: (...data: any[]) => void;
+	ping: (cb: ResponseCallback<'pong'>) => void;
 }
 
 export interface ClientToServerEvents {
