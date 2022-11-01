@@ -14,7 +14,6 @@ export interface ClientToServerEvents {
 	getDefaultValues: (cb: ResponseCallback<SettingsConfig>) => void;
 	ping: (cb: ResponseCallback<'pong'>) => void;
 	showSection: (sectionName: string, cb: ResponseCallback<'success'>) => void;
-	log: (...data: any[]) => void;
 	extensionName: (extensionName: IChromeExtensionName) => void;
 }
 export interface InterServerEvents {}

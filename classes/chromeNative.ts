@@ -79,10 +79,6 @@ io.on("connection", (socket) => {
 		});
 	});
 
-	socket.on('log', function (...data) {
-		console.log(...data);
-	});
-
 	socket.on('extensionName', function (extensionName) {
 		socket.data.extensionId = extensionName.extensionId;
 		socket.data.userAgent = extensionName.userAgent;
