@@ -1,5 +1,5 @@
 import {IFolderItem, IJsonWebsiteData, INotificationState} from "./bo/websiteData";
-import {JsonSerialize} from "../../classes/Settings";
+import {JsonSerialize} from "../../classes/JsonSerialize.js";
 
 export * from "./bo/websiteData";
 export class WebsiteData implements JsonSerialize<IJsonWebsiteData> {

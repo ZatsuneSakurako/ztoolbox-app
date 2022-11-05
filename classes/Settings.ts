@@ -9,19 +9,11 @@ import {PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, Setting
 import {resourcePath} from "./constants";
 import {app} from "electron";
 import Dict = NodeJS.Dict;
+import {JsonSerialize} from "./JsonSerialize";
 require = require("esm-wallaby")(module/*, options*/);
 const settings : SettingsConfig = require(path.normalize(resourcePath + "/browserViews/js/settings/settings")).default;
 
 
-
-export abstract class JsonSerialize<T> {
-	constructor(data:T) {
-		this.fromJSON(data);
-	}
-
-	abstract fromJSON(data:T):void
-	abstract toJSON():T
-}
 
 interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
 	get(key:string):RandomJsonData|undefined;
