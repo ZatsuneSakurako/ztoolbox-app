@@ -50,6 +50,9 @@ const url = 'ws://localhost:42080';
 
 // please note that the types are reversed
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(url, {
+    reconnectionDelay: 2000,
+    reconnectionDelayMax: 10000,
+    randomizationFactor: 1, // Not needed, only local server
     extraHeaders: {
         token: "VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c"
     }
@@ -130,7 +133,7 @@ socket.on('disconnect', function (reason, description) {
 
 
 
-function onReply(message: any, ...args: unknown[]) {
+function onReply(message: any, err:any, ...args: unknown[]) {
     bridge.emit({
         _id: message._id,
         type: 'commandReply',
@@ -159,15 +162,15 @@ const bridge = new ChromeNativeBridge(
                     ;
 
                     if (message._id) {
-                        emitData.push((...args: unknown[]) => {
-                            log(...args)
+                        emitData.push((err: any, ...args: unknown[]) => {
+                            log(err, ...args)
                                 .catch(console.error)
                             ;
-                            onReply(message, ...args);
+                            onReply(message, err, ...args);
                         });
                     }
 
-                    socket.emit(message.type, ...emitData);
+                    socket.timeout(10000).emit(message.type, ...emitData);
                 }
             }
 
