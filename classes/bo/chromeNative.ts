@@ -1,5 +1,5 @@
 import {RandomJsonData, SettingsConfig} from "./settings";
-import {IJsonWebsiteData} from "./websiteData";
+import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData";
 import Dict = NodeJS.Dict;
 
 export type SocketMessage<T> = {error: false} & {result: T} | {error: true|string};

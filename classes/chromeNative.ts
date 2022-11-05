@@ -9,7 +9,7 @@ import {settings} from "../main";
 import {setBadge, showSection} from "./windowManager";
 import {Server, Socket} from "socket.io";
 import Dict = NodeJS.Dict;
-import {WebsiteData, IJsonWebsiteData} from "./websiteData/websiteData.js";
+import {WebsiteData, IJsonWebsiteData} from "../browserViews/js/websiteData";
 import {JsonSerialize} from "./Settings";
 
 

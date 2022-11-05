@@ -1,7 +1,7 @@
-import {IFolderItem, IJsonWebsiteData, INotificationState} from "../bo/websiteData";
-import {JsonSerialize} from "../Settings";
+import {IFolderItem, IJsonWebsiteData, INotificationState} from "./bo/websiteData";
+import {JsonSerialize} from "../../classes/Settings";
 
-export * from "../bo/websiteData";
+export * from "./bo/websiteData";
 export class WebsiteData implements JsonSerialize<IJsonWebsiteData> {
 	public count: number;
 	public websiteIcon: string;
