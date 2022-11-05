@@ -6,6 +6,7 @@
 		input#infos.hidden(type='radio', name="menu", v-model='menu', value='infos')
 
 		div.grid-12(v-show='menu === \'main\'')
+			websitesData(:websitesData='websitesData')
 			div.grid.no-r-gap
 				p.grid-4
 					label(for="main_textarea_input", data-translate-id="textarea") Text area

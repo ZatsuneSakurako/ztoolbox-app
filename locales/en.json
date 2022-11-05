@@ -11,6 +11,8 @@
 	"codeTester": "Code tester",
 	"runCode": "Run code !",
 
+	"not_logged": "Not connected",
+
 	"textarea": "Text area",
 	"output": "Output (read only)",
 	"textarea_copied": "Text area copied !",

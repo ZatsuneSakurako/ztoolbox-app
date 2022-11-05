@@ -11,6 +11,8 @@
 	"codeTester": "Testeur de code",
 	"runCode": "Lancer le code !",
 
+	"not_logged": "Non connecté",
+
 	"textarea": "Zone de texte",
 	"output": "Sortie (lecture seule)",
 	"textarea_copied": "Zone de texte copiée !",

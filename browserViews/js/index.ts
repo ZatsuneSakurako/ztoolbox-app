@@ -5,11 +5,16 @@ import Vue from 'vue';
 import indexTemplate from '../index.js';
 // @ts-ignore
 import settingsTemplate from '../settings.js';
+// @ts-ignore
+import websitesDataTemplate from '../websitesData.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
 import {BridgedWindow} from "./bridgedWindow";
 import {ShowSectionEvent} from "./bo/showSectionEvent";
 import {IData} from "./bo/IData";
+import {IJsonWebsiteData} from "./bo/websiteData";
+import {WebsiteData} from "./websiteData.js";
+import Dict = NodeJS.Dict;
 
 declare var window : BridgedWindow;
 
@@ -23,6 +28,7 @@ const data: IData = {
 	versions: window.process.versions,
 	internetAddress: null,
 	versionState: null,
+	websitesData: [],
 	wsClientNames: []
 };
 
@@ -37,6 +43,29 @@ window.data = data;
 loadTranslations()
 	.catch(console.error)
 ;
+
+async function loadWebsitesData() {
+	let rawWebsitesData : Dict<IJsonWebsiteData>|null = null
+	try {
+		const result = await window.znmApi.getPreferences('websitesData');
+		rawWebsitesData = result.websitesData as unknown as Dict<IJsonWebsiteData>;
+	} catch (e) {
+		console.error(e);
+	}
+
+	if (!rawWebsitesData) return;
+
+	for (let [name, value] of Object.entries(rawWebsitesData)) {
+		if (!value) continue;
+
+		const instance = new WebsiteData();
+		instance.fromJSON(value);
+		data.websitesData.push({
+			websiteName: name,
+			websiteData: instance
+		});
+	}
+}
 
 themeOnLoad()
 	.then(styleTheme => {
@@ -79,12 +108,16 @@ window.addEventListener("load", async function () {
 
 
 	window.Vue.component('settings', settingsTemplate);
+	window.Vue.component('websitesData', websitesDataTemplate);
 	// @ts-ignore
 	const app = new window.Vue({
 		el: 'main',
 		data: data,
 		...indexTemplate
 	});
+	await loadWebsitesData()
+		.catch(console.error)
+	;
 
 
 
