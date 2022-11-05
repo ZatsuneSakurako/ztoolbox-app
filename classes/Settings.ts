@@ -14,6 +14,15 @@ const settings : SettingsConfig = require(path.normalize(resourcePath + "/browse
 
 
 
+export abstract class JsonSerialize<T> {
+	constructor(data:T) {
+		this.fromJSON(data);
+	}
+
+	abstract fromJSON(data:T):void
+	abstract toJSON():T
+}
+
 interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
 	get(key:string):RandomJsonData|undefined;
 
@@ -21,9 +30,10 @@ interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
 	getNumber(key:string):number|undefined;
 	getBoolean(key:string):boolean|undefined;
 	getDate(key:string):Date|undefined;
+	getObject<T extends object>(key: string):T | undefined
 
 	has(key:string):boolean;
-	set(key:string, value:RandomJsonData):this;
+	set(key:string, value:RandomJsonData|JsonSerialize<any>):this;
 	delete(key:string):boolean;
 	clear():void;
 	toJSON():RandomJsonData;
@@ -273,11 +283,23 @@ export class Settings extends EventEmitter implements ISettings {
 		return new Date(value);
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	set(key:string, value:PrimitivesValues):this {
-		let _value:PrimitivesValues|undefined = value;
+	getObject<T extends object>(key: string, useDefault: boolean = true):T | undefined {
+		let value : any = this.get(key, useDefault);
+		if (value === undefined) return;
+
+		if (typeof value !== 'object') {
+			throw new Error('TYPE_ERROR')
+		}
+
+		return value;
+	}
+
+	set<T extends object>(key:string, value:RandomJsonData|JsonSerialize<T>|Dict<JsonSerialize<T>>):this {
+		let _value:any|undefined = value instanceof JsonSerialize ?
+			value.toJSON()
+			:
+			value
+		;
 		if (key === storageDirKey && typeof _value === 'string') {
 			if (_value.length === 0 || (_value.length > 0 && !fs.existsSync(_value))) {
 				_value = undefined;

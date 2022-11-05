@@ -6,8 +6,11 @@ import {
 	SocketData
 } from "./bo/chromeNative";
 import {settings} from "../main";
-import {showSection} from "./windowManager";
+import {setBadge, showSection} from "./windowManager";
 import {Server, Socket} from "socket.io";
+import Dict = NodeJS.Dict;
+import {WebsiteData, IJsonWebsiteData} from "./websiteData/websiteData.js";
+import {JsonSerialize} from "./Settings";
 
 
 
@@ -84,6 +87,37 @@ io.on("connection", (socket: socket) => {
 		socket.data.extensionId = extensionName.extensionId;
 		socket.data.userAgent = extensionName.userAgent;
 	});
+
+	socket.on('getWebsitesData', function (cb) {
+		const data = settings.getObject<Dict<IJsonWebsiteData>>('websitesData');
+		if (!!data) {
+			cb({
+				error: false,
+				result: data
+			});
+		} else {
+			cb({
+				error: 'NOT_FOUND'
+			})
+		}
+	});
+
+	socket.on('sendWebsitesData', function (websiteData:Dict<IJsonWebsiteData>) {
+		const data : Dict<JsonSerialize<IJsonWebsiteData>> = {};
+		let count : number = 0;
+		for (let [name, raw] of Object.entries(websiteData)) {
+			if (!raw) continue;
+
+			const newInstance = new WebsiteData();
+			newInstance.fromJSON(raw);
+			data[name] = newInstance;
+
+			count += newInstance.count;
+		}
+
+		setBadge(count);
+		settings.set<IJsonWebsiteData>('websitesData', data);
+	});
 });
 
 export function ping(socket: socket): Promise<'pong'> {
@@ -95,7 +129,7 @@ export function ping(socket: socket): Promise<'pong'> {
 				reject('Error : ' + response.error);
 			}
 		});
-	})
+	});
 }
 
 export async function getWsClientNames(): Promise<string[]> {
