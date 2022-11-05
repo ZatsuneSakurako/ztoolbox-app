@@ -9,7 +9,7 @@ import {PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, Setting
 import {resourcePath} from "./constants";
 import {app} from "electron";
 import Dict = NodeJS.Dict;
-require = require("esm")(module/*, options*/);
+require = require("esm-wallaby")(module/*, options*/);
 const settings : SettingsConfig = require(path.normalize(resourcePath + "/browserViews/js/settings/settings")).default;
 
 

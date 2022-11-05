@@ -74,7 +74,7 @@
     "codemirror": "^5.60.0",
     "cron-parser": "^4.6.0",
     "dotenv": "^16.0.3",
-    "esm": "^3.2.25",
+    "esm-wallaby": "^3.2.26",
     "fs-extra": "^10.1.0",
     "i18next": "^22.0.3",
     "locutus": "^2.0.16",
