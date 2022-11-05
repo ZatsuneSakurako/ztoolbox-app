@@ -1,6 +1,18 @@
-import {BrowserWindow} from "electron";
+import {app, BrowserWindow} from "electron";
 import {appIcon, browserViewPath} from "./constants";
 import path from "path";
+
+/**
+ * @see https://github.com/electron/electron/pull/27067#discussion_r555466735
+ * @param count
+ */
+export function setBadge(count: number) {
+	if (count < 100) {
+		app.setBadgeCount(count);
+	} else {
+		app.setBadgeCount();
+	}
+}
 
 export function createWindow(showSection?: string) {
 	// Create the browser window.
