@@ -19,8 +19,8 @@ export class WebsiteData implements JsonSerialize<IJsonWebsiteData> {
 		this.folders = new Map();
 		this.websiteIcon = '';
 		this.logged = undefined;
-		this.loginId = '';
-		this.href = '';
+		this.loginId = undefined;
+		this.href = undefined;
 	}
 
 	fromJSON(data: IJsonWebsiteData) {
