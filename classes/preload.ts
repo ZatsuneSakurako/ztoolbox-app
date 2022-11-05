@@ -26,6 +26,15 @@ ipcRenderer.on('themeUpdate', function (e, theme:string, background_color:string
 	for (let cb of themeUpdateCb) {
 		cb(theme, background_color);
 	}
+});
+
+const websiteDataUpdateCb:(() => void)[] = [];
+// noinspection JSUnusedLocalSymbols
+ipcRenderer.on('websiteDataUpdate', function (e) {
+	console.info('websiteDataUpdate');
+	for (let cb of websiteDataUpdateCb) {
+		cb();
+	}
 })
 
 contextBridge.exposeInMainWorld(
@@ -71,6 +80,9 @@ const znmApi:IZnmApi = {
 	},
 	onThemeUpdate: (cb:(theme:string, background_color:string) => void) => {
 		themeUpdateCb.push(cb);
+	},
+	onWebsiteDataUpdate: (cb:() => void) => {
+		websiteDataUpdateCb.push(cb);
 	}
 };
 

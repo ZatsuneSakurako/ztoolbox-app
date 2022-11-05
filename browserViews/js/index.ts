@@ -55,6 +55,10 @@ async function loadWebsitesData() {
 
 	if (!rawWebsitesData) return;
 
+	// Clear array
+	data.websitesData.splice(0, data.websitesData.length);
+
+	let count = 0;
 	for (let [name, value] of Object.entries(rawWebsitesData)) {
 		if (!value) continue;
 
@@ -64,6 +68,14 @@ async function loadWebsitesData() {
 			websiteName: name,
 			websiteData: instance
 		});
+
+		count += instance.count;
+	}
+
+	// @ts-ignore
+	if (typeof navigator.setAppBadge === 'function') {
+		// @ts-ignore
+		navigator.setAppBadge(count);
 	}
 }
 
@@ -115,9 +127,17 @@ window.addEventListener("load", async function () {
 		data: data,
 		...indexTemplate
 	});
+
+
+
 	await loadWebsitesData()
 		.catch(console.error)
 	;
+	window.znmApi.onWebsiteDataUpdate(function () {
+		loadWebsitesData()
+			.catch(console.error)
+		;
+	});
 
 
 
