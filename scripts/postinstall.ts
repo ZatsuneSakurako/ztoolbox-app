@@ -24,6 +24,10 @@ fs.copy(path.resolve(currentPath, './node_modules/string-strip-html/dist/'), pat
 	.catch(console.error)
 ;
 
+fs.copy(path.resolve(currentPath, './node_modules/@fontsource/ubuntu/'), path.resolve(libPath, './fontsource-ubuntu'))
+	.catch(console.error)
+;
+
 fs.ensureDirSync(path.resolve(libPath, './locutus'));
 const b = browserify([ path.resolve(currentPath, './node_modules/locutus/index.js') ], {
 		standalone: 'locutus'

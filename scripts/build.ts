@@ -102,6 +102,8 @@ const _yargs = yargs(hideBin(process.argv))
 						"from": "browserViews/lib/",
 						"to": "resources/browserViews/lib/",
 						"filter": [
+							"**/*.woff",
+							"**/*.woff2",
 							"**/*.css",
 							"**/*.js",
 							"**/*.map"

@@ -67,6 +67,7 @@
     "yargs": "^17.6.0"
   },
   "dependencies": {
+    "@fontsource/ubuntu": "^4.5.11",
     "@josephuspaye/chrome-native-bridge": "^0.3.0",
     "auto-launch": "^5.0.5",
     "browserify": "^17.0.0",
