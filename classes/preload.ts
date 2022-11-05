@@ -37,6 +37,7 @@ contextBridge.exposeInMainWorld(
 
 const znmApi:IZnmApi = {
 	nonce: () => ipcRenderer.invoke('nonce-ipc'),
+	openExternal: (url: string) => ipcRenderer.invoke('openExternal', url),
 	openStreamlink: (url?: string) => ipcRenderer.invoke('openStreamlink', url),
 	digCmd: (domain: string) => ipcRenderer.invoke('digCmd', domain),
 	preferenceFileDialog: (prefId) => ipcRenderer.invoke('preferenceFileDialog', prefId),

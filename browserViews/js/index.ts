@@ -53,6 +53,18 @@ window.znmApi.onThemeUpdate(function (theme, background_color) {
 	;
 })
 
+document.addEventListener('click', function (e) {
+	const link : HTMLLinkElement|null = (<HTMLElement>e.target).closest('a[target=_blank]');
+	if (!link) return;
+
+	window.znmApi.openExternal(link.href)
+		.catch(console.error)
+	;
+
+	e.preventDefault();
+	e.stopPropagation();
+});
+
 window.addEventListener("load", async function () {
 	window.znmApi.onShowSection(function (sectionName:string) {
 		data.menu = data.menu === 'default' ? defaultMenu : sectionName;

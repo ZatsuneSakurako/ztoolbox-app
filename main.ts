@@ -1,4 +1,5 @@
 import {app, BrowserWindow, ipcMain, Menu, MenuItem, session, Tray, dialog} from 'electron';
+import electron from 'electron';
 import * as path from "path";
 import fs from "fs-extra";
 import crypto from "crypto";
@@ -137,6 +138,12 @@ app.whenReady()
 // noinspection JSUnusedLocalSymbols
 ipcMain.handle('nonce-ipc', async (event, ...args) => {
 	return nonce;
+});
+
+ipcMain.handle('openExternal', async (event, url: string) => {
+	return electron.shell.openExternal(url)
+		.catch(console.error)
+	;
 });
 
 ipcMain.handle('openStreamlink', async (event, url?: string) => {
