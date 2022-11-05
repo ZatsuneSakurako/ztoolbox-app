@@ -38,7 +38,7 @@ const paths = {
 		dest: '.'
 	},
 	mainClassJs: {
-		src: 'classes/*.ts',
+		src: 'classes/**/*.ts',
 		dest: 'classes/'
 	}
 };

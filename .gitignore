@@ -10,8 +10,7 @@
 /*.js
 /scripts/*.js
 /chrome_messaging/*.js
-/classes/bo/*.js
-/classes/*.js
+/classes/**/*.js
 
 ### Linux template
 *~
