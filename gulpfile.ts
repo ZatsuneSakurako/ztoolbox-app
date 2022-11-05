@@ -2,7 +2,7 @@ import * as gulp from "gulp";
 import del from "del";
 import * as fs from "fs-extra";
 import _gulpSass from "gulp-sass";
-import sass from "sass";
+import * as sass from "sass-embedded";
 import * as sourcemaps from "gulp-sourcemaps";
 import gulpPug from "gulp-pug";
 import gulpVue from "./scripts/gulp-vue.js";
