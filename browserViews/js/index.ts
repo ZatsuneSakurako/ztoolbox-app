@@ -22,7 +22,7 @@ declare var window : BridgedWindow;
 
 const defaultMenu = 'main';
 const data: IData = {
-	main_input_type: 'url',
+	main_input_type: 'dns',
 	menu: defaultMenu,
 	message: 'Hello Vue!',
 	versions: window.process.versions,

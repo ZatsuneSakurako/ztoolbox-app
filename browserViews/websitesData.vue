@@ -4,7 +4,7 @@
 			Websites data
 		</h1>
 		<ul class="grid no-r-gap">
-			<li class="grid-4" v-for="{websiteName: website, websiteData: data} in websitesData">
+			<li class="grid-3" v-for="{websiteName: website, websiteData: data} in websitesData">
 				<a class="buttonItem websiteItem cursor" :href="data.href" target="_blank"
 				   :data-logged="data.logged" :data-website="website">
 

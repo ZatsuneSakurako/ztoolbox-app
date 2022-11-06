@@ -8,28 +8,25 @@
 		div.grid-12(v-show='menu === \'main\'')
 			websitesData(:websitesData='websitesData')
 			div.grid.no-r-gap
-				p.grid-4
+				p.grid-3
 					label(for="main_textarea_input", data-translate-id="textarea") Text area
 					textarea#main_textarea_input(ref="main_textarea_input")
-				p.grid-4
+				p.grid-3
 					input#main_input_type_text.hidden(name="main_input_type", v-model="main_input_type", value="text", type="radio")
 					label.button.checkable.material-icons(for="main_input_type_text") text_fields
-					input#main_input_type_url.hidden(name="main_input_type", v-model="main_input_type", value="url", type="radio")
-					label.button.checkable.material-icons(for="main_input_type_url") link
 					input#main_input_type_dns.hidden(name="main_input_type", v-model="main_input_type", value="dns", type="radio")
 					label.button.checkable.material-icons(for="main_input_type_dns") dns
 					label(for="main_input", v-if="main_input_type === 'text'") Text&nbsp;:
-					label(for="main_input", v-if="main_input_type === 'url'") URL&nbsp;:
 					label(for="main_input", v-if="main_input_type === 'dns'") DNS / IP&nbsp;:
 					input#main_input(ref="main_input", :type="main_input_type === 'url' ? 'url' : 'text'")
-				p.grid-4
+				p.grid-6
 					label(for="main_textarea_output", data-translate-id="output") Output
 					textarea#main_textarea_output(readonly, ref="main_textarea_output")
 			div.grid.no-r-gap
-				p.grid-4
+				p.grid-3
 					button.material-icons(v-on:click='onCopyTextArea') content_copy
 					button.material-icons(v-on:click='onPasteTextArea') content_paste
-				p.grid-4
+				p.grid-3
 					button(v-on:click='onDigCmd', v-if="main_input_type === 'dns'") Dig domain
 
 		p.grid-12(v-show='menu === \'code-tester\'')
@@ -208,9 +205,6 @@ export default {
 				})
 				.catch(console.error)
 			;
-		},
-		onStreamLink() {
-			window.znmApi.openStreamlink(this.$refs.main_input.value);
 		},
 		onDigCmd() {
 			window.znmApi.digCmd(this.$refs.main_input.value)
