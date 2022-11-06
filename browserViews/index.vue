@@ -30,7 +30,6 @@
 					button.material-icons(v-on:click='onCopyTextArea') content_copy
 					button.material-icons(v-on:click='onPasteTextArea') content_paste
 				p.grid-4
-					button(v-on:click='onStreamLink', v-if="main_input_type === 'url'") Ouvrir streamlink
 					button(v-on:click='onDigCmd', v-if="main_input_type === 'dns'") Dig domain
 
 		p.grid-12(v-show='menu === \'code-tester\'')

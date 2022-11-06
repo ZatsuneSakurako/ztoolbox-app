@@ -9,7 +9,6 @@ export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 export interface IZnmApi {
 	nonce(): Promise<string>
 	openExternal(url: string): Promise<void>
-	openStreamlink(url?: string): Promise<void>
 	digCmd(domain: string): Promise<string>
 	preferenceFileDialog(prefId:string): Promise<{ canceled: boolean, filePaths: string[] }|string>
 	_(key: string): Promise<string>

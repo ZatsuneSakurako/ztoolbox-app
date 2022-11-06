@@ -146,18 +146,6 @@ ipcMain.handle('openExternal', async (event, url: string) => {
 	;
 });
 
-ipcMain.handle('openStreamlink', async (event, url?: string) => {
-	if (!!url) {
-		return openStreamlink(false, url)
-			.catch(console.error)
-		;
-	} else {
-		return openStreamlink(false)
-			.catch(console.error)
-		;
-	}
-});
-
 ipcMain.handle('digCmd', (event, domain: string) => {
 	let result:string = '';
 	try {
@@ -354,9 +342,7 @@ app.on('activate', function () {
 
 
 
-const urlRegexp = /https?:\/\/*/,
-	clipboard = new ZClipboard(5000, false)
-;
+const clipboard = new ZClipboard(5000, false);
 
 function getSelectedMenu() : string|null {
 	let checked:IZMenuItem|null = null;
@@ -367,86 +353,6 @@ function getSelectedMenu() : string|null {
 	}
 
 	return checked === null ? null : (checked?.id || checked?.label);
-}
-
-async function openStreamlink(useConfirmNotification:boolean=true, url:string|URL|null=null) : Promise<void> {
-	const selected = (getSelectedMenu() ?? '').trim(),
-		clipboardText = clipboard.text
-	;
-
-	let targetQuality = selected;
-
-	if (url === null && urlRegexp.test(clipboardText)) {
-		try {
-			url = new URL(clipboard.text);
-		} catch (e) {
-			console.error(e)
-		}
-	}
-
-	if (url == null) {
-		notifyElectron({
-			title: 'Erreur',
-			message: 'Pas d\'url dans le presse-papier'
-		})
-			.catch(console.error)
-		;
-		return;
-	}
-
-
-
-	let maxQuality;
-	if (/\d+p/.test(targetQuality)) {
-		maxQuality = selected;
-		targetQuality = 'best';
-	}
-
-	const isAvailable = await Streamlink.isAvailable(url, targetQuality, maxQuality)
-		.catch(console.error)
-	;
-
-	if (isAvailable === false || maxQuality === undefined) {
-		notifyElectron({
-			title: 'Information',
-			message: 'Vérifiez l\'url (flux en ligne, qualités, ...)'
-		})
-			.then(() => {
-				if (url) {
-					require("shell").openExternal(url.toString())
-						.catch(console.error)
-					;
-				}
-			})
-			.catch(console.error)
-		;
-		return;
-	}
-
-	if (useConfirmNotification) {
-		let notificationConfirmed: boolean;
-		try {
-			await notifyElectron({
-				title: 'Lien détecté',
-				message: 'Cliquer pour ouvrir le lien avec streamlink'
-			});
-
-			notificationConfirmed = true;
-		} catch (e) {
-			notificationConfirmed = false;
-		}
-
-		if (!notificationConfirmed) {
-			return;
-		}
-	}
-
-
-
-	Streamlink.open(url, targetQuality, maxQuality)
-		.catch(console.error)
-	;
-
 }
 
 
@@ -478,14 +384,6 @@ function onReady() {
 			}
 		},
 
-		{
-			label: 'Ouvrir streamlink', type: 'normal', click() {
-				openStreamlink(false)
-					.catch(console.error)
-				;
-			}
-		},
-
 		{type: 'separator'},
 
 		{
@@ -498,15 +396,6 @@ function onReady() {
 				triggerBrowserWindowPreferenceUpdate('clipboardWatch', settings.get('clipboardWatch'));
 			}
 		},
-
-		{type: 'separator'},
-
-		{id: 'worst', label: 'Pire', type: 'radio'},
-		{id: '360p', label: '360p', type: 'radio'},
-		{id: '480p', label: '480p', type: 'radio'},
-		{id: '720p', label: '720p', type: 'radio'},
-		{id: '1080p', label: '1080p', type: 'radio'},
-		{id: 'best', label: 'Meilleure', type: 'radio'},
 
 		{type: 'separator'},
 
@@ -537,31 +426,15 @@ function onReady() {
 	// tray.addListener('double-click', toggleWindow);
 
 	clipboard.toggle(settings.getBoolean('clipboardWatch') ?? false);
+	// noinspection JSUnusedLocalSymbols
 	clipboard.on('text', (clipboardText:string) => {
-		if (urlRegexp.test(clipboardText)) {
-			openStreamlink(true)
-				.catch(console.error)
-			;
-		}
+		//
 	});
 
 
 
-
-
-	const refreshQualityChecked = () => {
-		for (const menuItem of contextMenu?.items ?? []) {
-			const value = menuItem.id || menuItem.label;
-			if (menuItem.type === "radio" && settings.get("quality") === value) {
-				menuItem.checked = true;
-			}
-		}
-	};
 	settings.on('change', function (key:any) {
 		switch (key) {
-			case 'quality':
-				refreshQualityChecked();
-				break;
 			case 'autostart':
 				updateAutoStart()
 					.catch(console.error)
@@ -592,7 +465,6 @@ function onReady() {
 				break;
 		}
 	});
-	refreshQualityChecked();
 
 
 
@@ -688,8 +560,22 @@ async function updateAutoStart() {
 
 
 function onOpen(commandLine:string[]) {
-	const isAutoStarted = commandLine.includes(autoStartArgument),
-		requests = commandLine.filter(value => {
+	const zToolboxAllowedParams = [
+		autoStartArgument
+	];
+	const args = commandLine
+		.filter(arg => {
+			return !arg.startsWith('--') || zToolboxAllowedParams.includes(arg)
+		})
+		.slice(!app.isPackaged ? 2 : 1, commandLine.length)
+	;
+	if (args.length === 0) {
+		showSection('default');
+		return;
+	}
+
+	const isAutoStarted = args.includes(autoStartArgument),
+		requests = args.filter(value => {
 			return value.indexOf(zToolbox_protocol + '://') !== -1
 		})
 	;
@@ -709,28 +595,6 @@ function onOpen(commandLine:string[]) {
 		}
 
 		switch (url.host) {
-			case 'live':
-				// ztoolbox://live/...
-				const inputUrl = url.pathname.replace(/^\//, ''),
-					[siteType, liveId] = inputUrl.split('/')
-				;
-
-				let liveUrl: string;
-				switch (siteType) {
-					case 'youtube':
-						liveUrl = `https://www.youtube.com/watch?v=${liveId}`;
-						break;
-					case 'twitch':
-						liveUrl = `https://twitch.tv/${liveId}`;
-						break;
-					default:
-						liveUrl = `https://${inputUrl}`;
-				}
-
-				openStreamlink(false, liveUrl)
-					.catch(console.error)
-				;
-				break;
 			case 'settings':
 				showSection('settings');
 				break;
