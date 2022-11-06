@@ -433,6 +433,10 @@ function onReady() {
 
 
 
+	if (settings.has('quality')) {
+		settings.delete('quality');
+	}
+
 	settings.on('change', function (key:any) {
 		switch (key) {
 			case 'autostart':

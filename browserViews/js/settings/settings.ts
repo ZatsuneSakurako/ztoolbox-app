@@ -41,37 +41,7 @@ const settings:SettingsConfig = {
 	"clipboardWatch": {
 		"type": "bool",
 		"value": false
-	},
-	"quality": {
-		"type": "menulist",
-		"value": "best",
-		"options": [
-			{
-				value: 'worst',
-				label: 'worst'
-			},
-			{
-				value: '360p',
-				label: '360p'
-			},
-			{
-				value: '480p',
-				label: '480p'
-			},
-			{
-				value: '720p',
-				label: '720p'
-			},
-			{
-				value: '1080p',
-				label: '1080p'
-			},
-			{
-				value: 'best',
-				label: 'best'
-			}
-		]
-	},
+	}
 };
 
 export default settings;
