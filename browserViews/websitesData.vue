@@ -13,7 +13,7 @@
 					<div class="title" :data-count="data.logged ? data.count : ''">{{website}}</div>
 					<div class="websiteData">
 						<a class="folder" :href="folder.folderCount" target="_blank"
-						   v-if="data.logged && folder.folderUrl"
+						   v-if="data.logged && folder.folderUrl && folder.folderCount"
 						   v-for="[folderTitle, folder] in data.folders"
 						   :data-folder-count="folder.folderCount"
 						   :data-folder-url="folder.folderUrl">{{folderTitle}}</a>

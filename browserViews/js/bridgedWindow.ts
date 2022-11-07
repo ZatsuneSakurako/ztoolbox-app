@@ -1,8 +1,8 @@
-import Dict = NodeJS.Dict;
 import {VersionState} from "../../classes/bo/versionState";
-import {IPathConfigFilter, RandomJsonData} from "../../classes/bo/settings";
+import {RandomJsonData} from "../../classes/bo/settings";
 import {NotificationResponse} from "../../classes/bo/notify";
 import {IData} from "./bo/IData";
+import {Dict} from "./bo/Dict";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -36,5 +36,6 @@ export interface IZnmApi {
 
 export type BridgedWindow = Window & typeof globalThis & {
 	znmApi: IZnmApi,
-	data: IData
+	data: IData,
+	Vue: any
 };

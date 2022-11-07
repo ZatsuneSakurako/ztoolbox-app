@@ -1,0 +1,15 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./tsconfig.json",
+	"include": [
+		"./*.ts",
+		"chrome_messaging/*.ts",
+		"classes/*.ts",
+		"classes/**/*.ts",
+		"browserViews/js/_import-map-loader.ts"
+	],
+	"exclude": [
+		"*.d.ts",
+		"**/*.d.ts"
+	]
+}

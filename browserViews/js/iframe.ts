@@ -1,3 +1,4 @@
+// @ts-ignore
 import {stripHtml as _stripHtml} from 'string-strip-html';
 import 'locutus';
 

@@ -4,25 +4,34 @@
 		"alwaysStrict": true,
 		"declaration": true,
 		"downlevelIteration": true,
-		"esModuleInterop": true,
+		"esModuleInterop": false,
 		"experimentalDecorators": false,
 		"forceConsistentCasingInFileNames": true,
 		"newLine": "LF",
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"module": "ES6",
+		"moduleResolution": "classic",
 		"pretty": true,
-		"resolveJsonModule": true,
+		"resolveJsonModule": false,
+		"rootDir": ".",
 		"types": [
 			"node",
-			"browserify",
-			"codemirror"
+			"string-strip-html"
 		],
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"sourceMap": true,
 		"strictNullChecks": true,
 		"skipLibCheck": true,
-		"target": "ESNext",
-		"rootDir": "."
-	}
+		"target": "ESNext"
+	},
+	"include": [
+		"browserViews/js/*.ts",
+		"browserViews/js/**/*.ts"
+	],
+	"exclude": [
+		"_*.ts",
+		"*.d.ts",
+		"**/_*.ts",
+		"**/*.d.ts"
+	]
 }

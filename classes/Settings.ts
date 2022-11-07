@@ -5,12 +5,12 @@ import * as fs from "fs";
 import path from "path";
 import debounce from "lodash.debounce";
 
+require = require("esm-wallaby")(module/*, options*/);
 import {PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings";
 import {resourcePath} from "./constants";
 import {app} from "electron";
 import Dict = NodeJS.Dict;
 import {JsonSerialize} from "./JsonSerialize";
-require = require("esm-wallaby")(module/*, options*/);
 const settings : SettingsConfig = require(path.normalize(resourcePath + "/browserViews/js/settings/settings")).default;
 
 

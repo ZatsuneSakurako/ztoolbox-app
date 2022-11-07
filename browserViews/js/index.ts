@@ -1,4 +1,5 @@
 // noinspection ES6UnusedImports
+// @ts-ignore
 import Vue from 'vue';
 
 // @ts-ignore
@@ -14,7 +15,7 @@ import {ShowSectionEvent} from "./bo/showSectionEvent";
 import {IData} from "./bo/IData";
 import {IJsonWebsiteData} from "./bo/websiteData";
 import {WebsiteData} from "./websiteData.js";
-import Dict = NodeJS.Dict;
+import {Dict} from "./bo/Dict";
 
 declare var window : BridgedWindow;
 

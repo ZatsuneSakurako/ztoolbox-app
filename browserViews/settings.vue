@@ -29,9 +29,9 @@
 <script lang="ts">
 import settings from './js/settings/settings.js';
 import {BridgedWindow} from "./js/bridgedWindow.js";
-import Dict = NodeJS.Dict;
 import {SettingConfig, SettingsConfig} from "../classes/bo/settings.js";
 import {ShowSectionEvent} from "./js/bo/showSectionEvent.js";
+import {Dict} from "./js/bo/Dict";
 
 declare var window : BridgedWindow;
 

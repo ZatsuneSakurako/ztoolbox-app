@@ -1,16 +1,13 @@
+import child_process from "child_process";
 import * as gulp from "gulp";
 import del from "del";
 import * as fs from "fs-extra";
 import _gulpSass from "gulp-sass";
 import * as sass from "sass-embedded";
-import * as sourcemaps from "gulp-sourcemaps";
 import gulpPug from "gulp-pug";
 import gulpVue from "./scripts/gulp-vue.js";
-import gulpTs from "gulp-typescript";
 
-const gulpSass = _gulpSass(sass),
-	tsOptions = fs.readJsonSync('./tsconfig.json')
-;
+const gulpSass = _gulpSass(sass);
 
 const paths = {
 	html: {
@@ -27,10 +24,6 @@ const paths = {
 	},
 	js: {
 		src: 'browserViews/js/**/*.ts',
-		dest: 'browserViews/js/'
-	},
-	jsNoModule: {
-		src: 'browserViews/js/**/_*.ts',
 		dest: 'browserViews/js/'
 	},
 	mainJs: {
@@ -55,8 +48,9 @@ function clearCss() {
 }
 
 function _css() {
-	return gulp.src([paths.styles.src, '!**/_*.sass'])
-		.pipe(sourcemaps.init())
+	return gulp.src([paths.styles.src, '!**/_*.sass'], {
+		sourcemaps: true
+	})
 		.pipe(
 			gulpSass.sync({
 				indentedSyntax: true,
@@ -67,12 +61,11 @@ function _css() {
 			})
 				.on('error', gulpSass.logError)
 		)
-		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.styles.dest))
+		.pipe(gulp.dest(paths.styles.dest, {
+			sourcemaps: '.'
+		}))
 }
 export const css = gulp.series(clearCss, _css);
-
-
 
 
 
@@ -93,109 +86,76 @@ export const html = gulp.series(clearHtml, _html);
 
 
 
-
-
 function clearVue() {
 	return del([
 		'browserViews/*.js',
 	]);
 }
 
+const vueTs = {
+	compilerOptions: fs.readJsonSync('./tsconfig.json').compilerOptions
+};
+vueTs.compilerOptions.module = 'esnext';
+vueTs.compilerOptions.lib = ["es5", "es6", "dom"];
 function _vue() {
-	return gulp.src(paths.vue.src)
-		.pipe(gulpVue({}, browserViewsTsProject))
-		.pipe(gulp.dest(paths.vue.dest))
+	return gulp.src(paths.vue.src, {
+		sourcemaps: true
+	})
+
+		.pipe(gulpVue({}, vueTs))
+
+		.pipe(gulp.dest(paths.vue.dest, {
+			sourcemaps: '.'
+		}))
 }
 export const vue = gulp.series(clearVue, _vue);
 
 
 
-
-
-function clearMainJs() {
+function clearJs() {
 	return del([
 		'./*.js',
 		'./*.d.ts',
 		'./*.map',
+		'browserViews/js/**/*.js',
+		'browserViews/js/**/*.d.ts',
+		'browserViews/js/**/*.map',
 		'classes/*.js',
 		'classes/*.d.ts',
 		'classes/*.map',
 	])
 }
 
-function _mainJs() {
-	return gulp.src([
-		paths.mainJs.src, '!_*.ts',
-		paths.mainClassJs.src, '!**/_*.ts'
-	], {
-		cwd: __dirname,
-		base: __dirname
-	})
-		.pipe(sourcemaps.init())
-
-		.pipe(gulpTs(tsOptions.compilerOptions))
-
-		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.mainJs.dest))
+async function _mainJs() {
+	return child_process.execSync('tsc --project tsconfig-main.json')
 }
 
-// noinspection JSUnusedGlobalSymbols
-export const mainJs = gulp.series(clearMainJs, _mainJs);
-
-
-
-
-
-function clearJs() {
-	return del([
-		'browserViews/js/*.js',
-		'browserViews/js/**/*.js',
-		'browserViews/js/**/*.map',
-	]);
+/**
+ * Always put after _mainJs to prevent conflict
+ */
+async function _js() {
+	return child_process.execSync('tsc --project tsconfig-browserView.json')
 }
 
-const browserViewsTsProject:any = JSON.parse(JSON.stringify(tsOptions));
-browserViewsTsProject.compilerOptions.module = 'es6';
-function _js() {
-	return gulp.src([paths.js.src, '!**/_*.ts'])
-		.pipe(sourcemaps.init())
-
-		.pipe(gulpTs(browserViewsTsProject.compilerOptions))
-
-		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.js.dest))
-}
-const browserViewsTsProject_noModule:any = JSON.parse(JSON.stringify(tsOptions));
-browserViewsTsProject_noModule.compilerOptions.module = 'none';
-delete browserViewsTsProject_noModule.compilerOptions.moduleResolution;
-browserViewsTsProject_noModule.compilerOptions.resolveJsonModule = false;
-function _jsNoModule() {
-	return gulp.src([paths.jsNoModule.src])
-		.pipe(sourcemaps.init())
-
-		.pipe(gulpTs(browserViewsTsProject_noModule.compilerOptions))
-
-		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(paths.js.dest))
-}
-export const js = gulp.series(clearJs, _js, _jsNoModule);
+export const js = gulp.series(clearJs, _mainJs, _js);
 
 
 
 
 
-export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs, clearMainJs);
+export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs);
 
-export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js, _jsNoModule, _mainJs));
+export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _mainJs), _js);
 
 function _watch() {
 	gulp.watch(paths.styles.src, _css);
 	gulp.watch(paths.html.src, _html);
 	gulp.watch(paths.vue.src, _vue);
-	gulp.watch(paths.js.src, _js);
-	gulp.watch(paths.jsNoModule.src, _jsNoModule);
-	gulp.watch(paths.mainJs.src, _mainJs);
-	gulp.watch(paths.mainClassJs.src, _mainJs);
+	gulp.watch([
+		paths.js.src,
+		paths.mainJs.src,
+		paths.mainClassJs.src
+	], gulp.series(_mainJs, _js));
 }
 export const watch = gulp.series(clear, build, _watch);
 

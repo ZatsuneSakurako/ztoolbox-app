@@ -1,4 +1,6 @@
-import Dict = NodeJS.Dict;
+interface Dict<T> {
+	[key: string]: T | undefined;
+}
 
 interface IButtonConfig {
 	type: 'button',

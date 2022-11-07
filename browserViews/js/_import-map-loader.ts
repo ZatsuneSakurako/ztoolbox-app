@@ -1,6 +1,10 @@
-export = 0;
 // @ts-ignore
-self.module = {}
+self.export = 0;
+// @ts-ignore
+export = 0
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const module = self.module = {}
 
 import {BridgedWindow} from "./bridgedWindow";
 // @ts-ignore
