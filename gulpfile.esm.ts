@@ -89,6 +89,7 @@ export const html = gulp.series(clearHtml, _html);
 function clearVue() {
 	return del([
 		'browserViews/*.js',
+		'browserViews/*.js.map',
 	]);
 }
 
@@ -120,24 +121,20 @@ function clearJs() {
 		'browserViews/js/**/*.js',
 		'browserViews/js/**/*.d.ts',
 		'browserViews/js/**/*.map',
-		'classes/*.js',
-		'classes/*.d.ts',
-		'classes/*.map',
+		'chrome_messaging/**/*.js',
+		'chrome_messaging/**/*.d.ts',
+		'chrome_messaging/**/*.map',
+		'classes/**/*.js',
+		'classes/**/*.d.ts',
+		'classes/**/*.map'
 	])
 }
 
-async function _mainJs() {
-	return child_process.execSync('tsc --project tsconfig-main.json')
-}
-
-/**
- * Always put after _mainJs to prevent conflict
- */
 async function _js() {
-	return child_process.execSync('tsc --project tsconfig-browserView.json')
+	return child_process.execSync('tsc')
 }
 
-export const js = gulp.series(clearJs, _mainJs, _js);
+export const js = gulp.series(clearJs, _js);
 
 
 
@@ -145,7 +142,7 @@ export const js = gulp.series(clearJs, _mainJs, _js);
 
 export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs);
 
-export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _mainJs), _js);
+export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js));
 
 function _watch() {
 	gulp.watch(paths.styles.src, _css);
@@ -155,7 +152,7 @@ function _watch() {
 		paths.js.src,
 		paths.mainJs.src,
 		paths.mainClassJs.src
-	], gulp.series(_mainJs, _js));
+	], _js);
 }
 export const watch = gulp.series(clear, build, _watch);
 
