@@ -8,6 +8,7 @@ import Mustache from "mustache";
 import AutoLaunch from "auto-launch";
 import ProtocolRegistry from "protocol-registry";
 import shell, {which} from 'shelljs';
+import {fileURLToPath} from "url";
 import Dict = NodeJS.Dict;
 
 import {ZClipboard} from './classes/ZClipboard';
@@ -26,6 +27,9 @@ import {getWsClientNames, server, io} from "./classes/chromeNative";
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
 import {IPathConfigFilter, SettingConfig} from "./classes/bo/settings";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 

@@ -8,14 +8,17 @@
 		"experimentalDecorators": false,
 		"forceConsistentCasingInFileNames": true,
 		"newLine": "LF",
-		"module": "commonjs",
+		"module": "ESNext",
 		"moduleResolution": "node",
 		"pretty": true,
 		"resolveJsonModule": true,
 		"types": [
 			"node",
 			"browserify",
-			"codemirror"
+			"codemirror",
+			"del",
+			"gulp-pug",
+			"sass-embedded"
 		],
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
@@ -24,5 +27,12 @@
 		"skipLibCheck": true,
 		"target": "ESNext",
 		"rootDir": "."
-	}
+	},
+	"include": [
+		"./main.ts",
+		"./browserViews/js/**/*.ts",
+		"./chrome_messaging/**/*.ts",
+		"./classes/**/*.ts",
+		"./locales/**/*.json"
+	]
 }

@@ -2,6 +2,12 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import path from "path";
 import {build, CliOptions} from "electron-builder";
+import {fileURLToPath} from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
 
 const _yargs = yargs(hideBin(process.argv))
 	.usage('Usage: $0 [options]')

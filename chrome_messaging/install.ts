@@ -2,7 +2,12 @@ import path from "path";
 import fs from "fs-extra";
 import * as Winreg from "winreg";
 import {homedir} from "os";
-import Registry = require('winreg');
+import Registry from 'winreg';
+import {fileURLToPath} from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 
 const filePath = path.normalize(`${__dirname}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);

@@ -1,6 +1,12 @@
 import {app, BrowserWindow} from "electron";
 import {appIcon, browserViewPath} from "./constants";
 import path from "path";
+import {fileURLToPath} from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
 
 /**
  * @see https://github.com/electron/electron/pull/27067#discussion_r555466735
@@ -26,7 +32,7 @@ export function createWindow(showSection?: string) {
 		darkTheme: true,
 		webPreferences: {
 			nodeIntegration: true,
-			preload: path.resolve(__dirname, '../classes/preload.js')
+			preload: path.resolve(__dirname, '../classes/preload.cjs')
 		}
 	});
 

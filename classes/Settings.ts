@@ -5,7 +5,7 @@ import * as fs from "fs";
 import path from "path";
 import debounce from "lodash.debounce";
 
-require = require("esm-wallaby")(module/*, options*/);
+require = require("esm")(module/*, options*/);
 import {PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings";
 import {resourcePath} from "./constants";
 import {app} from "electron";

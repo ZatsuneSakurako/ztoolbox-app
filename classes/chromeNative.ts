@@ -1,4 +1,4 @@
-require = require("esm-wallaby")(module/*, options*/);
+require = require("esm")(module/*, options*/);
 import http from "http";
 import {
 	ClientToServerEvents,

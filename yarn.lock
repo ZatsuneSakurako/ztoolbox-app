@@ -3067,7 +3067,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esm-wallaby@npm:^3.2.26":
+"esm@npm:esm-wallaby@^3.2.26":
   version: 3.2.26
   resolution: "esm-wallaby@npm:3.2.26"
   checksum: 4e73b0ca4e70ccd522d22b808acda4b8d55a8909a8ff4b1a7cb2f14f0abb2f6c15eaac4e2a90c1df4a31dab707e992217e0efed36306e05d706c8cf9d6805a20
@@ -9053,7 +9053,7 @@ __metadata:
     dotenv: ^16.0.3
     electron: ^21.2.0
     electron-builder: ^23.6.0
-    esm-wallaby: ^3.2.26
+    esm: "npm:esm-wallaby@^3.2.26"
     fs-extra: ^10.1.0
     gulp: ^4.0.2
     gulp-cli: ^2.3.0
