@@ -1,8 +1,8 @@
-import {VersionState} from "../../classes/bo/versionState";
-import {RandomJsonData} from "../../classes/bo/settings";
-import {NotificationResponse} from "../../classes/bo/notify";
-import {IData} from "./bo/IData";
-import {Dict} from "./bo/Dict";
+import {VersionState} from "../../../classes/bo/versionState";
+import {RandomJsonData} from "../../../classes/bo/settings";
+import {NotificationResponse} from "../../../classes/bo/notify";
+import {IData} from "./IData";
+import {Dict} from "./Dict";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 

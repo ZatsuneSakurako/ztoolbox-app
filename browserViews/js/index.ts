@@ -10,7 +10,7 @@ import settingsTemplate from '../settings.js';
 import websitesDataTemplate from '../websitesData.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
-import {BridgedWindow} from "./bridgedWindow";
+import {BridgedWindow} from "./bo/bridgedWindow";
 import {ShowSectionEvent} from "./bo/showSectionEvent";
 import {IData} from "./bo/IData";
 import {IJsonWebsiteData} from "./bo/websiteData";

@@ -19,7 +19,7 @@ import frTranslation from "./locales/fr.json";
 import enTranslation from "./locales/en.json";
 import frPreferencesTranslation from "./locales/preferences/fr.json";
 import enPreferencesTranslation from "./locales/preferences/en.json";
-import {PreferenceTypes} from "./browserViews/js/bridgedWindow";
+import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
 import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants";

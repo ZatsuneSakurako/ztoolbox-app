@@ -1,4 +1,4 @@
-import {BridgedWindow} from "../bridgedWindow";
+import {BridgedWindow} from "../bo/bridgedWindow";
 import {Color} from "./color.js";
 
 declare var window : BridgedWindow;

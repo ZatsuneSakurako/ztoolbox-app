@@ -1,4 +1,4 @@
-import {BridgedWindow} from "./bridgedWindow";
+import {BridgedWindow} from "./bo/bridgedWindow";
 
 declare var window : BridgedWindow;
 

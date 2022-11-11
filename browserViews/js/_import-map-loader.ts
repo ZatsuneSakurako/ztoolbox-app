@@ -6,7 +6,7 @@ export = 0
 // noinspection JSUnusedLocalSymbols
 const module = self.module = {}
 
-import {BridgedWindow} from "./bridgedWindow";
+import {BridgedWindow} from "./bo/bridgedWindow";
 // @ts-ignore
 const parentWindow : BridgedWindow = window.parent;
 const baseDir = self.parent.location.href.replace(/[^/]+$/, '');

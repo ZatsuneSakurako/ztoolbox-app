@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import {BridgedWindow} from "./js/bridgedWindow.js";
+import {BridgedWindow} from "./js/bo/bridgedWindow";
 import {ShowSectionEvent} from "./js/bo/showSectionEvent.js";
 import ddgWhatIsMyIp from "./js/ddgWhatIsMyIp.js";
 

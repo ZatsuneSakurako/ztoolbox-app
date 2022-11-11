@@ -1,5 +1,5 @@
 import {contextBridge, ipcRenderer} from "electron";
-import {IZnmApi, PreferenceTypes} from "../browserViews/js/bridgedWindow";
+import {IZnmApi, PreferenceTypes} from "../browserViews/js/bo/bridgedWindow";
 import {NotificationResponse} from "./bo/notify";
 
 // https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
