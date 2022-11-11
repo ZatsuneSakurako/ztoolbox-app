@@ -13,7 +13,6 @@ import Dict = NodeJS.Dict;
 
 import {ZClipboard} from './classes/ZClipboard';
 import {Settings} from './classes/Settings';
-import {Streamlink} from './classes/Streamlink';
 import {notifyElectron} from "./classes/notify";
 import frTranslation from "./locales/fr.json";
 import enTranslation from "./locales/en.json";
