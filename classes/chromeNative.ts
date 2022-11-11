@@ -1,4 +1,3 @@
-require = require("esm")(module/*, options*/);
 import http from "http";
 import {
 	ClientToServerEvents,
