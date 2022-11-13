@@ -3,8 +3,10 @@
 import fs from "fs-extra";
 import path from "path";
 import browserify from "browserify";
+import {fileURLToPath} from "url";
 
-const currentPath = path.resolve(path.dirname(__filename), '..'),
+const __filename = fileURLToPath(import.meta.url),
+	currentPath = path.resolve(path.dirname(__filename), '..'),
 	libPath = path.resolve(currentPath, './browserViews/lib/')
 ;
 
