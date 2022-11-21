@@ -1,4 +1,4 @@
-=grid($grid-columns: 12, $queryPrefix:'', $max-width:0)
+=grid($grid-columns: 12, $grid-rows: 12, $queryPrefix:'', $max-width:0)
 	@if($queryPrefix == '' and $max-width == 0)
 		.grid
 			display: grid
@@ -17,6 +17,13 @@
 
 			.grid-start-#{$i}
 				grid-column-start: $i
+
+		@for $i from 1 through $grid-rows
+			.grid-row-#{$i}
+				grid-row-end: span $i
+
+			.grid-row-start-#{$i}
+				grid-row-start: $i
 	@else
 		@media screen and (max-width: $max-width)
 			@for $i from 1 through $grid-columns
@@ -26,9 +33,17 @@
 				.grid-#{$queryPrefix}-offset-#{$i}
 					grid-column-start: $i
 
+			@for $i from 1 through $grid-rows
+				.grid-#{$queryPrefix}\-row-#{$i}
+					grid-row-end: span 1
+
+				.grid-#{$queryPrefix}-row-offset-#{$i}
+					grid-row-start: $i
+
 
 
 $grid-columns: 12
+$grid-rows: 12
 
 // $name: >= min-width
 $small: 576px		// Small
@@ -38,8 +53,8 @@ $extraLarge: 1200px	// Extra large
 
 
 
-+grid($grid-columns) // Default and no xl => using a "desktop first"
-+grid($grid-columns, lg, $extraLarge - 1px)
-+grid($grid-columns, md, $large - 1px)
-+grid($grid-columns, sm, $medium - 1px)
-+grid($grid-columns, xs, $small - 1px)
++grid($grid-columns, $grid-rows) // Default and no xl => using a "desktop first"
++grid($grid-columns, $grid-rows, lg, $extraLarge - 1px)
++grid($grid-columns, $grid-rows, md, $large - 1px)
++grid($grid-columns, $grid-rows, sm, $medium - 1px)
++grid($grid-columns, $grid-rows, xs, $small - 1px)

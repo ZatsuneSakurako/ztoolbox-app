@@ -1,35 +1,36 @@
 <template lang="pug">
-	main.grid.no-c-gap.no-r-gap
+	//-main.grid.no-c-gap.no-r-gap
+	main.grid
 		input#main.hidden(type='radio', name="menu", v-model='menu', value='main')
 		input#codeTester.hidden(type='radio', name="menu", v-model='menu', value='code-tester')
 		input#settings.hidden(type='radio', name="menu", v-model='menu', value='settings')
 		input#infos.hidden(type='radio', name="menu", v-model='menu', value='infos')
 
-		div.grid-12(v-show='menu === \'main\'')
-			websitesData(:websitesData='websitesData')
-			div.grid.no-r-gap
-				p.grid-3
-					label(for="main_textarea_input", data-translate-id="textarea") Text area
-					textarea#main_textarea_input(ref="main_textarea_input")
-				p.grid-3
-					input#main_input_type_text.hidden(name="main_input_type", v-model="main_input_type", value="text", type="radio")
-					label.button.checkable.material-icons(for="main_input_type_text") text_fields
-					input#main_input_type_dns.hidden(name="main_input_type", v-model="main_input_type", value="dns", type="radio")
-					label.button.checkable.material-icons(for="main_input_type_dns") dns
-					label(for="main_input", v-if="main_input_type === 'text'") Text&nbsp;:
-					label(for="main_input", v-if="main_input_type === 'dns'") DNS / IP&nbsp;:
-					input#main_input(ref="main_input", :type="main_input_type === 'url' ? 'url' : 'text'")
-				p.grid-6
-					label(for="main_textarea_output", data-translate-id="output") Output
-					textarea#main_textarea_output(readonly, ref="main_textarea_output")
-			div.grid.no-r-gap
-				p.grid-3
-					button.material-icons(v-on:click='onCopyTextArea') content_copy
-					button.material-icons(v-on:click='onPasteTextArea') content_paste
-				p.grid-3
-					button(v-on:click='onDigCmd', v-if="main_input_type === 'dns'") Dig domain
+		websitesData.grid-12(v-show='menu === \'main\'', :websitesData='websitesData')
 
-		p.grid-12(v-show='menu === \'code-tester\'')
+		div.grid-12.grid.display-content(v-show='menu === \'main\'')
+			div.grid-3
+				label(for="main_textarea_input", data-translate-id="textarea") Text area
+				textarea#main_textarea_input(ref="main_textarea_input")
+			div.grid-3
+				input#main_input_type_text.hidden(name="main_input_type", v-model="main_input_type", value="text", type="radio")
+				label.button.checkable.material-icons(for="main_input_type_text") text_fields
+				input#main_input_type_dns.hidden(name="main_input_type", v-model="main_input_type", value="dns", type="radio")
+				label.button.checkable.material-icons(for="main_input_type_dns") dns
+				label(for="main_input", v-if="main_input_type === 'text'") Text&nbsp;:
+				label(for="main_input", v-if="main_input_type === 'dns'") DNS / IP&nbsp;:
+				input#main_input(ref="main_input", :type="main_input_type === 'url' ? 'url' : 'text'")
+			div.grid-6.grid-row-2
+				label(for="main_textarea_output", data-translate-id="output") Output
+				textarea#main_textarea_output(readonly, ref="main_textarea_output")
+
+			div.grid-3
+				button.material-icons(v-on:click='onCopyTextArea') content_copy
+				button.material-icons(v-on:click='onPasteTextArea') content_paste
+			div.grid-3
+				button(v-on:click='onDigCmd', v-if="main_input_type === 'dns'") Dig domain
+
+		div.grid-12(v-show='menu === \'code-tester\'')
 			button(v-on:click='reloadIframe', data-translate-id="runCode") Run code !
 
 		div.grid-12(v-show='menu === \'infos\'')
@@ -101,7 +102,7 @@ function codeTesterLoader() {
 
 
 	const iframe: HTMLIFrameElement = this.$refs.iframe;
-	window.addEventListener('message', function (e) {
+	window.addEventListener('message', function (e: WindowEventMap['message']) {
 		if (e.data.type === 'iframe-loaded') {
 			// @ts-ignore
 			const znm_init : (object:object)=>void = iframe.contentWindow?.znm_init;
