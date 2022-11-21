@@ -123,6 +123,14 @@ socket.on('ping', function (cb) {
     });
 })
 
+socket.on('onSettingUpdate', function (preference) {
+    bridge.emit({
+        error: false,
+        type: 'onSettingUpdate',
+        data: preference
+    });
+})
+
 socket.on('disconnect', function (reason, description) {
     log('ws close', `Socket is closed. Reason : ${reason}`, description)
         .catch(() => {})

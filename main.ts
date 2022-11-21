@@ -22,7 +22,7 @@ import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {ZAlarm} from "./classes/ZAlarm";
 import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants";
-import {getWsClientNames, server, io} from "./classes/chromeNative";
+import {getWsClientNames, server, io, onSettingUpdate} from "./classes/chromeNative";
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
 import {IPathConfigFilter, SettingConfig} from "./classes/bo/settings";
@@ -347,19 +347,6 @@ app.on('activate', function () {
 
 const clipboard = new ZClipboard(5000, false);
 
-function getSelectedMenu() : string|null {
-	let checked:IZMenuItem|null = null;
-	for (const menuItem of contextMenu?.items ?? []) {
-		if (menuItem.checked) {
-			checked = menuItem
-		}
-	}
-
-	return checked === null ? null : (checked?.id || checked?.label);
-}
-
-
-
 let tray:Tray|null = null,
 	contextMenu:Menu|null = null
 ;
@@ -405,15 +392,9 @@ function onReady() {
 		{label: 'Exit', type: 'normal', role: 'quit'}
 	]);
 
-	contextMenu.addListener("menu-will-close", function () {
-		setTimeout(() => {
-			const newSelectedQuality = getSelectedMenu();
-			if (settings.get('quality') !== newSelectedQuality) {
-				settings.set("quality", newSelectedQuality);
-				triggerBrowserWindowPreferenceUpdate('quality', newSelectedQuality);
-			}
-		})
-	});
+	/*contextMenu.addListener("menu-will-close", function () {
+		//
+	});*/
 
 
 
@@ -440,7 +421,14 @@ function onReady() {
 		settings.delete('quality');
 	}
 
-	settings.on('change', function (key:any) {
+	settings.on('change', function (key:any, oldValue: any, newValue: any) {
+		// Exclude some preference to prevent event loops
+		if (!['websitesData'].includes(key)) {
+			onSettingUpdate(key, oldValue, newValue)
+				.catch(console.error)
+			;
+		}
+
 		switch (key) {
 			case 'autostart':
 				updateAutoStart()

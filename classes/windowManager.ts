@@ -90,6 +90,7 @@ export function showSection(sectionName: string) {
 		const allWindows = BrowserWindow.getAllWindows();
 		for (let browserWindow of allWindows) {
 			browserWindow.webContents.send('showSection', sectionName);
+			browserWindow.focus();
 		}
 	}
 }

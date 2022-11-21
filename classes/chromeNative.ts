@@ -1,7 +1,7 @@
 import http from "http";
 import {
 	ClientToServerEvents,
-	InterServerEvents,
+	InterServerEvents, preferenceData,
 	ServerToClientEvents,
 	SocketData
 } from "./bo/chromeNative";
@@ -130,6 +130,17 @@ export function ping(socket: socket): Promise<'pong'> {
 			}
 		});
 	});
+}
+
+export async function onSettingUpdate(id: string, oldValue: preferenceData['value'], newValue: preferenceData['value']): Promise<void> {
+	const sockets = await io.fetchSockets();
+	for (let socket of sockets) {
+		socket.emit('onSettingUpdate', {
+			id,
+			oldValue,
+			newValue
+		});
+	}
 }
 
 export async function getWsClientNames(): Promise<string[]> {
