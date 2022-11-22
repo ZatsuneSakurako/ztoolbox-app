@@ -25,12 +25,18 @@ interface IColorConfig extends IConfigBase<string> {
 	type: 'color'
 }
 
-interface IIntegerConfig extends IConfigBase<number> {
+interface IIntegerInputNumberConfig extends IConfigBase<number> {
 	type: 'integer'
 	minValue?: number
 	maxValue?: number
-	stepValue?: boolean
-	rangeInput?: boolean
+	rangeInput?: false
+}
+interface IIntegerInputRangeConfig extends IConfigBase<number> {
+	type: 'integer'
+	minValue: number
+	maxValue: number
+	stepValue?: number
+	rangeInput: true
 }
 
 interface IBooleanConfig extends IConfigBase<boolean> {
@@ -64,7 +70,8 @@ export type SettingConfig =
 	IStringConfig |
 	IColorConfig |
 	IMenuListConfig |
-	IIntegerConfig |
+	IIntegerInputNumberConfig |
+	IIntegerInputRangeConfig |
 	IBooleanConfig |
 	IJsonConfig |
 	IPathConfig |

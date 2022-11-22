@@ -8,8 +8,9 @@
 				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="['button', 'color', 'string', 'integer', 'json', 'path', 'paths'].includes(conf.type)")
 				input(:type="conf.type === 'string' ? 'text' : conf.type", :id='"pref-" + id', :name='id', v-if="['button', 'color', 'string'].includes(conf.type)", @change="onChange", disabled)
 				input(type="text", :id='"pref-" + id', :name='id', v-if="conf.type === 'path' && conf.opts.asText", @change="onChange", disabled)
-				input(:type="conf.rangeInput ? 'range' : 'number'", :min="conf.minValue === undefined ? false : conf.minValue", :max="conf.maxValue === undefined ? false : conf.maxValue", :step="conf.stepValue === undefined ? false : conf.stepValue", :id='"pref-" + id', :name='id', v-if="conf.type === 'integer'", @change="onChange", disabled)
+				input(:type="conf.rangeInput ? 'range' : 'number'", :min="conf.minValue === undefined ? false : conf.minValue", :max="conf.maxValue === undefined ? false : conf.maxValue", :step="conf.stepValue === undefined ? false : conf.stepValue", :id='"pref-" + id', :name='id', v-if="conf.type === 'integer'", @change="onChange", @input="outputUpdate", disabled)
 				textarea(:id='"pref-" + id', :name='id', v-if="conf.type === 'json'", @change="onChange", disabled)
+				output.output(:for='"pref-" + id', v-if="conf.type === 'integer' && !!conf.rangeInput")
 
 				label.button.small(:for='"pref-" + id + "_file"', :data-translate-id="Array.isArray(conf.opts.asFile) ? 'select_file' : 'select_path'", v-if="['path', 'paths'].includes(conf.type) && conf.opts.asFile")
 				input.hidden(type="button", :id='"pref-" + id + "_file"', :name='id', v-if="['path', 'paths'].includes(conf.type) && conf.opts.asFile", @click="onPathSettingClick(id, conf)")
@@ -64,6 +65,13 @@ function setInputValue($input:HTMLInputElement, newValue:any) {
 	let inputType = $input.tagName.toLowerCase();
 	if (inputType === 'input') {
 		inputType = $input.type;
+	}
+
+	if (inputType === 'range') {
+		const output = $input.parentElement?.querySelector('output');
+		if (output) {
+			output.textContent = $input.value;
+		}
 	}
 
 	switch (inputType) {
@@ -150,6 +158,15 @@ export default {
 			const $input = document.querySelector<HTMLInputElement>('input[type="radio"][name="setting-group"]:checked');
 			if ($input) {
 				this.$data.selected_group = $input.value;
+			}
+		},
+		outputUpdate(e:Event) {
+			const $input = <HTMLInputElement|null> e.target;
+			if (!$input || $input.type !== 'range') return;
+
+			const output = $input.parentElement?.querySelector('output');
+			if (output) {
+				output.textContent = $input.value;
 			}
 		},
 		onChange(e:Event) {
