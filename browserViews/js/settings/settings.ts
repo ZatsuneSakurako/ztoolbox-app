@@ -41,7 +41,34 @@ const settings:SettingsConfig = {
 	"clipboardWatch": {
 		"type": "bool",
 		"value": false
-	}
+	},
+
+
+
+	"check_delay": {
+		"type": "integer",
+		"value": 5,
+		"minValue": 5,
+		"maxValue": 60,
+		"stepValue": 5,
+		"rangeInput": true,
+		"group": "web_extension"
+	},
+	"freshRss_baseUrl": {
+		"type": "string",
+		"value": '',
+		"group": "web_extension"
+	},
+	"notify_checkedData": {
+		"type": "bool",
+		"value": true,
+		"group": "web_extension"
+	},
+	"notify_all_viewed": {
+		"type": "bool",
+		"value": false,
+		"group": "web_extension"
+	},
 };
 
 export default settings;

@@ -4,6 +4,7 @@
 
 	"group_default": "Default",
 	"group_theme": "Theme",
+	"group_web_extension": "Browser extension",
 
 	"timeIsNow": "It is now {{currentTime}}",
 

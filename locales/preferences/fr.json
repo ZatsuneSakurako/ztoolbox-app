@@ -16,5 +16,12 @@
 	"theme-options-dark": "Sombre",
 	"theme-options-light": "Clair",
 
-	"background_color_title": "Couleur de fond"
+	"background_color_title": "Couleur de fond",
+
+
+
+	"check_delay_title":  "Délais de vérification de deviantArt/freshRss (secondes)",
+	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
+	"notify_checkedData_title": "Affiche une notification pour deviantArt/freshRss",
+	"notify_all_viewed_title": "Affiche une notification quand tout est vu pour un/des site(s)"
 }

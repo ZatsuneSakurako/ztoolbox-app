@@ -16,5 +16,12 @@
 	"theme-options-dark": "Dark",
 	"theme-options-light": "Light",
 
-	"background_color_title": "Background color"
+	"background_color_title": "Background color",
+
+
+
+	"check_delay_title":  "deviantArt/freshRss verification delay (seconds)",
+	"freshRss_baseUrl_title": "URL of your FreshRss instance (should end with /i/)",
+	"notify_checkedData_title": "Show a notification for deviantArt/freshRss",
+	"notify_all_viewed_title": "Show a notification when all view in website(s)"
 }
