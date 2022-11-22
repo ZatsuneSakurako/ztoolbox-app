@@ -20,7 +20,7 @@
 
 
 
-	"check_delay_title":  "Délais de vérification de deviantArt/freshRss (secondes)",
+	"check_delay_title":  "Délais de vérification de deviantArt/freshRss (minutes)",
 	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
 	"notify_checkedData_title": "Affiche une notification pour deviantArt/freshRss",
 	"notify_all_viewed_title": "Affiche une notification quand tout est vu pour un/des site(s)"

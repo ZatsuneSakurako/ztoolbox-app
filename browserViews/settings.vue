@@ -70,7 +70,7 @@ function setInputValue($input:HTMLInputElement, newValue:any) {
 	if (inputType === 'range') {
 		const output = $input.parentElement?.querySelector('output');
 		if (output) {
-			output.textContent = $input.value;
+			output.textContent = newValue;
 		}
 	}
 
@@ -188,11 +188,13 @@ export default {
 					newValue = $input.value;
 					break;
 				case 'text':
-				case 'number':
-				case 'range':
 				case 'select':
 				case 'textarea':
 					newValue = $input.value;
+					break;
+				case 'number':
+				case 'range':
+					newValue = $input.valueAsNumber;
 					break;
 				case 'radio':
 					newValue = $input.value;
