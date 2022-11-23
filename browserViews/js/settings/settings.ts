@@ -69,6 +69,11 @@ const settings:SettingsConfig = {
 		"value": false,
 		"group": "web_extension"
 	},
+	"tabPageServerIp_alias": {
+		"type": "yaml",
+		"value": {},
+		"group": "web_extension"
+	}
 };
 
 export default settings;
