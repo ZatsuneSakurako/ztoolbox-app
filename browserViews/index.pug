@@ -22,7 +22,8 @@ block head-css
 	link(rel='stylesheet', href='lib/codemirror/theme/monokai.css')
 
 block head-js
-	script(src='lib/vue/vue.runtime.js', type='module')
+	script(src='lib/vue/vue.runtime.js', type='lazy-module')
+	script(src='lib/yaml/index.js', type='lazy-module')
 	script(src='lib/codemirror/lib/codemirror.js')
 	script(src='lib/codemirror/mode/htmlmixed/htmlmixed.js')
 	script(src='lib/codemirror/mode/javascript/javascript.js')
@@ -37,10 +38,12 @@ block append head-css
 	link(rel='stylesheet', href='css/index.css')
 
 block append head-js
-	script(src='index.js', type='module')
-	script(src='settings.js', type='module')
-	script(src='js/settings/settings.js', type='module')
-	script(src='js/translation-api.js', type='module')
-	script(src='js/theme/color.js', type='module')
-	script(src='js/theme/theme.js', type='module')
-	script(src='js/index.js', type='module')
+	script(src="js/_fix_exports.js")
+	script(src="js/_import-map-loader.js")
+	script(src='index.js', type='lazy-module')
+	script(src='settings.js', type='lazy-module')
+	script(src='js/settings/settings.js', type='lazy-module')
+	script(src='js/translation-api.js', type='lazy-module')
+	script(src='js/theme/color.js', type='lazy-module')
+	script(src='js/theme/theme.js', type='lazy-module')
+	script(src='js/index.js', type='lazy-module')

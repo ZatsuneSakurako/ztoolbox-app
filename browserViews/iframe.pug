@@ -7,7 +7,9 @@ block head
 	// HEAD
 
 block head-js
+	script(src="js/_fix_exports.js")
 	script(src="js/_import-map-loader.js")
 	script(src='lib/string-strip-html/string-strip-html.umd.js')
+	script(src='js/iframe.js', type="lazy-module")
 
 block body

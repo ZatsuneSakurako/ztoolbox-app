@@ -39,3 +39,8 @@ const b = browserify([ path.resolve(currentPath, './node_modules/locutus/index.j
 b.bundle().pipe(locutusPhp);
 fs.writeFileSync(path.resolve(libPath, './locutus/index.js'), `import './_index.js';export default window['locutus']`)
 fs.copyFileSync(path.resolve(currentPath, './node_modules/@types/locutus/index.d.ts'), path.resolve(libPath, './locutus/index.d.ts'));
+
+
+fs.copy(path.resolve(currentPath, './node_modules/yaml/browser/dist/'), path.resolve(libPath, './yaml'))
+	.catch(console.error)
+;

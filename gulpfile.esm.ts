@@ -131,7 +131,7 @@ function clearJs() {
 }
 
 async function _js() {
-	return child_process.execSync('tsc')
+	return child_process.execSync('tsc --project tsconfig-nomodule.json && tsc')
 }
 
 export const js = gulp.series(clearJs, _js);

@@ -1,6 +1,8 @@
 // noinspection ES6UnusedImports
 // @ts-ignore
 import Vue from 'vue';
+import * as Yaml from 'yaml';
+console.dir(Yaml)
 
 // @ts-ignore
 import indexTemplate from '../index.js';
@@ -107,7 +109,7 @@ document.addEventListener('click', function (e) {
 	e.stopPropagation();
 });
 
-window.addEventListener("load", async function () {
+async function onLoad() {
 	window.znmApi.onShowSection(function (sectionName:string) {
 		data.menu = data.menu === 'default' ? defaultMenu : sectionName;
 		setTimeout(() => {
@@ -184,4 +186,12 @@ window.addEventListener("load", async function () {
 			updateClassesFor(<HTMLInputElement> node);
 		}
 	});
-});
+}
+
+if (document.readyState === 'complete') {
+	onLoad()
+		.catch(console.error)
+	;
+} else {
+	window.addEventListener("load", onLoad);
+}
