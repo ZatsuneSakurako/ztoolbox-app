@@ -2,7 +2,6 @@
 // @ts-ignore
 import Vue from 'vue';
 import * as Yaml from 'yaml';
-console.dir(Yaml)
 
 // @ts-ignore
 import indexTemplate from '../index.js';
