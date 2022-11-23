@@ -5,11 +5,11 @@
 
 		div.pref-group(v-show="group === selected_group", v-for="(list, group) in settingsByGroup")
 			div.pref-container(v-for="(conf, id) in list")
-				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="['button', 'color', 'string', 'integer', 'json', 'path', 'paths'].includes(conf.type)")
+				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="['button', 'color', 'string', 'integer', 'json', 'yaml', 'path', 'paths'].includes(conf.type)")
 				input(:type="conf.type === 'string' ? 'text' : conf.type", :id='"pref-" + id', :name='id', v-if="['button', 'color', 'string'].includes(conf.type)", @change="onChange", disabled)
 				input(type="text", :id='"pref-" + id', :name='id', v-if="conf.type === 'path' && conf.opts.asText", @change="onChange", disabled)
 				input(:type="conf.rangeInput ? 'range' : 'number'", :min="conf.minValue === undefined ? false : conf.minValue", :max="conf.maxValue === undefined ? false : conf.maxValue", :step="conf.stepValue === undefined ? false : conf.stepValue", :id='"pref-" + id', :name='id', v-if="conf.type === 'integer'", @change="onChange", @input="outputUpdate", disabled)
-				textarea(:id='"pref-" + id', :name='id', v-if="conf.type === 'json'", @change="onChange", disabled)
+				textarea.auto-height(:id='"pref-" + id', :name='id', v-if="['json', 'yaml'].includes(conf.type)", @change="onChange", disabled, :data-type="conf.type")
 				output.output(:for='"pref-" + id', v-if="conf.type === 'integer' && !!conf.rangeInput")
 
 				label.button.small(:for='"pref-" + id + "_file"', :data-translate-id="Array.isArray(conf.opts.asFile) ? 'select_file' : 'select_path'", v-if="['path', 'paths'].includes(conf.type) && conf.opts.asFile")
@@ -28,6 +28,7 @@
 </template>
 
 <script lang="ts">
+import * as Yaml from 'yaml';
 import settings from './js/settings/settings.js';
 import {BridgedWindow} from "./js/bo/bridgedWindow";
 import {SettingConfig, SettingsConfig} from "../classes/bo/settings.js";
@@ -87,13 +88,21 @@ function setInputValue($input:HTMLInputElement, newValue:any) {
 		case 'number':
 		case 'range':
 		case 'select':
-		case 'textarea':
 		case 'text':
 			$input.value = newValue;
 			$input.disabled = false;
 			break;
 		case 'radio':
 			$input.checked = $input.value === newValue;
+			$input.disabled = false;
+			break;
+		case 'textarea':
+			if ($input.dataset.type === 'yaml') {
+				const value = Yaml.stringify(newValue);
+				$input.value = value.trim() === '{}' ? '' : value;
+			} else {
+				$input.value = newValue;
+			}
 			$input.disabled = false;
 			break;
 		case 'button':
@@ -189,8 +198,17 @@ export default {
 					break;
 				case 'text':
 				case 'select':
-				case 'textarea':
 					newValue = $input.value;
+					break;
+				case 'textarea':
+					if ($input.dataset.type === 'yaml') {
+						newValue = Yaml.parse($input.value.trim());
+						if (newValue === null) {
+							newValue = {}
+						}
+					} else {
+						newValue = $input.value;
+					}
 					break;
 				case 'number':
 				case 'range':

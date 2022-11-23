@@ -43,8 +43,12 @@ interface IBooleanConfig extends IConfigBase<boolean> {
 	type: 'bool'
 }
 
-interface IJsonConfig extends IConfigBase<Dict<string|boolean|number|null>> {
+interface IJsonConfig extends IConfigBase<SettingJsonValue> {
 	type: 'json'
+}
+
+interface IYamlConfig extends IConfigBase<SettingJsonValue> {
+	type: 'yaml'
 }
 
 export type IPathConfigFilter = {
@@ -74,10 +78,12 @@ export type SettingConfig =
 	IIntegerInputRangeConfig |
 	IBooleanConfig |
 	IJsonConfig |
+	IYamlConfig |
 	IPathConfig |
 	IPathsConfig
 ;
-export type SettingValues = string|string[]|number|boolean|Dict<string|boolean|number|null>
+export type SettingJsonValue = Dict<string|boolean|number|null>;
+export type SettingValues = string|string[]|number|boolean|SettingJsonValue
 export type SettingsConfig = Dict<SettingConfig>;
 
 
