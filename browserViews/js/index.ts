@@ -1,7 +1,4 @@
-// noinspection ES6UnusedImports
-// @ts-ignore
 import Vue from 'vue';
-import * as Yaml from 'yaml';
 
 // @ts-ignore
 import indexTemplate from '../index.js';
@@ -121,10 +118,10 @@ async function onLoad() {
 
 
 
-	window.Vue.component('settings', settingsTemplate);
-	window.Vue.component('websitesData', websitesDataTemplate);
+	Vue.component('settings', settingsTemplate);
+	Vue.component('websitesData', websitesDataTemplate);
 	// @ts-ignore
-	const app = new window.Vue({
+	const app = new Vue({
 		el: 'main',
 		data: data,
 		...indexTemplate

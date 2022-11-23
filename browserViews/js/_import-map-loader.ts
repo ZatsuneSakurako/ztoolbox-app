@@ -8,7 +8,7 @@ const baseDir = self.parent.location.href.replace(/[^/]+$/, '');
 		"imports": {
 			"locutus": baseDir + "/lib/locutus/index.js",
 			"yaml": baseDir + "/lib/yaml/index.js",
-			"vue": baseDir + "/lib/vue/vue.runtime.js",
+			"vue": baseDir + "/lib/vue/vue.esm.browser.js",
 		}
 	}
 	const im = document.createElement('script');
