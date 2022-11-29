@@ -478,10 +478,16 @@ function onReady() {
 }
 
 async function updateAutoStart() {
-	const autoLaunchName = "Z-Toolbox",
-		autoStartPref = settings.getBoolean('autostart', true)
-	;
 	// const exeName = path.basename(process.execPath);
+	const autoLaunchName = "Z-Toolbox",
+		autoStartPref = settings.getBoolean('autostart', true),
+
+		args : string[] = []
+	;
+	if (!app.isPackaged) {
+		args.push(JSON.stringify(__dirname));
+	}
+	args.push(autoStartArgument);
 
 	if (process.platform === 'linux') {
 		if (!app.isPackaged) {
@@ -498,7 +504,7 @@ async function updateAutoStart() {
 				if (autoStartPref) {
 					await AutoLaunchLinux.enable({
 						appName: autoLaunchName,
-						appPath: `${JSON.stringify(process.execPath)} ${JSON.stringify(__dirname)}`,
+						appPath: `${JSON.stringify(process.execPath)} ${args.join(' ')}`,
 						isHiddenOnLaunch: false
 					})
 						.then(() => {
@@ -541,18 +547,11 @@ async function updateAutoStart() {
 			}
 		}
 	} else {
-		const autostartOpts : Electron.Settings = {
+		app.setLoginItemSettings({
 			name: autoLaunchName,
-			openAtLogin: autoStartPref
-		}
-
-		if (!app.isPackaged) {
-			autostartOpts.args = [
-				JSON.stringify(__dirname)
-			];
-		}
-
-		app.setLoginItemSettings(autostartOpts);
+			openAtLogin: autoStartPref,
+			args: args
+		});
 	}
 }
 
