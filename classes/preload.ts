@@ -52,6 +52,7 @@ const znmApi:IZnmApi = {
 	_: (key:string) => ipcRenderer.invoke('i18n', key),
 	getWsClientNames: () => ipcRenderer.invoke('getWsClientNames'),
 
+	getProcessArgv: () => ipcRenderer.invoke('getProcessArgv'),
 	getVersionState: () => ipcRenderer.invoke('getVersionState'),
 
 	getPreference: (preferenceId:string, type?:PreferenceTypes) => {

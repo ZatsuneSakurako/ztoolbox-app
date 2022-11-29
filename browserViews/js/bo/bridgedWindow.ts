@@ -14,6 +14,7 @@ export interface IZnmApi {
 	_(key: string): Promise<string>
 	getWsClientNames(): Promise<string[]>
 
+	getProcessArgv(): Promise<string[]>
 	getVersionState(): Promise<VersionState|null>
 
 	getPreference(preferenceId: string): Promise<RandomJsonData|undefined>

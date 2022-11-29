@@ -260,6 +260,10 @@ ipcMain.handle('i18n', async (event, key) => {
 	});
 });
 
+ipcMain.handle('getProcessArgv', () => {
+	return process.argv;
+});
+
 ipcMain.handle('getVersionState', () => {
 	return versionState(__dirname);
 });

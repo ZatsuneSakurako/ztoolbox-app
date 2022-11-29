@@ -26,6 +26,7 @@ const data: IData = {
 	message: 'Hello Vue!',
 	versions: window.process.versions,
 	internetAddress: null,
+	processArgv: [],
 	versionState: null,
 	websitesData: [],
 	wsClientNames: []

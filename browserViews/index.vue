@@ -38,6 +38,7 @@
 				span(data-translate-id='language')
 				| ).
 			p(v-if="!!versionState" ) Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.
+			p(v-if="!!processArgv.length") Arguments : {{processArgv.join(', ')}}
 			p(v-if="!!internetAddress") Addresse ip : {{internetAddress}}
 			p(v-if="!!wsClientNames") Web extensions :
 				ul.list-style-inside.list-style-disc
@@ -149,6 +150,12 @@ window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	}
 	window.removeEventListener('showSection', fn, false);
 
+	window.znmApi.getProcessArgv()
+		.then(processArgv => {
+			window.data.processArgv = processArgv;
+		})
+		.catch(console.error)
+	;
 	window.znmApi.getVersionState()
 		.then(versionState => {
 			window.data.versionState = versionState;

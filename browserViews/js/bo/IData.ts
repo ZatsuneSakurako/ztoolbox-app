@@ -6,6 +6,7 @@ export interface IData {
 	main_input_type: string;
 	menu: string;
 	message: string;
+	processArgv: string[]; // NodeJS.Process.argv
 	versions: Dict<string>; // NodeJS.ProcessVersions;
 	internetAddress: string | null;
 	websitesData: {websiteName: string, websiteData: WebsiteData}[];
