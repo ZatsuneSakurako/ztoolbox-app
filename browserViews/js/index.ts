@@ -44,17 +44,7 @@ loadTranslations()
 	.catch(console.error)
 ;
 
-async function loadWebsitesData() {
-	let rawWebsitesData : Dict<IJsonWebsiteData>|null = null
-	try {
-		const result = await window.znmApi.getPreferences('websitesData');
-		rawWebsitesData = result.websitesData as unknown as Dict<IJsonWebsiteData>;
-	} catch (e) {
-		console.error(e);
-	}
-
-	if (!rawWebsitesData) return;
-
+async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>) {
 	// Clear array
 	data.websitesData.splice(0, data.websitesData.length);
 
@@ -129,12 +119,18 @@ async function onLoad() {
 	});
 
 
-
-	await loadWebsitesData()
+	window.znmApi.getPreferences('websitesData')
+		.then(async (result) => {
+			if (!!result) {
+				loadWebsitesData(result.websitesData as unknown as Dict<IJsonWebsiteData>)
+					.catch(console.error)
+				;
+			}
+		})
 		.catch(console.error)
 	;
-	window.znmApi.onWebsiteDataUpdate(function () {
-		loadWebsitesData()
+	window.znmApi.onWebsiteDataUpdate(function (data) {
+		loadWebsitesData(data)
 			.catch(console.error)
 		;
 	});

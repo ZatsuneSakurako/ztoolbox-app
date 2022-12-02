@@ -3,6 +3,8 @@ import {RandomJsonData} from "../../../classes/bo/settings";
 import {NotificationResponse} from "../../../classes/bo/notify";
 import {IData} from "./IData";
 import {Dict} from "./Dict";
+import {JsonSerialize} from "../../../classes/JsonSerialize";
+import {IJsonWebsiteData} from "./websiteData";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -32,7 +34,7 @@ export interface IZnmApi {
 	onUpdatePreference(cb: (preferenceId: string, newValue: any) => void): void
 	onShowSection(cb: (sectionName:string) => void): void
 	onThemeUpdate(cb: (theme:string, background_color:string) => void): void
-	onWebsiteDataUpdate(cb: () => void): void
+	onWebsiteDataUpdate(cb: (data: Dict<IJsonWebsiteData>) => void): void
 }
 
 export type BridgedWindow = Window & typeof globalThis & {

@@ -457,11 +457,6 @@ function onReady() {
 					);
 				}
 				break;
-			case 'websitesData':
-				for (let browserWindow of BrowserWindow.getAllWindows()) {
-					browserWindow.webContents.send('websiteDataUpdate');
-				}
-				break;
 		}
 	});
 

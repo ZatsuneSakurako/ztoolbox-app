@@ -1,3 +1,4 @@
+import {BrowserWindow} from 'electron';
 import http from "http";
 import {
 	ClientToServerEvents,
@@ -117,6 +118,12 @@ io.on("connection", (socket: socket) => {
 
 		setBadge(count);
 		settings.set<IJsonWebsiteData>('websitesData', data);
+
+
+
+		for (let browserWindow of BrowserWindow.getAllWindows()) {
+			browserWindow.webContents.send('websiteDataUpdate', websiteData);
+		}
 	});
 });
 

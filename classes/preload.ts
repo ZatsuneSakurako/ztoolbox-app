@@ -1,6 +1,8 @@
 import {contextBridge, ipcRenderer} from "electron";
 import {IZnmApi, PreferenceTypes} from "../browserViews/js/bo/bridgedWindow";
 import {NotificationResponse} from "./bo/notify";
+import Dict = NodeJS.Dict;
+import {IJsonWebsiteData} from "../browserViews/js/bo/websiteData";
 
 // https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
 
@@ -28,12 +30,12 @@ ipcRenderer.on('themeUpdate', function (e, theme:string, background_color:string
 	}
 });
 
-const websiteDataUpdateCb:(() => void)[] = [];
+const websiteDataUpdateCb:((data: Dict<IJsonWebsiteData>) => void)[] = [];
 // noinspection JSUnusedLocalSymbols
-ipcRenderer.on('websiteDataUpdate', function (e) {
+ipcRenderer.on('websiteDataUpdate', function (e, data: Dict<IJsonWebsiteData>) {
 	console.info('websiteDataUpdate');
 	for (let cb of websiteDataUpdateCb) {
-		cb();
+		cb(data);
 	}
 })
 
@@ -81,7 +83,7 @@ const znmApi:IZnmApi = {
 	onThemeUpdate: (cb:(theme:string, background_color:string) => void) => {
 		themeUpdateCb.push(cb);
 	},
-	onWebsiteDataUpdate: (cb:() => void) => {
+	onWebsiteDataUpdate: (cb:(data: Dict<IJsonWebsiteData>) => void) => {
 		websiteDataUpdateCb.push(cb);
 	}
 };
