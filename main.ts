@@ -1,4 +1,4 @@
-import {app, BrowserWindow, ipcMain, Menu, MenuItem, session, Tray, dialog} from 'electron';
+import {app, BrowserWindow, ipcMain, Menu, session, Tray, dialog} from 'electron';
 import electron from 'electron';
 import * as path from "path";
 import crypto from "crypto";
@@ -23,7 +23,7 @@ import {appIcon, autoStartArgument, zToolbox_protocol} from "./classes/constants
 import {getWsClientNames, server, io, onSettingUpdate} from "./classes/chromeNative";
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
-import {IPathConfigFilter, SettingConfig} from "./classes/bo/settings";
+import {SettingConfig} from "./classes/bo/settings";
 import {TwingEnvironment, TwingLoaderFilesystem} from "twing";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -348,12 +348,6 @@ const clipboard = new ZClipboard(5000, false);
 let tray:Tray|null = null,
 	contextMenu:Menu|null = null
 ;
-// This method will be called when Electron has finished initialization.
-// Some APIs can only be used after this event occurs.
-interface IZMenuItem extends MenuItem {
-	id: string;
-	type: 'normal' | 'separator' | 'submenu' | 'checkbox' | 'radio';
-}
 export const settings = new Settings();
 function onReady() {
 	contextMenu = Menu.buildFromTemplate([
