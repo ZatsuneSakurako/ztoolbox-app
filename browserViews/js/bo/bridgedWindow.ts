@@ -30,7 +30,7 @@ export interface IZnmApi {
 
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse>
 
-	mustacheRender(templateName: string, context: any): Promise<string>
+	twigRender(templateName: string, context: any): Promise<string>
 	onUpdatePreference(cb: (preferenceId: string, newValue: any) => void): void
 	onShowSection(cb: (sectionName:string) => void): void
 	onThemeUpdate(cb: (theme:string, background_color:string) => void): void

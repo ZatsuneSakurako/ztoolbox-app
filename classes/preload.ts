@@ -71,8 +71,8 @@ const znmApi:IZnmApi = {
 		return ipcRenderer.invoke('sendNotification', message, title, sound);
 	},
 
-	mustacheRender: (templateName:string, context:any) => {
-		return ipcRenderer.invoke('mustacheRender', templateName, context)
+	twigRender: (templateName:string, context:any) => {
+		return ipcRenderer.invoke('twigRender', templateName, context)
 	},
 	onUpdatePreference: (cb:(preferenceId:string, newValue:any) => void) => {
 		updatePreferenceCb.push(cb);

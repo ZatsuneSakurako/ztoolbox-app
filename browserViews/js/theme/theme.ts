@@ -30,7 +30,7 @@ async function getPreferences(): Promise<IThemePreferences> {
 }
 
 async function render(data:any) {
-	return window.znmApi.mustacheRender("backgroundTheme", data);
+	return window.znmApi.twigRender("backgroundTheme", data);
 }
 
 export async function themeOnLoad() {

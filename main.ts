@@ -1,10 +1,8 @@
 import {app, BrowserWindow, ipcMain, Menu, MenuItem, session, Tray, dialog} from 'electron';
 import electron from 'electron';
 import * as path from "path";
-import fs from "fs-extra";
 import crypto from "crypto";
 import i18next from "i18next";
-import Mustache from "mustache";
 import AutoLaunch from "auto-launch";
 import ProtocolRegistry from "protocol-registry";
 import shell, {which} from 'shelljs';
@@ -26,6 +24,7 @@ import {getWsClientNames, server, io, onSettingUpdate} from "./classes/chromeNat
 import {createWindow, getMainWindow, showSection, showWindow, toggleWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
 import {IPathConfigFilter, SettingConfig} from "./classes/bo/settings";
+import {TwingEnvironment, TwingLoaderFilesystem} from "twing";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -308,16 +307,11 @@ ipcMain.handle('sendNotification', async (e, message: string, title?: string, so
 	});
 });
 
-const mstCache:Map<string, string> = new Map();
-ipcMain.handle('mustacheRender', async (e, templateName:string, context:any) => {
-	let template = mstCache.get(templateName);
-	if (template === undefined) {
-		template = fs.readFileSync(`${__dirname}/templates/${templateName}.mst`, {
-			encoding: 'utf8'
-		});
-		mstCache.set(templateName, template);
-	}
-	return Mustache.render(template, context);
+const twig = new TwingEnvironment(new TwingLoaderFilesystem(path.normalize(`${__dirname}/templates/`)), {
+	cache: false // TODO store cache in some folders
+});
+ipcMain.handle('twigRender', async (e, templateName:string, context:any) => {
+	return await twig.render(`${templateName}.twig`, context);
 });
 
 function triggerBrowserWindowPreferenceUpdate(preferenceId: string, newValue: any) {
