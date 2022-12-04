@@ -126,7 +126,10 @@ function clearJs() {
 		'chrome_messaging/**/*.map',
 		'classes/**/*.js',
 		'classes/**/*.d.ts',
-		'classes/**/*.map'
+		'classes/**/*.map',
+		'src/**/*.js',
+		'src/**/*.d.ts',
+		'src/**/*.map'
 	])
 }
 

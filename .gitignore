@@ -11,6 +11,7 @@
 /scripts/*.js
 /chrome_messaging/*.js
 /classes/**/*.js
+/src/**/*.js
 
 ### Linux template
 *~

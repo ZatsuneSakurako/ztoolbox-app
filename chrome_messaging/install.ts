@@ -22,8 +22,12 @@ const json = {
 	]
 };
 
-function writeAndGetJsonFilePath(browser: "chrome" | "chromium" | "firefox"): string {
-	const jsonFilePath = path.normalize(`${__dirname}/eu.gitlab.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`),
+function getJsonFilePath(browser: browsers) {
+	return path.normalize(`${__dirname}/eu.gitlab.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`);
+}
+
+function writeAndGetJsonFilePath(browser: browsers): string {
+	const jsonFilePath = getJsonFilePath(browser),
 		_json = JSON.parse(JSON.stringify(json))
 	;
 
@@ -47,6 +51,9 @@ function writeAndGetJsonFilePath(browser: "chrome" | "chromium" | "firefox"): st
 	return jsonFilePath;
 }
 
+
+
+export const browsers : readonly browsers[] = Object.freeze(['chrome', 'chromium', 'firefox']);
 export type browsers = "chrome" | "chromium" | "firefox";
 export type osList = "darwin" | "win32" | "linux";
 export type install_types = 'user' | 'global';
@@ -116,74 +123,134 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 	return paths[browser][os][type];
 }
 
-async function install(isUninstall=false) {
-	const browsers : browsers[] = ['chrome', 'chromium', 'firefox'];
+type BrowsersOutput<T> = {
+	[key in browsers]: T
+}
 
+export async function getInstallState(browser: browsers) : Promise<false|{ manifestPath: string, path?: string }> {
 	if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
 		throw new Error('PLATFORM_NOT_SUPPORTED');
 	}
-	const platform : osList = process.platform,
-		promises : Promise<void>[] = []
-	;
 
-	for (let browser of browsers) {
-		const manifestPath = writeAndGetJsonFilePath(browser);
-
-		if (platform === 'win32') {
-			const installPath = getInstallPath(browser, platform);
-
-			let exists = false;
-			try {
-				exists = await new Promise<boolean>((resolve, reject) => {
-					installPath.container.keyExists((err, exists) => {
-						if (err) {
-							reject(err);
-						} else {
-							resolve(exists);
+	const platform : osList = process.platform;
+	if (platform === 'win32') {
+		const installPath = getInstallPath(browser, platform);
+		try {
+			return await new Promise((resolve, reject) => {
+				installPath.target.get(json.name, (err, result) => {
+					if (err) {
+						console.error(err);
+						resolve(false);
+					} else {
+						let path;
+						try {
+							path = JSON.parse(result.value).path
+						} catch (e) {
+							console.error(e);
 						}
-					})
+
+						if (path !== undefined && typeof path !== 'string') {
+							reject('UNEXPECTED_PATH_VALUE');
+							return;
+						}
+						resolve({
+							manifestPath: result.value,
+							path
+						});
+					}
 				});
+			});
+		} catch (e) {
+			console.error(e);
+		}
+	} else {
+		const installPath = getInstallPath(browser, platform);
+		if (fs.existsSync(installPath)) {
+			let path;
+			try {
+				path = JSON.parse(installPath).path
 			} catch (e) {
 				console.error(e);
 			}
-			if (!exists) {
-				console.warn(`${browser} reg key not found, skipping`);
-				continue;
+			if (path !== undefined && typeof path !== 'string') {
+				throw new Error('UNEXPECTED_PATH_VALUE');
 			}
+			return {
+				manifestPath: installPath,
+				path
+			};
+		}
+	}
 
-			if (isUninstall) {
-				const promise = new Promise<void>((resolve, reject) => {
-					installPath.target.remove(json.name, err => {
-						if (err) {
-							reject(err);
-						} else {
-							resolve();
-						}
-					});
+	return false;
+}
+
+export async function getInstallStates(): Promise<BrowsersOutput<{ manifestPath: string, path?: string }|false>> {
+	const output : BrowsersOutput<{ manifestPath: string, path?: string }|false> = {
+		chrome: false,
+		chromium: false,
+		firefox: false
+	};
+	for (let browser of browsers) {
+		output[browser] = await getInstallState(browser);
+	}
+	return output;
+}
+
+
+
+
+
+async function installForBrowser(browser: browsers, isUninstall=false) : Promise<boolean> {
+	if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
+		throw new Error('PLATFORM_NOT_SUPPORTED');
+	}
+
+	const platform : osList = process.platform,
+		manifestPath = writeAndGetJsonFilePath(browser)
+	;
+
+	if (platform === 'win32') {
+		const installPath = getInstallPath(browser, platform);
+
+		let exists = false;
+		try {
+			exists = await new Promise<boolean>((resolve, reject) => {
+				installPath.container.keyExists((err, exists) => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve(exists);
+					}
+				})
+			});
+		} catch (e) {
+			console.error(e);
+		}
+		if (!exists) {
+			console.warn(`${browser} reg key not found, skipping`);
+			return false;
+		}
+
+		if (isUninstall) {
+			return await new Promise<boolean>(resolve => {
+				installPath.target.remove(json.name, err => {
+					console.error(err);
+					resolve(!err);
 				});
-				promise
-					.catch(console.error)
-				;
-				promises.push(promise);
-			} else {
-				console.warn(`${browser} reg key found, installing`);
-				const promise = new Promise<void>((resolve, reject) => {
-					installPath.target.set('', Registry.REG_SZ, manifestPath, err => {
-						if (err) {
-							reject(err);
-						} else {
-							resolve();
-						}
-					});
-				});
-				promise
-					.catch(console.error)
-				;
-				promises.push(promise);
-			}
+			});
 		} else {
+			console.warn(`${browser} reg key found, installing`);
+			return await new Promise<boolean>(resolve => {
+				installPath.target.set('', Registry.REG_SZ, manifestPath, err => {
+					console.error(err);
+					resolve(!err);
+				});
+			});
+		}
+	} else {
+		try {
 			const installPath = getInstallPath(browser, platform);
-
 			if (isUninstall) {
 				if (fs.existsSync(installPath)) {
 					fs.unlinkSync(installPath);
@@ -196,18 +263,31 @@ async function install(isUninstall=false) {
 					});
 				}
 
-				fs.copySync(installPath, manifestPath, {
-					recursive: true
-				});
+				fs.symlinkSync(installPath, manifestPath);
 			}
+
+			return true;
+		} catch (e) {
+			console.error(e);
+			return false;
 		}
 	}
-
-	if (promises.length > 1) {
-		await Promise.allSettled(promises)
-			.catch(console.error)
-		;
+}
+export async function install(isUninstall=false): Promise<BrowsersOutput<boolean>> {
+	const output : BrowsersOutput<boolean> = {
+		chrome: false,
+		chromium: false,
+		firefox: false
 	}
+	for (let browser of browsers) {
+		try {
+			output[browser] = await installForBrowser(browser, isUninstall);
+		} catch (e) {
+			console.error(e);
+			output[browser] = false;
+		}
+	}
+	return output;
 }
 
 install()

@@ -33,6 +33,7 @@
 		"./browserViews/js/**/*.ts",
 		"./chrome_messaging/**/*.ts",
 		"./classes/**/*.ts",
+		"./src/**/*.ts",
 		"./locales/**/*.json"
 	],
 	"exclude": [
