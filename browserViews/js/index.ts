@@ -4,8 +4,6 @@ import Vue from 'vue';
 import indexTemplate from '../index.js';
 // @ts-ignore
 import settingsTemplate from '../settings.js';
-// @ts-ignore
-import websitesDataTemplate from '../websitesData.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
 import {BridgedWindow} from "./bo/bridgedWindow";
@@ -28,7 +26,6 @@ const data: IData = {
 	internetAddress: null,
 	processArgv: [],
 	versionState: null,
-	websitesData: [],
 	wsClientNames: []
 };
 
@@ -45,8 +42,13 @@ loadTranslations()
 ;
 
 async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>) {
+	const container = document.querySelector('#websitesData');
+	if (!container) {
+		throw new Error('#websitesData not found');
+	}
+
 	// Clear array
-	data.websitesData.splice(0, data.websitesData.length);
+	const websitesData : {websiteName: string, websiteData: WebsiteData|IJsonWebsiteData}[] = [];
 
 	let count = 0;
 	for (let [name, value] of Object.entries(rawWebsitesData)) {
@@ -54,13 +56,30 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>) {
 
 		const instance = new WebsiteData();
 		instance.fromJSON(value);
-		data.websitesData.push({
+		websitesData.push({
 			websiteName: name,
-			websiteData: instance
+			websiteData: instance.toJSON()
 		});
 
 		count += instance.count;
 	}
+
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(
+		await window.znmApi.twigRender('websitesData', {
+			websitesData
+		}),
+		'text/html'
+	);
+
+	const section = htmlDoc.body.children.item(0);
+	if (!section || htmlDoc.body.children.length > 1) {
+		throw new Error('ONE_NODE_ONLY');
+	}
+
+	section.id = '#websitesData';
+	section.classList.add('grid-12');
+	container.replaceWith(section);
 
 	// @ts-ignore
 	if (typeof navigator.setAppBadge === 'function') {
@@ -110,7 +129,6 @@ async function onLoad() {
 
 
 	Vue.component('settings', settingsTemplate);
-	Vue.component('websitesData', websitesDataTemplate);
 	// @ts-ignore
 	const app = new Vue({
 		el: 'main',

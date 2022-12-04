@@ -9,7 +9,6 @@ export interface IData {
 	processArgv: string[]; // NodeJS.Process.argv
 	versions: Dict<string>; // NodeJS.ProcessVersions;
 	internetAddress: string | null;
-	websitesData: {websiteName: string, websiteData: WebsiteData}[];
 	wsClientNames: string[];
 	versionState: VersionState | null;
 }

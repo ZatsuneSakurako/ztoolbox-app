@@ -6,7 +6,7 @@
 		input#settings.hidden(type='radio', name="menu", v-model='menu', value='settings')
 		input#infos.hidden(type='radio', name="menu", v-model='menu', value='infos')
 
-		websitesData.grid-12(v-show='menu === \'main\'', :websitesData='websitesData')
+		div#websitesData(v-show='menu === \'main\'')
 
 		div.grid-12.grid.display-content(v-show='menu === \'main\'')
 			div.grid-3
