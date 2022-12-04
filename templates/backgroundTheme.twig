@@ -1,5 +1,5 @@
-{{#isDarkTheme}}@import url('css/theme/theme-dark.css');{{/isDarkTheme}}
-{{#isLightTheme}}@import url('css/theme/theme-light.css');{{/isLightTheme}}
+{% if isDarkTheme %}@import url('css/theme/theme-dark.css');{% endif %}
+{% if isLightTheme %}@import url('css/theme/theme-light.css');{% endif %}
 :root {
 	--bgLight0: hsl({{baseColor_hsl.H}}, {{baseColor_hsl.S}}, {{light0}});
 	--bgLight1: hsl({{baseColor_hsl.H}}, {{baseColor_hsl.S}}, {{light1}});
