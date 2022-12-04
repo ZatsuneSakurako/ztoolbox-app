@@ -74,6 +74,13 @@ const _yargs = yargs(hideBin(process.argv))
 						"filter": "*.html"
 					},
 					{
+						"from": "templates/",
+						"to": "resources/templates",
+						"filter": [
+							"**/*.twig"
+						]
+					},
+					{
 						"from": "browserViews/js",
 						"to": "resources/browserViews/js",
 						"filter": [
