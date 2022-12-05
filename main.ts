@@ -174,7 +174,7 @@ ipcMain.handle('sendNotification', async (e, message: string, title?: string, so
 	});
 });
 
-const twig = new TwingEnvironment(new TwingLoaderFilesystem(path.normalize(`${resourcePath}/templates/`)), {
+const twig = new TwingEnvironment(new TwingLoaderFilesystem(path.normalize(`${resourcePath}/browserViews/`)), {
 	cache: false // TODO store cache in some folders
 });
 ipcMain.handle('twigRender', async (e, templateName:string, context:any) => {
