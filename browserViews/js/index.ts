@@ -5,6 +5,7 @@ import indexTemplate from '../index.js';
 import {nextTick, onPasteTextArea, onCopyTextArea, onDigCmd, reloadIframe} from './index-main.js';
 // @ts-ignore
 import settingsTemplate from '../settings.js';
+import './settings.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
 import {BridgedWindow} from "./bo/bridgedWindow";
