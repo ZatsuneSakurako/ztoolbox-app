@@ -4,7 +4,7 @@
  */
 import shell, {which} from "shelljs";
 import ProtocolRegistry from "protocol-registry";
-import {autoStartArgument, zToolbox_protocol} from "../classes/constants";
+import {appRootPath, autoStartArgument, zToolbox_protocol} from "../classes/constants";
 import {app} from "electron";
 import path from "path";
 import {showSection} from "../classes/windowManager";
@@ -46,7 +46,7 @@ if (!process.platform.startsWith('win')) {
 			command: app.isPackaged ?
 				`${JSON.stringify(process.execPath)} $_URL_`
 				:
-				`"${process.execPath}" "${__dirname}" $_URL_`,
+				`"${process.execPath}" "${appRootPath}" $_URL_`,
 			override: true,
 			terminal: false,
 			script: false,
