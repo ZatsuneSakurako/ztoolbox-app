@@ -2,6 +2,7 @@ import Vue from 'vue';
 
 // @ts-ignore
 import indexTemplate from '../index.js';
+import {nextTick, onPasteTextArea, onCopyTextArea, onDigCmd, reloadIframe} from './index-main.js';
 // @ts-ignore
 import settingsTemplate from '../settings.js';
 import {loadTranslations} from "./translation-api.js";
@@ -77,7 +78,7 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>) {
 		throw new Error('ONE_NODE_ONLY');
 	}
 
-	section.id = '#websitesData';
+	section.id = 'websitesData';
 	section.classList.add('grid-12');
 	container.replaceWith(section);
 
@@ -133,7 +134,15 @@ async function onLoad() {
 	const app = new Vue({
 		el: 'main',
 		data: data,
-		...indexTemplate
+		render: indexTemplate.render,
+		staticRenderFns: indexTemplate.staticRenderFns,
+		methods: {
+			nextTick,
+			onPasteTextArea,
+			onCopyTextArea,
+			onDigCmd,
+			reloadIframe
+		}
 	});
 
 
