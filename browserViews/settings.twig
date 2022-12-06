@@ -11,61 +11,61 @@
 			<div class="pref-group{% if group != selected_group %} group-hidden{% endif %}" data-group-show="{{ group }}">
 				<div class="pref-container">
 					{% if conf.type in ['button', 'color', 'string', 'integer', 'json', 'yaml', 'path', 'paths'] %}
-					<label for="pref-{{ id }}"
-						   data-translate-id="preferences.{{ id }}_title"
-						   data-translate-title="preferences.{{ id }}_description"></label>
+						<label for="pref-{{ id }}"
+							   data-translate-id="preferences.{{ id }}_title"
+							   data-translate-title="preferences.{{ id }}_description"></label>
 					{% endif %}
 
 					{% if conf.type in ['button', 'color', 'string'] %}
-					<input
-						type="{{ conf.type == 'string' ? 'text' : conf.type }}" id="pref-{{ id }}" name="{{ id }}"
-						data-on-change="" disabled="disabled"/>
+						<input
+							type="{{ conf.type == 'string' ? 'text' : conf.type }}" id="pref-{{ id }}" name="{{ id }}"
+							data-on-change="" disabled="disabled"/>
 					{% endif %}
 
 					{% if conf.type == 'path' and conf.opts.asText %}
-					<input type="text" id="pref-{{ id }}" name="{{ id }}" data-on-change="" disabled="disabled"/>
+						<input type="text" id="pref-{{ id }}" name="{{ id }}" data-on-change="" disabled="disabled"/>
 					{% endif %}
 
 					{% if conf.type == 'integer' %}
-					<input
-						type="{{ conf.rangeInput ? 'range' : 'number' }}"
-						{%- if conf.minValue >= 0 %}min="{{ conf.minValue }}" {% endif %}
-						{%- if conf.maxValue >= 0 %}max="{{ conf.maxValue }}" {% endif %}
-						{%- if conf.stepValue >= 0 %}step="{{ conf.stepValue }}" {% endif %}
-						id="pref-{{ id }}" name="{{ id }}"
-						data-on-change="" data-on-output-update="" disabled="disabled"/>
+						<input
+							type="{{ conf.rangeInput ? 'range' : 'number' }}"
+							{%- if conf.minValue >= 0 %}min="{{ conf.minValue }}" {% endif %}
+							{%- if conf.maxValue >= 0 %}max="{{ conf.maxValue }}" {% endif %}
+							{%- if conf.stepValue >= 0 %}step="{{ conf.stepValue }}" {% endif %}
+							id="pref-{{ id }}" name="{{ id }}"
+							data-on-change="" data-on-output-update="" disabled="disabled"/>
 					{% endif %}
 
 					{% if conf.type in ['json', 'yaml'] %}
-					<textarea
-						class="auto-height" id="pref-{{ id }}" name="{{ id }}"
-						data-on-change="" disabled="disabled" data-type="{{ conf.type }}"></textarea>
+						<textarea
+							class="auto-height" id="pref-{{ id }}" name="{{ id }}"
+							data-on-change="" disabled="disabled" data-type="{{ conf.type }}"></textarea>
 					{% endif %}
 
 					{% if conf.type == 'integer' and conf.rangeInput %}
-					<output class="output" for="pref-{{ id }}"></output>
+						<output class="output" for="pref-{{ id }}"></output>
 					{% endif %}
 
 					{% if conf.type in ['path', 'paths'] and conf.opts.asFile %}
-					<label class="button small" for="pref-{{ id }}_file"
-						   data-translate-id="{{ conf.opts.asFile ? 'select_file' : 'select_path' }}"></label>
+						<label class="button small" for="pref-{{ id }}_file"
+							   data-translate-id="{{ conf.opts.asFile ? 'select_file' : 'select_path' }}"></label>
 					{% endif %}
 
 					{% if conf.type in ['path', 'paths'] and conf.opts.asFile %}
-					<input
-						class="hidden" type="button" id="pref-{{ id }}_file" name="{{ id }}"
-						data-on-click-path-setting="{{ id }}" />
+						<input
+							class="hidden" type="button" id="pref-{{ id }}_file" name="{{ id }}"
+							data-on-click-path-setting="{{ id }}" />
 					{% endif %}
 
 					{% if conf.type in ['bool'] %}
-					<input type="checkbox"
-						   id="pref-{{ id }}"
-						   name="{{ id }}"
-						   data-on-change=""
-						   disabled="disabled" />
-					<label
-						for="pref-{{ id }}" data-translate-id="preferences.{{ id }}_title"
-						data-translate-title="preferences.{{ id }}_description"></label>
+						<input type="checkbox"
+							   id="pref-{{ id }}"
+							   name="{{ id }}"
+							   data-on-change=""
+							   disabled="disabled" />
+						<label
+							for="pref-{{ id }}" data-translate-id="preferences.{{ id }}_title"
+							data-translate-title="preferences.{{ id }}_description"></label>
 					{% endif %}
 
 					{% if conf.type == 'menulist' %}
@@ -80,13 +80,13 @@
 							{% endfor %}
 						{% else %}
 							<label for="pref-{{ id }}" data-translate-id="preferences.{{ id }}_title"
-								 data-translate-title="preferences.{{ id }}_description"></label>
+								   data-translate-title="preferences.{{ id }}_description"></label>
 							<select
 								id="pref-{{ id }}" name="{{ id }}"
 								data-on-change=""
 								disabled="disabled">
 								{% for choice in conf.options %}
-								<option value="{{ choice.value }}" data-translate-id="preferences.{{ id }}-options-{{ choice.value }}"></option>
+									<option value="{{ choice.value }}" data-translate-id="preferences.{{ id }}-options-{{ choice.value }}"></option>
 								{% endfor %}
 							</select>
 						{% endif %}
