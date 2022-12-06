@@ -1,38 +1,98 @@
-<template lang="pug">
-	form#settingsForm()
-		input.hidden(v-for="group in groups", type='radio', name="setting-group", :value="group", :id="'setting-group-' + group", data-on-group-change='', :checked="group === 'default'")
-		label.tab.setting-group(v-for="group in groups", :for="'setting-group-' + group", :data-translate-id="'group_' + group")
+<form id="settingsForm">
+	{% for group in groups %}
+		<input class="hidden" type="radio" name="setting-group" value="{{ group }}"
+			   id="setting-group-{{ group }}" data-on-group-change="" {% if group == selected_group %} checked{% endif %}/>
+		<label class="tab setting-group{% if group == selected_group %} checked{% endif %}"
+			   for="setting-group-{{ group }}"
+			   data-translate-id="group_{{ group }}"></label>
+	{% endfor %}
+	{% for group, list in settingsByGroup %}
+		{% for id, conf in list %}
+			<div class="pref-group{% if group != selected_group %} group-hidden{% endif %}" data-group-show="{{ group }}">
+				<div class="pref-container">
+					{% if conf.type in ['button', 'color', 'string', 'integer', 'json', 'yaml', 'path', 'paths'] %}
+					<label for="pref-{{ id }}"
+						   data-translate-id="preferences.{{ id }}_title"
+						   data-translate-title="preferences.{{ id }}_description"></label>
+					{% endif %}
 
-		div.pref-group(v-show="group === selected_group", v-for="(list, group) in settingsByGroup")
-			div.pref-container(v-for="(conf, id) in list")
-				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="['button', 'color', 'string', 'integer', 'json', 'yaml', 'path', 'paths'].includes(conf.type)")
-				input(:type="conf.type === 'string' ? 'text' : conf.type", :id='"pref-" + id', :name='id', v-if="['button', 'color', 'string'].includes(conf.type)", data-on-change="", disabled)
-				input(type="text", :id='"pref-" + id', :name='id', v-if="conf.type === 'path' && conf.opts.asText", data-on-change="", disabled)
-				input(:type="conf.rangeInput ? 'range' : 'number'", :min="conf.minValue === undefined ? false : conf.minValue", :max="conf.maxValue === undefined ? false : conf.maxValue", :step="conf.stepValue === undefined ? false : conf.stepValue", :id='"pref-" + id', :name='id', v-if="conf.type === 'integer'", data-on-change="", data-on-output-update="", disabled)
-				textarea.auto-height(:id='"pref-" + id', :name='id', v-if="['json', 'yaml'].includes(conf.type)", data-on-change="", disabled, :data-type="conf.type")
-				output.output(:for='"pref-" + id', v-if="conf.type === 'integer' && !!conf.rangeInput")
+					{% if conf.type in ['button', 'color', 'string'] %}
+					<input
+						type="{{ conf.type == 'string' ? 'text' : conf.type }}" id="pref-{{ id }}" name="{{ id }}"
+						data-on-change="" disabled="disabled"/>
+					{% endif %}
 
-				label.button.small(:for='"pref-" + id + "_file"', :data-translate-id="Array.isArray(conf.opts.asFile) ? 'select_file' : 'select_path'", v-if="['path', 'paths'].includes(conf.type) && conf.opts.asFile")
-				input.hidden(type="button", :id='"pref-" + id + "_file"', :name='id', v-if="['path', 'paths'].includes(conf.type) && conf.opts.asFile", :data-on-click-path-setting="id", @click="onPathSettingClick(id, conf)")
+					{% if conf.type == 'path' and conf.opts.asText %}
+					<input type="text" id="pref-{{ id }}" name="{{ id }}" data-on-change="" disabled="disabled"/>
+					{% endif %}
 
-				input(type="checkbox", :id='"pref-" + id', :name='id', v-if="conf.type === 'bool'", data-on-change="", disabled)
-				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="conf.type === 'bool'")
+					{% if conf.type == 'integer' %}
+					<input
+						type="{{ conf.rangeInput ? 'range' : 'number' }}"
+						{%- if conf.minValue >= 0 %}min="{{ conf.minValue }}" {% endif %}
+						{%- if conf.maxValue >= 0 %}max="{{ conf.maxValue }}" {% endif %}
+						{%- if conf.stepValue >= 0 %}step="{{ conf.stepValue }}" {% endif %}
+						id="pref-{{ id }}" name="{{ id }}"
+						data-on-change="" data-on-output-update="" disabled="disabled"/>
+					{% endif %}
 
-				div(v-for="choice in conf.options", v-if="conf.type === 'menulist' && conf.options.length <= 3")
-					input(type="radio", :id='"pref-" + id + "-" + choice.value', :name='id', :value="choice.value", data-on-change="", disabled)
-					label(:for='"pref-" + id + "-" + choice.value', :data-translate-id="'preferences.' + id + '-options-' + choice.value", :data-translate-title="'preferences.' + id + '_description'")
+					{% if conf.type in ['json', 'yaml'] %}
+					<textarea
+						class="auto-height" id="pref-{{ id }}" name="{{ id }}"
+						data-on-change="" disabled="disabled" data-type="{{ conf.type }}"></textarea>
+					{% endif %}
 
-				label(:for='"pref-" + id', :data-translate-id="'preferences.' + id + '_title'", :data-translate-title="'preferences.' + id + '_description'", v-if="conf.type === 'menulist' && conf.options.length > 3")
-				select(:id='"pref-" + id', :name='id', v-if="conf.type === 'menulist' && conf.options.length > 3", data-on-change="", disabled)
-					option(:value='choice.value', :data-translate-id="'preferences.' + id + '-options-' + choice.value", v-for="choice in conf.options")
-</template>
+					{% if conf.type == 'integer' and conf.rangeInput %}
+					<output class="output" for="pref-{{ id }}"></output>
+					{% endif %}
 
-<script lang="ts">
-import {data} from "./js/settings.js";
-export default {
-	name: "settings",
-	data: function () {
-		return data
-	}
-};
-</script>
+					{% if conf.type in ['path', 'paths'] and conf.opts.asFile %}
+					<label class="button small" for="pref-{{ id }}_file"
+						   data-translate-id="{{ conf.opts.asFile ? 'select_file' : 'select_path' }}"></label>
+					{% endif %}
+
+					{% if conf.type in ['path', 'paths'] and conf.opts.asFile %}
+					<input
+						class="hidden" type="button" id="pref-{{ id }}_file" name="{{ id }}"
+						data-on-click-path-setting="{{ id }}" />
+					{% endif %}
+
+					{% if conf.type in ['bool'] %}
+					<input type="checkbox"
+						   id="pref-{{ id }}"
+						   name="{{ id }}"
+						   data-on-change=""
+						   disabled="disabled" />
+					<label
+						for="pref-{{ id }}" data-translate-id="preferences.{{ id }}_title"
+						data-translate-title="preferences.{{ id }}_description"></label>
+					{% endif %}
+
+					{% if conf.type == 'menulist' %}
+						{% if conf.options|length <= 3 %}
+							{% for choice in conf.options %}
+								<input type="radio" id="pref-{{ id }}-{{ choice.value }}" name="{{ id }}"
+									   value="{{ choice.value }}" data-on-change="" disabled="disabled"/>
+								<label
+									for="pref-{{ id }}-{{ choice.value }}"
+									data-translate-id="preferences.{{ id }}-options-{{ choice.value }}"
+									data-translate-title="preferences.{{ id }}_description"></label>
+							{% endfor %}
+						{% else %}
+							<label for="pref-{{ id }}" data-translate-id="preferences.{{ id }}_title"
+								 data-translate-title="preferences.{{ id }}_description"></label>
+							<select
+								id="pref-{{ id }}" name="{{ id }}"
+								data-on-change=""
+								disabled="disabled">
+								{% for choice in conf.options %}
+								<option value="{{ choice.value }}" data-translate-id="preferences.{{ id }}-options-{{ choice.value }}"></option>
+								{% endfor %}
+							</select>
+						{% endif %}
+					{% endif %}
+				</div>
+			</div>
+		{% endfor %}
+	{% endfor %}
+</form>
