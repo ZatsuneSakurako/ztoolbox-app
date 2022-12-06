@@ -6,10 +6,10 @@
 		input#settings.hidden(type='radio', name="menu", v-model='menu', value='settings')
 		input#infos.hidden(type='radio', name="menu", v-model='menu', value='infos')
 
-		div.display-contents(v-show='menu === \'main\'')
+		div.display-contents(data-menu-show='main')
 			section#websitesData
 
-		div.grid-12.grid.display-contents(v-show='menu === \'main\'')
+		div.grid-12.grid.display-contents(data-menu-show='main')
 			div.grid-3
 				label(for="main_textarea_input", data-translate-id="textarea") Text area
 				textarea#main_textarea_input(ref="main_textarea_input")
@@ -31,10 +31,10 @@
 			div.grid-3
 				button(v-on:click='onDigCmd', v-if="main_input_type === 'dns'") Dig domain
 
-		div.grid-12(v-show='menu === \'code-tester\'')
+		div.grid-12(data-menu-show='code-tester')
 			button(v-on:click='reloadIframe', data-translate-id="runCode") Run code !
 
-		div.grid-12(v-show='menu === \'infos\'')
+		div.grid-12(data-menu-show='infos')
 			p Using Node.js {{versions.node}}, Chromium {{versions.chrome}}, and Electron {{versions.electron}} (current i18next language :&nbsp;
 				span(data-translate-id='language')
 				| ).
@@ -45,13 +45,13 @@
 				ul.list-style-inside.list-style-disc
 					li(v-for="client in wsClientNames") {{client}}
 
-		div.grid-12#settingsContainer(v-show='menu === \'settings\'')
+		div.grid-12#settingsContainer(data-menu-show='settings')
 
-		div#input1.grid-4(ref='input1', v-show='menu === \'code-tester\'')
-		div#input2.grid-4(ref='input2', v-show='menu === \'code-tester\'')
-		div#input3.grid-4(ref='input3', v-show='menu === \'code-tester\'')
+		div#input1.grid-4(ref='input1', data-menu-show='code-tester')
+		div#input2.grid-4(ref='input2', data-menu-show='code-tester')
+		div#input3.grid-4(ref='input3', data-menu-show='code-tester')
 
-		iframe#iframe.grid-12(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html', v-show='menu === \'code-tester\'')
+		iframe#iframe.grid-12(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html', data-menu-show='code-tester')
 </template>
 
 <script lang="ts">

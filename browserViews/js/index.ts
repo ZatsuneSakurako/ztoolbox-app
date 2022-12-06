@@ -13,6 +13,7 @@ import {IData} from "./bo/IData";
 import {IJsonWebsiteData} from "./bo/websiteData";
 import {WebsiteData} from "./websiteData.js";
 import {Dict} from "./bo/Dict";
+import {updateClassesFor} from "./labelChecked.js";
 
 declare var window : BridgedWindow;
 
@@ -122,6 +123,7 @@ async function onLoad() {
 		setTimeout(() => {
 			const $input = document.querySelector<HTMLInputElement>(`input[type="radio"][name="menu"][id="${sectionName}"]`);
 			if ($input) {
+				triggerMenu(sectionName);
 				updateClassesFor($input);
 			}
 		});
@@ -163,47 +165,34 @@ async function onLoad() {
 
 
 
-	function triggerMenu(newSection:string, oldSection?:string) {
+	function triggerMenu(newSection:string) {
 		const event:ShowSectionEvent = new CustomEvent('showSection', {
 			detail: {
-				oldSection: oldSection,
 				newSection,
 				app
 			}
 		});
+		updateMenuShown();
 		window.dispatchEvent(event);
 	}
-	triggerMenu(data.menu);
-	app.$watch('menu', function (newSection:string, oldSection:string) {
-		location.hash = newSection;
-		triggerMenu(newSection, oldSection);
-	});
-
-
-
-	function updateClassesFor(target: HTMLInputElement) {
-		const nodes: HTMLLabelElement[] = [...document.querySelectorAll<HTMLLabelElement>(`label[for="${target.id}"]`)];
-		if (target.type === 'radio') {
-			const radios = document.querySelectorAll(`input[type="radio"][name="${target.name}"]:not([id="${target.id}"])`);
-			for (let radio of radios) {
-				nodes.push(...document.querySelectorAll<HTMLLabelElement>(`label[for="${radio.id}"]`));
+	function updateMenuShown() {
+		const target = document.querySelector<HTMLInputElement>('input[name="menu"][type="radio"]:checked')
+		if (target) {
+			const $menuShow = [...document.querySelectorAll<HTMLElement>('[data-menu-show]')];
+			for (let item of $menuShow) {
+				const menu = item.dataset.menuShow;
+				item.style.display = menu === target.value ? '' : 'none';
 			}
 		}
-
-		for (let node of nodes) {
-			node.classList.toggle('checked', (<HTMLInputElement|null> node.control)?.checked);
-		}
 	}
-	document.addEventListener('change', function (e) {
-		const target = (<Element> e.target).closest<HTMLInputElement>('input[type="checkbox"][id],input[type="radio"][id]');
+	triggerMenu(data.menu);
+	document.addEventListener('change', function onMenuChange(e) {
+		const target = (<Element> e.target).closest<HTMLInputElement>('input[name="menu"][type="radio"]');
 		if (!target) return;
 
-		updateClassesFor(target);
-	});
-	setTimeout(() => {
-		for (let node of document.querySelectorAll('input[type="checkbox"][id],input[type="radio"][id]')) {
-			updateClassesFor(<HTMLInputElement> node);
-		}
+		const newSection = target.value;
+		location.hash = newSection;
+		triggerMenu(newSection);
 	});
 }
 

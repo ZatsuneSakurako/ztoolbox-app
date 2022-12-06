@@ -4,6 +4,7 @@ import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {SettingConfig, SettingsConfig} from "../../classes/bo/settings.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import {Dict} from "./bo/Dict";
+import {reloadClassesFor} from "./labelChecked.js";
 
 declare var window : BridgedWindow;
 
@@ -49,6 +50,7 @@ async function init() {
 	);
 
 	$container.append(...htmlDoc.body.children);
+	reloadClassesFor($container)
 }
 
 

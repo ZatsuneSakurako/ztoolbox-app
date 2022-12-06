@@ -2,7 +2,7 @@
 	{% for group in groups %}
 		<input class="hidden" type="radio" name="setting-group" value="{{ group }}"
 			   id="setting-group-{{ group }}" data-on-group-change="" {% if group == selected_group %} checked{% endif %}/>
-		<label class="tab setting-group{% if group == selected_group %} checked{% endif %}"
+		<label class="tab setting-group"
 			   for="setting-group-{{ group }}"
 			   data-translate-id="group_{{ group }}"></label>
 	{% endfor %}
