@@ -59,13 +59,13 @@ interface IPathConfig extends IConfigBase<string> {
 	type: 'path',
 	opts: {
 		asText?: boolean
-		asFile?: IPathConfigFilter[]|boolean // file filter for file input, true for path input
+		asFile?: IPathConfigFilter[]|true // file filter for file input, true for path input
 	}
 }
 interface IPathsConfig extends IConfigBase<string[]> {
 	type: 'paths',
 	opts: {
-		asFile?: IPathConfigFilter[]|boolean // file filter for file input, true for path input
+		asFile?: IPathConfigFilter[]|true // file filter for file input, true for path input
 	}
 }
 

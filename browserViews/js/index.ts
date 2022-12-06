@@ -2,9 +2,8 @@ import Vue from 'vue';
 
 // @ts-ignore
 import indexTemplate from '../index.js';
+
 import {nextTick, onPasteTextArea, onCopyTextArea, onDigCmd, reloadIframe} from './index-main.js';
-// @ts-ignore
-import settingsTemplate from '../settings.js';
 import './settings.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
@@ -130,7 +129,6 @@ async function onLoad() {
 
 
 
-	Vue.component('settings', settingsTemplate);
 	// @ts-ignore
 	const app = new Vue({
 		el: 'main',

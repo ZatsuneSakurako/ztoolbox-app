@@ -45,8 +45,7 @@
 				ul.list-style-inside.list-style-disc
 					li(v-for="client in wsClientNames") {{client}}
 
-		p.grid-12(v-show='menu === \'settings\'')
-			settings
+		div.grid-12#settingsContainer(v-show='menu === \'settings\'')
 
 		div#input1.grid-4(ref='input1', v-show='menu === \'code-tester\'')
 		div#input2.grid-4(ref='input2', v-show='menu === \'code-tester\'')

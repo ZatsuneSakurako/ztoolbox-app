@@ -36,6 +36,21 @@ export const data = {
 	settingsByGroup
 };
 
+async function init() {
+	const $container = document.querySelector<HTMLFormElement>(`#settingsContainer`);
+	if (!$container) {
+		throw new Error('CONTAINER_NOT_FOUND');
+	}
+
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(
+		await window.znmApi.twigRender('settings', data),
+		'text/html'
+	);
+
+	$container.append(...htmlDoc.body.children);
+}
+
 
 
 
@@ -129,7 +144,10 @@ window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	}
 
 	window.removeEventListener('showSection', fn, false);
-	settingsLoader()
+	(async () => {
+		await init();
+		await settingsLoader();
+	})()
 		.catch(console.error)
 	;
 });
@@ -146,6 +164,12 @@ document.addEventListener('change', function onGroupChange(e: SubmitEvent) {
 	const $input = document.querySelector<HTMLInputElement>('input[type="radio"][name="setting-group"]:checked');
 	if ($input) {
 		data.selected_group = $input.value;
+
+		const groups = [...document.querySelectorAll<HTMLElement>(`#${settingFormId} [data-group-show]`)];
+		for (let $group of groups) {
+			const group = $group.dataset.groupShow;
+			$group.classList.toggle('group-hidden', data.selected_group !== group);
+		}
 	}
 });
 
