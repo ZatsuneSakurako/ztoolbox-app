@@ -152,7 +152,7 @@ export async function updateAutoStart() {
 		args : string[] = []
 	;
 	if (!app.isPackaged) {
-		args.push(JSON.stringify(__dirname));
+		args.push(JSON.stringify(appRootPath));
 	}
 	args.push(autoStartArgument);
 
