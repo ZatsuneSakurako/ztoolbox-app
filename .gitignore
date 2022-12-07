@@ -2,7 +2,6 @@
 /dist
 /browserViews/lib
 /browserViews/*.html
-/browserViews/*.js
 /browserViews/css/**/*.css
 /browserViews/js/**/*.js
 **/*.map

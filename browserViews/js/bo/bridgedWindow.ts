@@ -1,7 +1,6 @@
 import {VersionState} from "../../../classes/bo/versionState";
 import {RandomJsonData} from "../../../classes/bo/settings";
 import {NotificationResponse} from "../../../classes/bo/notify";
-import {IData} from "./IData";
 import {Dict} from "./Dict";
 import {IJsonWebsiteData} from "./websiteData";
 
@@ -37,7 +36,5 @@ export interface IZnmApi {
 }
 
 export type BridgedWindow = Window & typeof globalThis & {
-	znmApi: IZnmApi,
-	data: IData,
-	Vue: any
+	znmApi: IZnmApi
 };

@@ -1,0 +1,22 @@
+<p>Node.js {{versions.node}}, Chromium {{versions.chrome}}, Electron {{versions.electron}} (current i18next language :&nbsp;<span data-translate-id='language'></span>)</p>
+
+{% if versionState %}
+	<p>Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.</p>
+{% endif %}
+
+{% if processArgv|length > 0 %}
+	<p>Arguments : {{processArgv|join(', ')}}</p>
+{% endif %}
+
+{% if internetAddress %}
+	<p>Adresse ip : {{internetAddress}}</p>
+{% endif %}
+
+{% if wsClientNames %}
+	<p>Web extensions :</p>
+	<ul class="list-style-inside list-style-disc">
+		{%- for client in wsClientNames %}
+			<li>{{ client }}</li>
+		{%- endfor -%}
+	</ul>
+{% endif %}

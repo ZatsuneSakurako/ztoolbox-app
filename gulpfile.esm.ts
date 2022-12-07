@@ -1,11 +1,9 @@
 import child_process from "child_process";
 import * as gulp from "gulp";
 import del from "del";
-import * as fs from "fs-extra";
 import _gulpSass from "gulp-sass";
 import * as sass from "sass-embedded";
 import gulpPug from "gulp-pug";
-import gulpVue from "./scripts/gulp-vue.js";
 
 const gulpSass = _gulpSass(sass);
 
@@ -85,31 +83,15 @@ function _html() {
 export const html = gulp.series(clearHtml, _html);
 
 
-
+/**
+ * @deprecated
+ */
 function clearVue() {
 	return del([
 		'browserViews/*.js',
 		'browserViews/*.js.map',
 	]);
 }
-
-const vueTs = {
-	compilerOptions: fs.readJsonSync('./tsconfig.json').compilerOptions
-};
-vueTs.compilerOptions.module = 'esnext';
-vueTs.compilerOptions.lib = ["es5", "es6", "dom"];
-function _vue() {
-	return gulp.src(paths.vue.src, {
-		sourcemaps: true
-	})
-
-		.pipe(gulpVue({}, vueTs))
-
-		.pipe(gulp.dest(paths.vue.dest, {
-			sourcemaps: '.'
-		}))
-}
-export const vue = gulp.series(clearVue, _vue);
 
 
 
@@ -145,12 +127,11 @@ export const js = gulp.series(clearJs, _js);
 
 export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs);
 
-export const build = gulp.series(clear, gulp.parallel(_css, _html, _vue, _js));
+export const build = gulp.series(clear, gulp.parallel(_css, _html, _js));
 
 function _watch() {
 	gulp.watch(paths.styles.src, _css);
 	gulp.watch(paths.html.src, _html);
-	gulp.watch(paths.vue.src, _vue);
 	gulp.watch([
 		paths.js.src,
 		paths.mainJs.src,

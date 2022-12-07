@@ -85,14 +85,6 @@ const _yargs = yargs(hideBin(process.argv))
 						]
 					},
 					{
-						"from": "browserViews",
-						"to": "resources/browserViews",
-						"filter": [
-							"*.js",
-							"*.map"
-						]
-					},
-					{
 						"from": "browserViews/css",
 						"to": "resources/browserViews/css",
 						"filter": [

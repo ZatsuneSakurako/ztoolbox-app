@@ -1,15 +1,9 @@
-import Vue from 'vue';
-
-// @ts-ignore
-import indexTemplate from '../index.js';
-
-import {nextTick, onPasteTextArea, onCopyTextArea, onDigCmd, reloadIframe} from './index-main.js';
+import './index-main.js';
 import './settings.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
 import {BridgedWindow} from "./bo/bridgedWindow";
 import {ShowSectionEvent} from "./bo/showSectionEvent";
-import {IData} from "./bo/IData";
 import {IJsonWebsiteData} from "./bo/websiteData";
 import {WebsiteData} from "./websiteData.js";
 import {Dict} from "./bo/Dict";
@@ -20,24 +14,6 @@ declare var window : BridgedWindow;
 
 
 const defaultMenu = 'main';
-const data: IData = {
-	main_input_type: 'dns',
-	menu: defaultMenu,
-	message: 'Hello Vue!',
-	versions: window.process.versions,
-	internetAddress: null,
-	processArgv: [],
-	versionState: null,
-	wsClientNames: []
-};
-
-if (location.hash.length > 1) {
-	data.menu = location.hash.substring(1);
-	if (data.menu === 'default') {
-		data.menu = defaultMenu;
-	}
-}
-window.data = data;
 
 loadTranslations()
 	.catch(console.error)
@@ -119,32 +95,13 @@ document.addEventListener('click', function (e) {
 
 async function onLoad() {
 	window.znmApi.onShowSection(function (sectionName:string) {
-		data.menu = data.menu === 'default' ? defaultMenu : sectionName;
-		setTimeout(() => {
-			const $input = document.querySelector<HTMLInputElement>(`input[type="radio"][name="menu"][id="${sectionName}"]`);
-			if ($input) {
-				triggerMenu(sectionName);
-				updateClassesFor($input);
-			}
-		});
-	});
-
-
-
-	// @ts-ignore
-	const app = new Vue({
-		el: 'main',
-		data: data,
-		render: indexTemplate.render,
-		staticRenderFns: indexTemplate.staticRenderFns,
-		methods: {
-			nextTick,
-			onPasteTextArea,
-			onCopyTextArea,
-			onDigCmd,
-			reloadIframe
+		if (!sectionName || sectionName === 'default') {
+			sectionName = defaultMenu;
 		}
+
+		triggerMenu(sectionName);
 	});
+
 
 
 	window.znmApi.getPreferences('websitesData')
@@ -166,13 +123,25 @@ async function onLoad() {
 
 
 	function triggerMenu(newSection:string) {
+		if (!newSection || newSection === 'default') {
+			newSection = defaultMenu;
+		}
+
+		const $input = document.querySelector<HTMLInputElement>(`input[name="menu"][value=${newSection}]`);
+		if (!$input) {
+			throw new Error(`MENU_NOT_FOUND "${newSection}"`);
+		}
+		if (!$input.checked) {
+			$input.checked = true;
+		}
+
 		const event:ShowSectionEvent = new CustomEvent('showSection', {
 			detail: {
-				newSection,
-				app
+				newSection
 			}
 		});
 		updateMenuShown();
+		updateClassesFor($input);
 		window.dispatchEvent(event);
 	}
 	function updateMenuShown() {
@@ -185,7 +154,9 @@ async function onLoad() {
 			}
 		}
 	}
-	triggerMenu(data.menu);
+
+	triggerMenu(location.hash.substring(1));
+
 	document.addEventListener('change', function onMenuChange(e) {
 		const target = (<Element> e.target).closest<HTMLInputElement>('input[name="menu"][type="radio"]');
 		if (!target) return;

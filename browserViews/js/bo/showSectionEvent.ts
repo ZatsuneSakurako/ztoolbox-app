@@ -1,4 +1,3 @@
 export type ShowSectionEvent = CustomEvent<{
-	newSection: string,
-	app: unknown
+	newSection: string
 }>

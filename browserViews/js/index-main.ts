@@ -1,9 +1,23 @@
 import {BridgedWindow} from "./bo/bridgedWindow";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import ddgWhatIsMyIp from "./ddgWhatIsMyIp.js";
+import {VersionState} from "../../classes/bo/versionState";
+import {Dict} from "./bo/Dict";
 
 declare var CodeMirror : any;
 declare var window : BridgedWindow;
+
+function nonNullable<T>(element:T|null): NonNullable<T> {
+	if (!element) {
+		throw new Error('MISSING_INPUT');
+	}
+	return element;
+}
+
+const main_input = nonNullable(document.querySelector<HTMLInputElement>('input#main_input')),
+	main_textarea_input = nonNullable(document.querySelector<HTMLTextAreaElement>('textarea#main_textarea_input')),
+	main_textarea_output = nonNullable(document.querySelector<HTMLTextAreaElement>('textarea#main_textarea_output'))
+;
 
 
 
@@ -32,22 +46,22 @@ function codeTesterLoader() {
 		theme: 'monokai'
 	};
 
-	const htmlEditor = CodeMirror(this.$refs.input1, Object.assign({
+	const htmlEditor = CodeMirror(document.querySelector('#input1'), Object.assign({
 		value: editors.html,
 		mode: 'htmlmixed'
 	}, defaultOptions));
-	const cssEditor = CodeMirror(this.$refs.input2, Object.assign({
+	const cssEditor = CodeMirror(document.querySelector('#input2'), Object.assign({
 		value: editors.css,
 		mode: 'css'
 	}, defaultOptions));
-	const jsEditor = CodeMirror(this.$refs.input3, Object.assign({
+	const jsEditor = CodeMirror(document.querySelector('#input3'), Object.assign({
 		value: editors.js,
 		mode: 'javascript'
 	}, defaultOptions));
 
 
 
-	const iframe: HTMLIFrameElement = this.$refs.iframe;
+	const iframe = nonNullable(document.querySelector<HTMLIFrameElement>('iframe'));
 	window.addEventListener('message', function (e: WindowEventMap['message']) {
 		if (e.data.type === 'iframe-loaded') {
 			// @ts-ignore
@@ -89,34 +103,67 @@ function codeTesterLoader() {
 
 
 
+interface IVariousInfosData {
+	versions?: Dict<string>; // NodeJS.ProcessVersions;
+	processArgv?: string[] // NodeJS.Process.argv
+	versionState?: VersionState | null
+	internetAddress?: string
+	wsClientNames?: string[]
+}
+async function refreshData() {
+	const $variousInfos = document.querySelector('#variousInfos');
+	if (!$variousInfos) return;
+
+	const infosData : IVariousInfosData = {},
+		promises : Promise<any>[] = []
+	;
+
+	infosData.versions = window.process.versions;
+	promises.push(
+		window.znmApi.getProcessArgv()
+			.then(result => {
+				infosData.processArgv = result;
+			})
+			.catch(console.error)
+	);
+	promises.push(
+		window.znmApi.getVersionState()
+			.then(result => {
+				infosData.versionState = result;
+			})
+			.catch(console.error)
+	);
+	promises.push(
+		ddgWhatIsMyIp(true)
+			.then(result => {
+				infosData.internetAddress = result;
+			})
+			.catch(console.error)
+	);
+	promises.push(
+		window.znmApi.getWsClientNames()
+			.then(result => {
+				infosData.wsClientNames = result;
+			})
+			.catch(console.error)
+	);
+	await Promise.allSettled(promises);
+
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(
+		await window.znmApi.twigRender('variousInfos', infosData),
+		'text/html'
+	);
+	$variousInfos.append(...htmlDoc.body.children);
+}
+
 window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	if (e.detail.newSection !== 'infos') {
 		return;
 	}
 	window.removeEventListener('showSection', fn, false);
 
-	window.znmApi.getProcessArgv()
-		.then(processArgv => {
-			window.data.processArgv = processArgv;
-		})
-		.catch(console.error)
-	;
-	window.znmApi.getVersionState()
-		.then(versionState => {
-			window.data.versionState = versionState;
-		})
-		.catch(console.error)
-	;
-	ddgWhatIsMyIp(true)
-		.then(result => {
-			window.data.internetAddress = result;
-		})
-		.catch(console.error)
-	;
-	window.znmApi.getWsClientNames()
-		.then(wsClientNames => {
-			window.data.wsClientNames = wsClientNames;
-		})
+	refreshData()
 		.catch(console.error)
 	;
 });
@@ -125,21 +172,30 @@ window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	const val = e.detail.newSection;
 	if (val === 'code-tester' && !codeTesterLoaded) {
 		window.removeEventListener('showSection', fn, false);
-		codeTesterLoader.call(e.detail.app);
+		codeTesterLoader();
 	}
 }, false);
 
+document.addEventListener('change', function onMenuChange(e) {
+	const target = (<Element> e.target).closest<HTMLInputElement>('input[name="main_input_type"][type="radio"]');
+	if (!target) return;
+
+	if (main_input) {
+		const onMainInputs = [...document.querySelectorAll<HTMLElement>('[data-main-input]')];
+		for (let element of onMainInputs) {
+			const value = element.dataset.mainInput
+			element.classList.toggle('hidden', value !== target.value);
+		}
+	}
+});
 
 
 
 
-export function nextTick() {
-	return this.constructor.nextTick()
-}
 
-export async function onCopyTextArea() {
+async function onCopyTextArea() {
 	try {
-		await navigator.clipboard.writeText(this.$refs.main_textarea_input.value)
+		await navigator.clipboard.writeText(main_textarea_input.value)
 	} catch (e) {
 		console.error(e);
 		return;
@@ -150,24 +206,46 @@ export async function onCopyTextArea() {
 	;
 }
 
-export function onPasteTextArea() {
+document.addEventListener('click', function(e) {
+	const target = (<HTMLElement>e.target).closest<HTMLElement>('#copyTextArea');
+	if (!target) return;
+
+	onCopyTextArea()
+		.catch(console.error)
+	;
+});
+
+document.addEventListener('click', function onPasteTextArea(e) {
+	const target = (<HTMLElement>e.target).closest<HTMLElement>('#pasteTextArea');
+	if (!target) return;
+
 	navigator.clipboard.readText()
 		.then(value => {
-			this.$refs.main_textarea_input.value = value
+			main_textarea_input.value = value
 		})
 		.catch(console.error)
 	;
-}
+});
 
-export function onDigCmd() {
-	window.znmApi.digCmd(this.$refs.main_input.value)
+
+document.addEventListener('click', function digCmd(e) {
+	const target = (<HTMLElement>e.target).closest<HTMLElement>('#digCmd');
+	if (!target) return;
+
+	window.znmApi.digCmd(main_input.value)
 		.then(result => {
-			this.$refs.main_textarea_output.value = result;
+			main_textarea_output.value = result;
 		})
 		.catch(console.error)
 	;
-}
+});
 
-export function reloadIframe() {
-	this.$refs.iframe.contentWindow.location.reload();
-}
+document.addEventListener('click', function reloadIframe(e) {
+	const target = (<HTMLElement>e.target).closest<HTMLElement>('[data-reload-iframe]');
+	if (!target) return;
+
+	const $iframe = document.querySelector<HTMLIFrameElement>('iframe#iframe');
+	if ($iframe && $iframe.contentWindow) {
+		$iframe.contentWindow.location.reload();
+	}
+});

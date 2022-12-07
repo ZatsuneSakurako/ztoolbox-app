@@ -38,9 +38,11 @@ block append head-css
 block append head-js
 	script(src="js/_fix_exports.js")
 	script(src="js/_import-map-loader.js")
-	script(src='index.js', type='lazy-module')
 	script(src='js/settings/settings.js', type='lazy-module')
 	script(src='js/translation-api.js', type='lazy-module')
 	script(src='js/theme/color.js', type='lazy-module')
 	script(src='js/theme/theme.js', type='lazy-module')
 	script(src='js/index.js', type='lazy-module')
+
+block main
+	include index-main

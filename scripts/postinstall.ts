@@ -18,9 +18,10 @@ fs.copy(path.resolve(currentPath, './node_modules/codemirror/'), path.resolve(li
 	.catch(console.error)
 ;
 
-fs.copy(path.resolve(currentPath, './node_modules/vue/dist/'), path.resolve(libPath, './vue'))
-	.catch(console.error)
-;
+const vuePath = path.resolve(libPath, './vue');
+if (fs.existsSync(vuePath)) {
+	fs.removeSync(vuePath);
+}
 
 fs.copy(path.resolve(currentPath, './node_modules/string-strip-html/dist/'), path.resolve(libPath, './string-strip-html'))
 	.catch(console.error)
