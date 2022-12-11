@@ -16,6 +16,7 @@ export interface ServerToClientEvents {
 		oldValue: preferenceData['value'],
 		newValue: preferenceData['value']
 	}): void
+	sendNotification<T>(opts: ISendNotificationOptions, cb: ResponseCallback<T>): void
 }
 
 export interface ClientToServerEvents {
@@ -24,16 +25,34 @@ export interface ClientToServerEvents {
 	getDefaultValues(cb: ResponseCallback<SettingsConfig>): void
 	ping(cb: ResponseCallback<'pong'>): void
 	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
-	extensionName(extensionName: IChromeExtensionName): void
+	updateSocketData(data: Partial<IChromeExtensionName & {notificationSupport: boolean}>): void
 	getWebsitesData(cb: ResponseCallback<Dict<IJsonWebsiteData>>): void
 	sendWebsitesData(websiteData: Dict<IJsonWebsiteData>): void
 }
 export interface InterServerEvents {}
 
 export interface SocketData extends Partial<IChromeExtensionName> {
+	notificationSupport?: boolean
 }
 
 export interface IChromeExtensionName {
 	userAgent: string,
 	extensionId: string
+}
+
+export interface ISendNotificationOptions {
+	title?: string
+	message: string
+	contextMessage?: string
+	buttons?: {
+		title: string;
+		/**
+		 * This url must be available from the browser
+		 */
+		iconUrl?: string | undefined;
+	}[]
+	/**
+	 * This url must be available from the browser
+	 */
+	iconURL?: string
 }

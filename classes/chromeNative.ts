@@ -2,20 +2,22 @@ import {BrowserWindow} from 'electron';
 import http from "http";
 import {
 	ClientToServerEvents,
-	InterServerEvents, preferenceData,
+	InterServerEvents, ISendNotificationOptions, preferenceData,
 	ServerToClientEvents,
-	SocketData
+	SocketData, SocketMessage
 } from "./bo/chromeNative";
 import {settings} from "../main";
 import {setBadge, showSection} from "./windowManager";
-import {Server, Socket} from "socket.io";
+import {Server, Socket, RemoteSocket} from "socket.io";
 import Dict = NodeJS.Dict;
 import {WebsiteData, IJsonWebsiteData} from "../browserViews/js/websiteData";
 import {JsonSerialize} from "./JsonSerialize";
+import {NotificationResponse} from "./bo/notify";
 
 
 
 export type socket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
+export type remoteSocket = RemoteSocket<ServerToClientEvents, SocketData>;
 export const server = http.createServer(),
 	io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server)
 ;
@@ -84,9 +86,12 @@ io.on("connection", (socket: socket) => {
 		});
 	});
 
-	socket.on('extensionName', function (extensionName) {
-		socket.data.extensionId = extensionName.extensionId;
-		socket.data.userAgent = extensionName.userAgent;
+	socket.on('updateSocketData', function (data) {
+		if ('notificationSupport' in data) {
+			socket.data.notificationSupport = data.notificationSupport;
+		}
+		socket.data.extensionId = data.extensionId;
+		socket.data.userAgent = data.userAgent;
 	});
 
 	socket.on('getWebsitesData', function (cb) {
@@ -150,13 +155,34 @@ export async function onSettingUpdate(id: string, oldValue: preferenceData['valu
 	}
 }
 
+function _sendNotification<T>(socket: remoteSocket, opts: ISendNotificationOptions): Promise<T> {
+	return new Promise<T>((resolve, reject) => {
+		socket.emit('sendNotification', opts, (response:SocketMessage<T>) => {
+			if (response.error !== false) {
+				reject(response.error);
+			} else {
+				resolve(response.result);
+			}
+		});
+	});
+}
+
+export async function sendNotification(opts: ISendNotificationOptions): Promise<NotificationResponse|null> {
+	const sockets = await io.fetchSockets();
+	for (let client of sockets) {
+		if (!client.data.notificationSupport) continue;
+		return await _sendNotification(client, opts);
+	}
+	return null;
+}
+
 export async function getWsClientNames(): Promise<string[]> {
 	const output : string[] = [];
 
 	const sockets = await io.fetchSockets();
 	for (let client of sockets) {
 		if (client.data) {
-			output.push(client.data.extensionId + ' - ' + client.data.userAgent);
+			output.push(`${client.data.extensionId} ${client.data.notificationSupport ? '(notification support)' : ''} : ${client.data.userAgent}`);
 		} else {
 			output.push('Unknown');
 		}

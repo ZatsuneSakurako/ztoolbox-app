@@ -1,10 +1,23 @@
 import {Notification} from "electron";
 import {appIconPath_x3} from "./constants";
 import {NotificationResponse} from "./bo/notify";
+import {sendNotification} from "./chromeNative";
 
 
 
-export function notifyElectron(options:{title:string, message:string, icon?:string | Electron.NativeImage, sound?:boolean}):Promise<NotificationResponse> {
+type notifyElectron_options = {title:string, message:string, icon?:string | Electron.NativeImage, sound?:boolean};
+export async function notifyElectron(options:notifyElectron_options): Promise<NotificationResponse> {
+	const response = await sendNotification({
+		title: options.title,
+		message: options.message
+	});
+	if (response !== null) {
+		return response;
+	}
+	return _notifyElectron(options);
+}
+
+function _notifyElectron(options:notifyElectron_options):Promise<NotificationResponse> {
 	return new Promise((resolve, reject) => {
 		if (options === null || typeof options !== 'object') {
 			reject('WrongArgument');
