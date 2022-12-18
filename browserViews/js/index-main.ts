@@ -193,24 +193,27 @@ document.addEventListener('change', function onMenuChange(e) {
 
 
 
-async function onCopyTextArea() {
+async function onCopyTextArea(isCut:boolean) {
 	try {
-		await navigator.clipboard.writeText(main_textarea_input.value)
+		await navigator.clipboard.writeText(main_textarea_input.value);
+		if (isCut) {
+			main_textarea_input.value = '';
+		}
 	} catch (e) {
 		console.error(e);
 		return;
 	}
 
-	window.znmApi.sendNotification(await window.znmApi._('textarea_copied'))
+	window.znmApi.sendNotification(await window.znmApi._(isCut ? 'textarea_clipped' : 'textarea_copied'))
 		.catch(console.error)
 	;
 }
 
 document.addEventListener('click', function(e) {
-	const target = (<HTMLElement>e.target).closest<HTMLElement>('#copyTextArea');
+	const target = (<HTMLElement>e.target).closest<HTMLElement>('#copyTextArea,#cutTextArea');
 	if (!target) return;
 
-	onCopyTextArea()
+	onCopyTextArea(target.id === 'cutTextArea')
 		.catch(console.error)
 	;
 });

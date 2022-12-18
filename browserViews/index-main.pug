@@ -11,18 +11,19 @@ main.grid
 	div.grid-12.grid.display-contents(data-menu-show='main')
 		div.grid-3
 			label(for="main_textarea_input", data-translate-id="textarea") Text area
-			textarea#main_textarea_input(ref="main_textarea_input")
+			textarea#main_textarea_input
 		div.grid-3
 			input#main_input_type_text.hidden(name="main_input_type", value="text", type="radio")
 			label.button.checkable.material-icons(for="main_input_type_text", title="Text") text_fields
 			input#main_input_type_dns.hidden(name="main_input_type", value="dns", type="radio", checked="checked")
 			label.button.checkable.material-icons(for="main_input_type_dns", title="DNS / IP") dns
-			input#main_input(ref="main_input", type="text")
+			input#main_input(type="text")
 		div.grid-6.grid-row-2
 			label(for="main_textarea_output", data-translate-id="output") Output
-			textarea#main_textarea_output(readonly, ref="main_textarea_output")
+			textarea#main_textarea_output(readonly)
 
 		div.grid-3
+			button#cutTextArea.material-icons() content_cut
 			button#copyTextArea.material-icons() content_copy
 			button#pasteTextArea.material-icons() content_paste
 		div.grid-3
@@ -39,4 +40,4 @@ main.grid
 	div#input2.grid-4(data-menu-show='code-tester')
 	div#input3.grid-4(data-menu-show='code-tester')
 
-	iframe#iframe.grid-12(ref='iframe', sandbox='allow-same-origin allow-scripts', src='iframe.html', data-menu-show='code-tester')
+	iframe#iframe.grid-12(sandbox='allow-same-origin allow-scripts', src='iframe.html', data-menu-show='code-tester')
