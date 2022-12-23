@@ -20,7 +20,7 @@ export async function versionState(gitDir=process.cwd()) {
 	}
 
 	const remoteOrigin = firstRemote.refs.fetch,
-		originTest = /(?:git@gitlab\.com:|https:\/\/gitlab\.com\/)([^\/]+\/[^\/]+)\.git/i,
+		originTest = /(?:git@github\.com:|https:\/\/github\.com\/)([^\/]+\/[^\/]+)\.git/i,
 		result = originTest.exec(remoteOrigin),
 		remoteGitlabOrigin = result ? result[1] : null
 	;

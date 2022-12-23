@@ -45,7 +45,7 @@ const _yargs = yargs(hideBin(process.argv))
 				"files": [
 					"!scripts/*"
 				],
-				"appId": "eu.gitlab.zatsunenomokou.zelectron-streamlink",
+				"appId": "eu.zatsunenomokou.zelectron-streamlink",
 				"nsis": {
 					"oneClick": false,
 					"allowToChangeInstallationDirectory": true

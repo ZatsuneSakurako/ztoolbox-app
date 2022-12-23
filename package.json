@@ -15,7 +15,7 @@
     "dist": "yarn pre-build && yarn gulp build && yarn node scripts/build.js",
     "postinstall": "tsc --project tsconfig-scripts.json && node scripts/postinstall.js"
   },
-  "repository": "git@gitlab.com:ZatsuneNoMokou/streamlink-electron.git",
+  "repository": "git@github.com:ZatsuneNoMokou/ztoolbox-app.git",
   "keywords": [
     "Electron",
     "streamlink"

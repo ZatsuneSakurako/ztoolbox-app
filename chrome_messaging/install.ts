@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const filePath = path.normalize(`${__dirname}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);
 const json = {
-	"name": "eu.gitlab.zatsunenomokou.chromenativebridge",
+	"name": "eu.zatsunenomokou.chromenativebridge",
 	"description": "Z-Toolbox integration with native messaging support",
 	"path": (process.platform === 'win32' ? filePath : 'node ' + JSON.stringify(filePath)),
 	"type": "stdio",
@@ -23,7 +23,7 @@ const json = {
 };
 
 function getJsonFilePath(browser: browsers) {
-	return path.normalize(`${__dirname}/eu.gitlab.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`);
+	return path.normalize(`${__dirname}/eu.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`);
 }
 
 function writeAndGetJsonFilePath(browser: browsers): string {
