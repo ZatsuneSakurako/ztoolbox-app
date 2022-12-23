@@ -154,6 +154,10 @@ async function refreshData() {
 		await window.znmApi.twigRender('variousInfos', infosData),
 		'text/html'
 	);
+	const $loader = $variousInfos.querySelector('.loader-container');
+	if ($loader) {
+		$loader.remove();
+	}
 	$variousInfos.append(...htmlDoc.body.children);
 }
 

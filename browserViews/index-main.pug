@@ -33,8 +33,14 @@ main.grid
 		button(data-reload-iframe="", data-translate-id="runCode") Run code !
 
 	div#variousInfos.grid-12(data-menu-show='infos')
+		div.loader-container
+			svg.loader(width="1em", height="1em")
+				circle(cx="0.5em", cy="0.5em", r="0.45em")
 
 	div.grid-12#settingsContainer(data-menu-show='settings')
+		div.loader-container
+			svg.loader(width="1em", height="1em")
+				circle(cx="0.5em", cy="0.5em", r="0.45em")
 
 	div#input1.grid-4(data-menu-show='code-tester')
 	div#input2.grid-4(data-menu-show='code-tester')

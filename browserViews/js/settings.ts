@@ -43,11 +43,15 @@ async function init() {
 		throw new Error('CONTAINER_NOT_FOUND');
 	}
 
+	const settings = await window.znmApi.twigRender('settings', data);
+
+	const $loader = $container.querySelector('.loader-container');
+	if ($loader) {
+		$loader.remove();
+	}
+
 	const parser = new DOMParser();
-	const htmlDoc = parser.parseFromString(
-		await window.znmApi.twigRender('settings', data),
-		'text/html'
-	);
+	const htmlDoc = parser.parseFromString(settings, 'text/html');
 
 	$container.append(...htmlDoc.body.children);
 	reloadClassesFor($container)
