@@ -10,16 +10,23 @@
 		{% for id, conf in list %}
 			<div class="pref-group{% if group != selected_group %} group-hidden{% endif %}" data-group-show="{{ group }}">
 				<div class="pref-container">
-					{% if conf.type in ['button', 'color', 'string', 'integer', 'json', 'yaml', 'path', 'paths'] %}
-						<label for="pref-{{ id }}"
-							   data-translate-id="preferences.{{ id }}_title"
-							   data-translate-title="preferences.{{ id }}_description"></label>
+					{% if conf.type in ['color', 'string', 'integer', 'json', 'yaml', 'path', 'paths'] %}
+						<label
+							for="pref-{{ id }}"
+							data-translate-id="preferences.{{ id }}_title"
+							data-translate-title="preferences.{{ id }}_description"></label>
 					{% endif %}
 
-					{% if conf.type in ['button', 'color', 'string'] %}
+					{% if conf.type in ['color', 'string'] %}
 						<input
 							type="{{ conf.type == 'string' ? 'text' : conf.type }}" id="pref-{{ id }}" name="{{ id }}"
 							data-on-change="" disabled="disabled"/>
+					{% endif %}
+
+					{% if conf.type in ['button'] %}
+						<button id="pref-{{ id }}" name="{{ id }}" type="button"
+								data-translate-id="preferences.{{ id }}_title"
+								data-translate-title="preferences.{{ id }}_description"  disabled="disabled"></button>
 					{% endif %}
 
 					{% if conf.type == 'path' and conf.opts.asText %}
