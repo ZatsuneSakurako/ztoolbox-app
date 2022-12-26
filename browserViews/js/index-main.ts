@@ -3,6 +3,7 @@ import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import ddgWhatIsMyIp from "./ddgWhatIsMyIp.js";
 import {VersionState} from "../../classes/bo/versionState";
 import {Dict} from "./bo/Dict";
+import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers";
 
 declare var CodeMirror : any;
 declare var window : BridgedWindow;
@@ -108,6 +109,7 @@ interface IVariousInfosData {
 	processArgv?: string[] // NodeJS.Process.argv
 	versionState?: VersionState | null
 	internetAddress?: string
+	chromeNativeInstallersStates?: chromeNativeInstallers.getInstallStatesResult
 	wsClientNames?: string[]
 }
 async function refreshData() {
@@ -137,6 +139,13 @@ async function refreshData() {
 		ddgWhatIsMyIp(true)
 			.then(result => {
 				infosData.internetAddress = result;
+			})
+			.catch(console.error)
+	);
+	promises.push(
+		window.znmApi.chromeNative_installStates()
+			.then(result => {
+				infosData.chromeNativeInstallersStates = result;
 			})
 			.catch(console.error)
 	);

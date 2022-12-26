@@ -131,6 +131,24 @@ function setInputValue($input:HTMLInputElement, newValue:any) {
 			break;
 		case 'button':
 			// No value to write
+
+			if ($input.name === 'installChromeMessaging') {
+				window.znmApi.chromeNative_installStates()
+					.then(states => {
+						for (let [, state] of Object.entries(states)) {
+							if (state === false) {
+								// "false" state found
+								$input.disabled = false;
+								break;
+							}
+						}
+					})
+					.catch(console.error)
+				;
+			} else {
+				$input.disabled = false;
+			}
+
 			break;
 		default:
 			console.error('Unhandled value loading', $input);
@@ -309,6 +327,27 @@ async function onPathSettingClick(prefId:string, conf:SettingConfig):Promise<voi
 			console.error(`onPathSettingClick: Unexpected type ${conf.type}`);
 	}
 }
+
+document.addEventListener('click', function onPrefButtonClick(e: MouseEvent) {
+	if (!e.target) return;
+	const button = (<Element> e.target).closest<HTMLButtonElement>('button[type="button"][id^="pref-"]');
+	if (!button) return;
+
+	button.disabled = true;
+	switch (button.name) {
+		case "installChromeMessaging":
+			window.znmApi.chromeNative_install()
+				.then(console.dir)
+				.catch(err => {
+					console.error(err);
+					button.disabled = false;
+				})
+			;
+			break;
+		default:
+			console.warn('onPrefButtonClick', button.name);
+	}
+});
 
 document.addEventListener('submit', function onSubmit(e: SubmitEvent) {
 	if (!e.target) return;

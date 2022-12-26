@@ -3,6 +3,7 @@ import {IZnmApi, PreferenceTypes} from "../browserViews/js/bo/bridgedWindow";
 import {NotificationResponse} from "./bo/notify";
 import Dict = NodeJS.Dict;
 import {IJsonWebsiteData} from "../browserViews/js/bo/websiteData";
+import {getInstallStates} from "./chromeNativeInstallers";
 
 // https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
 
@@ -65,6 +66,12 @@ const znmApi:IZnmApi = {
 	},
 	savePreference: (preferenceId:string, newValue:any) => {
 		return ipcRenderer.invoke('savePreference', preferenceId, newValue)
+	},
+	chromeNative_install() {
+		return ipcRenderer.invoke('chromeNative_install');
+	},
+	chromeNative_installStates() {
+		return ipcRenderer.invoke('chromeNative_installStates');
 	},
 
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse> {

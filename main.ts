@@ -19,6 +19,7 @@ import './src/hourlyAlarm';
 import {i18n} from "./src/i18next";
 import './src/manageProtocolAndAutostart';
 import {appRootPath, resourcePath} from "./classes/constants";
+import * as ChromeNativeInstallers from "./classes/chromeNativeInstallers";
 
 
 
@@ -172,6 +173,12 @@ ipcMain.handle('sendNotification', async (e, message: string, title?: string, so
 		title: title || app.name,
 		sound
 	});
+});
+ipcMain.handle('chromeNative_install', async () : ReturnType<typeof ChromeNativeInstallers.install> => {
+	return await ChromeNativeInstallers.install();
+});
+ipcMain.handle('chromeNative_installStates', async () : ReturnType<typeof ChromeNativeInstallers.getInstallStates> => {
+	return await ChromeNativeInstallers.getInstallStates();
 });
 
 const twig = new TwingEnvironment(new TwingLoaderFilesystem(path.normalize(`${resourcePath}/browserViews/`)), {

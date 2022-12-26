@@ -3,6 +3,7 @@ import {RandomJsonData} from "../../../classes/bo/settings";
 import {NotificationResponse} from "../../../classes/bo/notify";
 import {Dict} from "./Dict";
 import {IJsonWebsiteData} from "./websiteData";
+import {getInstallStatesResult, installResult} from "../../../classes/bo/chromeNativeInstallers";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -25,6 +26,8 @@ export interface IZnmApi {
 	getPreference(preferenceId: string, type?:PreferenceTypes): Promise<RandomJsonData|undefined>
 	getPreferences(...preferenceIds: string[]): Promise<Dict<RandomJsonData|undefined>>
 	savePreference(preferenceId: string, newValue: RandomJsonData): Promise<boolean>
+	chromeNative_install(): Promise<installResult>
+	chromeNative_installStates(): Promise<getInstallStatesResult>
 
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse>
 

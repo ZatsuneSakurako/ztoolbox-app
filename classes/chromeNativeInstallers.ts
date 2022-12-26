@@ -289,7 +289,3 @@ export async function install(isUninstall=false): Promise<BrowsersOutput<boolean
 	}
 	return output;
 }
-
-install()
-	.catch(console.error)
-;

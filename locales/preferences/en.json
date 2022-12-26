@@ -4,6 +4,8 @@
 	"storageDir_description": "Directory to use",
 	"hourlyNotification_title": "Hourly notification",
 	"clipboardWatch_title": "Observe clipboard",
+	"installChromeMessaging_title": "Install chrome native port",
+	"installChromeMessaging_description": "Allow app connexion with browsers",
 	"quality_title": "Quality",
 	"quality-options-worst": "Worst",
 	"quality-options-360p": "360p",
