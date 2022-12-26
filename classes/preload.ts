@@ -58,13 +58,13 @@ const znmApi:IZnmApi = {
 	getProcessArgv: () => ipcRenderer.invoke('getProcessArgv'),
 	getVersionState: () => ipcRenderer.invoke('getVersionState'),
 
-	getPreference: (preferenceId:string, type?:PreferenceTypes) => {
+	getPreference(preferenceId:string, type?:PreferenceTypes) {
 		return ipcRenderer.invoke('getPreference', preferenceId, type)
 	},
-	getPreferences: (...preferenceIds:string[]) => {
+	getPreferences(...preferenceIds:string[]) {
 		return ipcRenderer.invoke('getPreferences', ...preferenceIds)
 	},
-	savePreference: (preferenceId:string, newValue:any) => {
+	savePreference(preferenceId:string, newValue:any) {
 		return ipcRenderer.invoke('savePreference', preferenceId, newValue)
 	},
 	chromeNative_install() {
