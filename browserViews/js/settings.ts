@@ -70,7 +70,18 @@ async function settingsLoader() {
 			conf = settings[inputName]
 		;
 
-		if (!conf || conf.type === 'button') continue;
+		if (!conf) continue;
+		if (conf.type === 'button') {
+
+			if ($input.name === 'installChromeMessaging') {
+				loadInstallChromeMessaging()
+					.catch(console.error)
+				;
+			} else {
+				$input.disabled = false;
+			}
+			continue;
+		}
 
 		const value = preferenceValues[inputName] ?? conf.value;
 
@@ -129,24 +140,6 @@ function setInputValue($input:HTMLInputElement, newValue:any) {
 			break;
 		case 'button':
 			// No value to write
-
-			if ($input.name === 'installChromeMessaging') {
-				window.znmApi.chromeNative_installStates()
-					.then(states => {
-						for (let [, state] of Object.entries(states)) {
-							if (state === false) {
-								// "false" state found
-								$input.disabled = false;
-								break;
-							}
-						}
-					})
-					.catch(console.error)
-				;
-			} else {
-				$input.disabled = false;
-			}
-
 			break;
 		default:
 			console.error('Unhandled value loading', $input);
@@ -326,6 +319,28 @@ async function onPathSettingClick(prefId:string, conf:SettingConfig):Promise<voi
 	}
 }
 
+async function loadInstallChromeMessaging() {
+	const $input = document.querySelector<HTMLButtonElement>('button#pref-installChromeMessaging') ?? undefined;
+	if (!$input) {
+		throw new Error('BUTTON_NOT_FOUND');
+	}
+
+	const states = await window.znmApi.chromeNative_installStates();
+
+	let isUninstall = true;
+	for (let [, state] of Object.entries(states)) {
+		if (state === false) {
+			// If false state found : action will be uninstall
+			isUninstall = false;
+			break;
+		}
+	}
+
+	$input.dataset.translateId = `preferences.installChromeMessaging_title${isUninstall ? '_off' : ''}`;
+	$input.dataset.isUninstall = isUninstall ? '1' : '';
+	$input.disabled = false;
+}
+
 document.addEventListener('click', function onPrefButtonClick(e: MouseEvent) {
 	if (!e.target) return;
 	const button = (<Element> e.target).closest<HTMLButtonElement>('button[type="button"][id^="pref-"]');
@@ -334,11 +349,16 @@ document.addEventListener('click', function onPrefButtonClick(e: MouseEvent) {
 	button.disabled = true;
 	switch (button.name) {
 		case "installChromeMessaging":
-			window.znmApi.chromeNative_install()
+			button.disabled = true;
+			window.znmApi.chromeNative_install(!!button.dataset.isUninstall)
 				.then(console.dir)
 				.catch(err => {
 					console.error(err);
-					button.disabled = false;
+				})
+				.finally(() => {
+					loadInstallChromeMessaging()
+						.catch(console.error)
+					;
 				})
 			;
 			break;

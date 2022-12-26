@@ -67,8 +67,8 @@ const znmApi:IZnmApi = {
 	savePreference(preferenceId:string, newValue:any) {
 		return ipcRenderer.invoke('savePreference', preferenceId, newValue)
 	},
-	chromeNative_install() {
-		return ipcRenderer.invoke('chromeNative_install');
+	chromeNative_install(isUninstall?: boolean) {
+		return ipcRenderer.invoke('chromeNative_install', isUninstall);
 	},
 	chromeNative_installStates() {
 		return ipcRenderer.invoke('chromeNative_installStates');

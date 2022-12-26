@@ -174,8 +174,8 @@ ipcMain.handle('sendNotification', async (e, message: string, title?: string, so
 		sound
 	});
 });
-ipcMain.handle('chromeNative_install', async () : ReturnType<typeof ChromeNativeInstallers.install> => {
-	return await ChromeNativeInstallers.install();
+ipcMain.handle('chromeNative_install', async (e, isUninstall=false) : ReturnType<typeof ChromeNativeInstallers.install> => {
+	return await ChromeNativeInstallers.install(isUninstall);
 });
 ipcMain.handle('chromeNative_installStates', async () : ReturnType<typeof ChromeNativeInstallers.getInstallStates> => {
 	return await ChromeNativeInstallers.getInstallStates();

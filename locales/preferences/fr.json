@@ -5,6 +5,7 @@
 	"hourlyNotification_title": "Notification par heure",
 	"clipboardWatch_title": "Observer le presse-papier",
 	"installChromeMessaging_title": "Installation chrome native",
+	"installChromeMessaging_title_off": "Désinstallation chrome native",
 	"installChromeMessaging_description": "Autoriser la connexion de l'app avec les navigateurs",
 	"quality_title": "Qualité",
 	"quality-options-worst": "Pire",
