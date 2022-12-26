@@ -1,16 +1,23 @@
-import path from "path";
-import fs from "fs-extra";
+import * as path from "path";
+import * as fs from "fs-extra";
 import * as Winreg from "winreg";
+import Registry from "winreg";
 import {homedir} from "os";
-import Registry from 'winreg';
-import {fileURLToPath} from "url";
+import {
+	browsers,
+	BrowsersOutput,
+	getInstallStatesResult,
+	install_types,
+	installResult,
+	osList
+} from "./bo/chromeNativeInstallers";
+import {resourcePath} from "./constants";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const baseDirectory = path.normalize(`${resourcePath}/chrome_messaging`);
 
 
 
-const filePath = path.normalize(`${__dirname}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);
+const filePath = path.normalize(`${baseDirectory}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);
 const json = {
 	"name": "eu.zatsunenomokou.chromenativebridge",
 	"description": "Z-Toolbox integration with native messaging support",
@@ -23,7 +30,7 @@ const json = {
 };
 
 function getJsonFilePath(browser: browsers) {
-	return path.normalize(`${__dirname}/eu.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`);
+	return path.normalize(`${baseDirectory}/eu.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`);
 }
 
 function writeAndGetJsonFilePath(browser: browsers): string {
@@ -52,11 +59,6 @@ function writeAndGetJsonFilePath(browser: browsers): string {
 }
 
 
-
-export const browsers : readonly browsers[] = Object.freeze(['chrome', 'chromium', 'firefox']);
-export type browsers = "chrome" | "chromium" | "firefox";
-export type osList = "darwin" | "win32" | "linux";
-export type install_types = 'user' | 'global';
 
 /**
  *
@@ -123,10 +125,6 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 	return paths[browser][os][type];
 }
 
-type BrowsersOutput<T> = {
-	[key in browsers]: T
-}
-
 export async function getInstallState(browser: browsers) : Promise<false|{ manifestPath: string, path?: string }> {
 	if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
 		throw new Error('PLATFORM_NOT_SUPPORTED');
@@ -137,14 +135,14 @@ export async function getInstallState(browser: browsers) : Promise<false|{ manif
 		const installPath = getInstallPath(browser, platform);
 		try {
 			return await new Promise((resolve, reject) => {
-				installPath.target.get(json.name, (err, result) => {
+				installPath.target.get('', (err, result) => {
 					if (err) {
 						console.error(err);
 						resolve(false);
 					} else {
 						let path;
 						try {
-							path = JSON.parse(result.value).path
+							path = fs.readJsonSync(result.value).path
 						} catch (e) {
 							console.error(e);
 						}
@@ -185,7 +183,7 @@ export async function getInstallState(browser: browsers) : Promise<false|{ manif
 	return false;
 }
 
-export async function getInstallStates(): Promise<BrowsersOutput<{ manifestPath: string, path?: string }|false>> {
+export async function getInstallStates(): Promise<getInstallStatesResult> {
 	const output : BrowsersOutput<{ manifestPath: string, path?: string }|false> = {
 		chrome: false,
 		chromium: false,
@@ -273,7 +271,7 @@ async function installForBrowser(browser: browsers, isUninstall=false) : Promise
 		}
 	}
 }
-export async function install(isUninstall=false): Promise<BrowsersOutput<boolean>> {
+export async function install(isUninstall=false): Promise<installResult> {
 	const output : BrowsersOutput<boolean> = {
 		chrome: false,
 		chromium: false,

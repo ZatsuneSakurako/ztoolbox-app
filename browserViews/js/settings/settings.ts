@@ -42,6 +42,9 @@ const settings:SettingsConfig = {
 		"type": "bool",
 		"value": false
 	},
+	"installChromeMessaging": {
+		"type": "button"
+	},
 
 
 
