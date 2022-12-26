@@ -12,6 +12,7 @@ import {
 	osList
 } from "./bo/chromeNativeInstallers";
 import {resourcePath} from "./constants";
+import {WindowsRegistry} from "./WindowsRegistry";
 
 const baseDirectory = path.normalize(`${resourcePath}/chrome_messaging`);
 
@@ -65,8 +66,8 @@ function writeAndGetJsonFilePath(browser: browsers): string {
  * @see https://unpkg.com/browse/native-installer@1.0.0/paths.json
  */
 function getInstallPath(browser: browsers, os?: Exclude<osList, 'win32'>, type?:'user'):string
-function getInstallPath(browser: browsers, os?: "win32", type?:'global'): { container: Winreg.Registry, target: Winreg.Registry }
-function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: install_types = 'user'): string | { container: Winreg.Registry, target: Winreg.Registry } {
+function getInstallPath(browser: browsers, os?: "win32", type?:'global'): { container: WindowsRegistry, target: WindowsRegistry }
+function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: install_types = 'user'): string | { container: WindowsRegistry, target: WindowsRegistry } {
 	const home = homedir(),
 		name = json.name
 	;
@@ -80,7 +81,7 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 				"global": `/Library/Google/Chrome/NativeMessagingHosts/${name}.json`,
 				"user": `${home}/Library/Application Support/Google/Chrome/NativeMessagingHosts/${name}.json`
 			},
-			"win32": `\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\`,
+			"win32": `\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts`,
 			"linux": {
 				"global": `/etc/opt/chrome/native-messaging-hosts/${name}.json`,
 				"user": `${home}/.config/google-chrome/NativeMessagingHosts/${name}.json`
@@ -91,7 +92,7 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 				"global": `/Library/Application Support/Chromium/NativeMessagingHosts/${name}.json`,
 				"user": `${home}/Library/Application Support/Chromium/NativeMessagingHosts/${name}.json`
 			},
-			"win32": `\\SOFTWARE\\Chromium\\NativeMessagingHosts\\`,
+			"win32": `\\SOFTWARE\\Chromium\\NativeMessagingHosts`,
 			"linux": {
 				"global": `/etc/chromium/native-messaging-hosts/${name}.json`,
 				"user": `${home}/.config/chromium/NativeMessagingHosts/${name}.json`
@@ -102,7 +103,7 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 				"global": `/Library/Application Support/Mozilla/NativeMessagingHosts/${name}.json`,
 				"user": `${home}/Library/Application Support/Mozilla/NativeMessagingHosts/${name}.json`
 			},
-			"win32": `\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\`,
+			"win32": `\\SOFTWARE\\Mozilla\\NativeMessagingHosts`,
 			"linux": {
 				"global": `/usr/lib/mozilla/native-messaging-hosts/${name}.json`,
 				"user": `${home}/.mozilla/native-messaging-hosts/${name}.json`
@@ -112,14 +113,14 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 
 	if (os === 'win32') {
 		return {
-			container: new Registry({
+			container: new WindowsRegistry(new Registry({
 				hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
 				key: paths[browser][os]
-			}),
-			target: new Registry({
+			})),
+			target: new WindowsRegistry(new Registry({
 				hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
-				key: paths[browser][os] + name
-			})
+				key: `${paths[browser][os]}\\${name}`
+			}))
 		}
 	}
 	return paths[browser][os][type];
@@ -133,34 +134,33 @@ export async function getInstallState(browser: browsers) : Promise<false|{ manif
 	const platform : osList = process.platform;
 	if (platform === 'win32') {
 		const installPath = getInstallPath(browser, platform);
-		try {
-			return await new Promise((resolve, reject) => {
-				installPath.target.get('', (err, result) => {
-					if (err) {
-						console.error(err);
-						resolve(false);
-					} else {
-						let path;
-						try {
-							path = fs.readJsonSync(result.value).path
-						} catch (e) {
-							console.error(e);
-						}
+		let result: Winreg.RegistryItem|undefined = undefined, path: any|undefined = undefined;
 
-						if (path !== undefined && typeof path !== 'string') {
-							reject('UNEXPECTED_PATH_VALUE');
-							return;
-						}
-						resolve({
-							manifestPath: result.value,
-							path
-						});
-					}
-				});
-			});
+		try {
+			if (!await installPath.container.exist() || !await installPath.target.exist()) {
+				return false;
+			}
+
+			result = await installPath.target.get('');
 		} catch (e) {
 			console.error(e);
+			return false;
 		}
+
+		if (result && result.value) {
+			try {
+				path = fs.readJsonSync(result.value).path
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		if (path !== undefined && typeof path !== 'string') {
+			throw new Error('UNEXPECTED_PATH_VALUE');
+		}
+		return {
+			manifestPath: result.value,
+			path
+		};
 	} else {
 		const installPath = getInstallPath(browser, platform);
 		if (fs.existsSync(installPath)) {
@@ -213,15 +213,7 @@ async function installForBrowser(browser: browsers, isUninstall=false) : Promise
 
 		let exists = false;
 		try {
-			exists = await new Promise<boolean>((resolve, reject) => {
-				installPath.container.keyExists((err, exists) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(exists);
-					}
-				})
-			});
+			exists = await installPath.container.exist();
 		} catch (e) {
 			console.error(e);
 		}
@@ -231,20 +223,10 @@ async function installForBrowser(browser: browsers, isUninstall=false) : Promise
 		}
 
 		if (isUninstall) {
-			return await new Promise<boolean>(resolve => {
-				installPath.target.remove(json.name, err => {
-					console.error(err);
-					resolve(!err);
-				});
-			});
+			return await installPath.target.destroy();
 		} else {
 			console.warn(`${browser} reg key found, installing`);
-			return await new Promise<boolean>(resolve => {
-				installPath.target.set('', Registry.REG_SZ, manifestPath, err => {
-					console.error(err);
-					resolve(!err);
-				});
-			});
+			return await installPath.target.set('', Registry.REG_SZ, manifestPath);
 		}
 	} else {
 		try {
