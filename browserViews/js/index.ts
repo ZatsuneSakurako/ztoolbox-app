@@ -8,6 +8,7 @@ import {IJsonWebsiteData} from "./bo/websiteData";
 import {WebsiteData} from "./websiteData.js";
 import {Dict} from "./bo/Dict";
 import {updateClassesFor} from "./labelChecked.js";
+import {twigRender} from "./twigRenderHelper.js";
 
 declare var window : BridgedWindow;
 
@@ -42,16 +43,12 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>) {
 		count += instance.count;
 	}
 
-	const parser = new DOMParser();
-	const htmlDoc = parser.parseFromString(
-		await window.znmApi.twigRender('websitesData', {
-			websitesData
-		}),
-		'text/html'
-	);
+	const elements = await twigRender('websitesData', {
+		websitesData
+	});
 
-	const section = htmlDoc.body.children.item(0);
-	if (!section || htmlDoc.body.children.length > 1) {
+	const section = elements.item(0);
+	if (!section || elements.length > 1) {
 		throw new Error('ONE_NODE_ONLY');
 	}
 

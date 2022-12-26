@@ -5,6 +5,7 @@ import {SettingConfig, SettingsConfig} from "../../classes/bo/settings.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import {Dict} from "./bo/Dict";
 import {reloadClassesFor} from "./labelChecked.js";
+import {twigRender} from "./twigRenderHelper.js";
 
 declare var window : BridgedWindow;
 
@@ -43,17 +44,14 @@ async function init() {
 		throw new Error('CONTAINER_NOT_FOUND');
 	}
 
-	const settings = await window.znmApi.twigRender('settings', data);
+	const elements = await twigRender('settings', data);
 
 	const $loader = $container.querySelector('.loader-container');
 	if ($loader) {
 		$loader.remove();
 	}
 
-	const parser = new DOMParser();
-	const htmlDoc = parser.parseFromString(settings, 'text/html');
-
-	$container.append(...htmlDoc.body.children);
+	$container.append(...elements);
 	reloadClassesFor($container)
 }
 

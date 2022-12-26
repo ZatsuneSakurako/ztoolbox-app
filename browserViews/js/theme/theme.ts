@@ -1,5 +1,6 @@
 import {BridgedWindow} from "../bo/bridgedWindow";
 import {Color} from "./color.js";
+import {twigRender} from "../twigRenderHelper.js";
 
 declare var window : BridgedWindow;
 
@@ -27,10 +28,6 @@ async function getPreferences(): Promise<IThemePreferences> {
 
 	localStorage.setItem(THEME_LS_PREF_CACHE_KEY, JSON.stringify(output));
 	return output;
-}
-
-async function render(data:any) {
-	return window.znmApi.twigRender("backgroundTheme", data);
 }
 
 export async function themeOnLoad() {
@@ -99,7 +96,7 @@ export async function themeCacheUpdate(theme: string, background_color: string) 
 
 
 
-	const style = await render({
+	const style = await twigRender("backgroundTheme", {
 		"isDarkTheme": (theme === "dark"),
 		"isLightTheme": (theme === "light"),
 		"baseColor_hsl": baseColor_hsl,
@@ -109,7 +106,7 @@ export async function themeCacheUpdate(theme: string, background_color: string) 
 		"light3": values[3],
 		"invBaseColor_hue": ''+(baseColor_hsl.H - 360/2 * ((baseColor_hsl.H < 360/2)? 1 : -1)),
 		"invBaseColor_light": (theme === "dark")? "77%" : "33%"
-	});
+	}, 'string');
 
 	const styleElement = colorStylesheetNode ?? document.createElement("style");
 	styleElement.id = STYLE_NODE_ID;

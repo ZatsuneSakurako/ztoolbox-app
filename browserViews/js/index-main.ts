@@ -4,6 +4,7 @@ import ddgWhatIsMyIp from "./ddgWhatIsMyIp.js";
 import {VersionState} from "../../classes/bo/versionState";
 import {Dict} from "./bo/Dict";
 import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers";
+import {twigRender} from "./twigRenderHelper.js";
 
 declare var CodeMirror : any;
 declare var window : BridgedWindow;
@@ -158,16 +159,12 @@ async function refreshData() {
 	);
 	await Promise.allSettled(promises);
 
-	const parser = new DOMParser();
-	const htmlDoc = parser.parseFromString(
-		await window.znmApi.twigRender('variousInfos', infosData),
-		'text/html'
-	);
+	const elements = await twigRender('variousInfos', infosData)
 	const $loader = $variousInfos.querySelector('.loader-container');
 	if ($loader) {
 		$loader.remove();
 	}
-	$variousInfos.append(...htmlDoc.body.children);
+	$variousInfos.append(...elements);
 }
 
 window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
