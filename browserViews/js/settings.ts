@@ -327,11 +327,11 @@ async function loadInstallChromeMessaging() {
 
 	const states = await window.znmApi.chromeNative_installStates();
 
-	let isUninstall = true;
+	let isUninstall = false;
 	for (let [, state] of Object.entries(states)) {
-		if (state === false) {
-			// If false state found : action will be uninstall
-			isUninstall = false;
+		if (state !== false) {
+			// If non-false state found : action will be "uninstall"
+			isUninstall = true;
 			break;
 		}
 	}
