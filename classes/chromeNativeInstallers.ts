@@ -19,14 +19,33 @@ const baseDirectory = path.normalize(`${resourcePath}/chrome_messaging`);
 
 
 const filePath = path.normalize(`${baseDirectory}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);
-const json = {
+
+interface IBaseNativeHost {
+	name: string;
+	description: string;
+	path: string;
+	type: string;
+	allowed_origins?: string[];
+	allowed_extensions?: string[];
+}
+interface IChromeNativeHost {
+	name: string;
+	description: string;
+	path: string;
+	type: string;
+	allowed_origins: string[];
+}
+interface IFirefoxNativeHost extends Omit<IChromeNativeHost, 'allowed_origins'> {
+	allowed_extensions: string[];
+}
+
+const json: IChromeNativeHost = {
 	"name": "eu.zatsunenomokou.chromenativebridge",
 	"description": "Z-Toolbox integration with native messaging support",
 	"path": (process.platform === 'win32' ? filePath : 'node ' + JSON.stringify(filePath)),
 	"type": "stdio",
 	"allowed_origins": [
-		"chrome-extension://ecgiibibekoebbdeieihohopccibchmg/",
-		"chrome-extension://gojepdjljocnjlifemonhphjnafigcfe/"
+		// "chrome-extension://gojepdjljocnjlifemonhphjnafigcfe/"
 	]
 };
 
@@ -34,27 +53,36 @@ function getJsonFilePath(browser: browsers) {
 	return path.normalize(`${baseDirectory}/eu.zatsunenomokou.chromenativebridge_${browser === 'firefox' ? 'firefox_' : ''}${process.platform}.json`);
 }
 
-function writeAndGetJsonFilePath(browser: browsers): string {
+function writeAndGetJsonFilePath(browser: browsers, additionalAllowedOrigins:string[]=[]): string {
 	const jsonFilePath = getJsonFilePath(browser),
-		_json = JSON.parse(JSON.stringify(json))
+		_json : IChromeNativeHost|IFirefoxNativeHost = fs.existsSync(jsonFilePath) ?
+			fs.readJsonSync(jsonFilePath)
+			:
+			JSON.parse(JSON.stringify(json))
 	;
+	_json.name = json.name;
+	_json.type = json.type;
+	_json.path = json.path;
 
 	if (browser === 'firefox') {
-		delete _json.allowed_origins;
-		_json.allowed_extensions = [
+		delete (<any>_json).allowed_origins;
+		(<IFirefoxNativeHost>_json).allowed_extensions = [...new Set([
 			"ztoolbox_dev@zatsunenomokou.eu",
-		];
+			...additionalAllowedOrigins.filter(origin => !origin.startsWith('chrome-extension://'))
+		])];
+	} else {
+		// Add additional allowed_origin and deduplicate them
+		(<IChromeNativeHost>_json).allowed_origins = [...new Set([
+				...(<IChromeNativeHost>_json).allowed_origins,
+			...additionalAllowedOrigins.filter(origin => origin.startsWith('chrome-extension://'))
+		])];
 	}
 
-	fs.writeJSONSync(
-		jsonFilePath,
-		_json,
-		{
-			encoding: 'utf8',
-			spaces: '\t',
-			EOL: '\n'
-		}
-	);
+	fs.writeJSONSync(jsonFilePath, _json, {
+		encoding: 'utf8',
+		spaces: '\t',
+		EOL: '\n'
+	});
 
 	return jsonFilePath;
 }
@@ -66,8 +94,8 @@ function writeAndGetJsonFilePath(browser: browsers): string {
  * @see https://unpkg.com/browse/native-installer@1.0.0/paths.json
  */
 function getInstallPath(browser: browsers, os?: Exclude<osList, 'win32'>, type?:'user'):string
-function getInstallPath(browser: browsers, os?: "win32", type?:'global'): { container: WindowsRegistry, target: WindowsRegistry }
-function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: install_types = 'user'): string | { container: WindowsRegistry, target: WindowsRegistry } {
+function getInstallPath(browser: browsers, os?: "win32", type?:'global'): WindowsRegistry
+function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type: install_types = 'user'): string | WindowsRegistry {
 	const home = homedir(),
 		name = json.name
 	;
@@ -112,19 +140,15 @@ function getInstallPath(browser: browsers = 'chrome', os: osList = 'win32', type
 	};
 
 	if (os === 'win32') {
-		return {
-			container: new WindowsRegistry(new Registry({
-				hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
-				key: paths[browser][os]
-			})),
-			target: new WindowsRegistry(new Registry({
-				hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
-				key: `${paths[browser][os]}\\${name}`
-			}))
-		}
+		return new WindowsRegistry(new Registry({
+			hive: type === 'global' ? Registry.HKLM : Registry.HKCU,
+			key: `${paths[browser][os]}\\${name}`
+		}));
 	}
 	return paths[browser][os][type];
 }
+
+
 
 export async function getInstallState(browser: browsers) : Promise<false|{ manifestPath: string, path?: string }> {
 	if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
@@ -137,11 +161,11 @@ export async function getInstallState(browser: browsers) : Promise<false|{ manif
 		let result: Winreg.RegistryItem|undefined = undefined, path: any|undefined = undefined;
 
 		try {
-			if (!await installPath.container.exist() || !await installPath.target.exist()) {
+			if (!await installPath.parent.exist() || !await installPath.exist()) {
 				return false;
 			}
 
-			result = await installPath.target.get('');
+			result = await installPath.get('');
 		} catch (e) {
 			console.error(e);
 			return false;
@@ -197,8 +221,6 @@ export async function getInstallStates(): Promise<getInstallStatesResult> {
 
 
 
-
-
 async function installForBrowser(browser: browsers, isUninstall=false) : Promise<boolean> {
 	if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
 		throw new Error('PLATFORM_NOT_SUPPORTED');
@@ -213,7 +235,7 @@ async function installForBrowser(browser: browsers, isUninstall=false) : Promise
 
 		let exists = false;
 		try {
-			exists = await installPath.container.exist();
+			exists = await installPath.parent.exist();
 		} catch (e) {
 			console.error(e);
 		}
@@ -223,10 +245,10 @@ async function installForBrowser(browser: browsers, isUninstall=false) : Promise
 		}
 
 		if (isUninstall) {
-			return await installPath.target.destroy();
+			return await installPath.destroy();
 		} else {
 			console.warn(`${browser} reg key found, installing`);
-			return await installPath.target.set('', Registry.REG_SZ, manifestPath);
+			return await installPath.set('', Registry.REG_SZ, manifestPath);
 		}
 	} else {
 		try {
