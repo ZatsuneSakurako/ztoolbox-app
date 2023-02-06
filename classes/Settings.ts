@@ -1,7 +1,7 @@
 // @ts-ignore
 import * as classUtils from "class-utils";
 import {EventEmitter} from "events";
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import path from "path";
 import debounce from "lodash.debounce";
 
@@ -118,7 +118,7 @@ export class Settings extends EventEmitter implements ISettings {
 	static #loadFile(filePath:string):Map<string, RandomJsonData>|null {
 		let data:RandomJsonData = null;
 		try {
-			data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+			data = fs.readJsonSync(filePath, 'utf8');
 		} catch (e) {
 			console.error(e)
 		}
@@ -147,7 +147,7 @@ export class Settings extends EventEmitter implements ISettings {
 	 */
 	static #saveFile(storagePath:string, data:RandomJsonData):boolean {
 		try {
-			fs.writeFileSync(storagePath, JSON.stringify(data), "utf8");
+			fs.writeJsonSync(storagePath, data, "utf8");
 			return true;
 		} catch (e) {
 			console.error(e)
