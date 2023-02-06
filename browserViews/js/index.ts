@@ -30,7 +30,7 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>) {
 	const websitesData : {websiteName: string, websiteData: WebsiteData|IJsonWebsiteData}[] = [];
 
 	let count = 0;
-	for (let [name, value] of Object.entries(rawWebsitesData)) {
+	for (let [name, value] of Object.entries(rawWebsitesData ?? {})) {
 		if (!value) continue;
 
 		const instance = new WebsiteData();

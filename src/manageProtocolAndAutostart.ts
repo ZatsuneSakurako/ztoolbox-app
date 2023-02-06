@@ -40,7 +40,7 @@ if (!process.platform.startsWith('win')) {
 	const nodePath = shell.config.execPath = shell.which('node')?.toString() ?? null,
 		nodeVersion = !!nodePath ? shell.exec(JSON.stringify(nodePath) + ' --version').toString().trim() : ''
 	;
-	if (/^v1[46]\.$/.test(nodeVersion)) {
+	if (/^v\d{2}\./.test(nodeVersion)) {
 		ProtocolRegistry.register({
 			protocol: zToolbox_protocol,
 			command: app.isPackaged ?
