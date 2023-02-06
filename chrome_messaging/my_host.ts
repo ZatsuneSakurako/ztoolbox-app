@@ -1,4 +1,4 @@
-#!/usr/local/bin/node
+#!/bin/node
 // Best to use a direct path on the shebang line in case node isn't in the
 // PATH when launched by Chrome.
 

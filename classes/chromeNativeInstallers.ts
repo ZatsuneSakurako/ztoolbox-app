@@ -18,7 +18,7 @@ const baseDirectory = path.normalize(`${resourcePath}/chrome_messaging`);
 
 
 
-const filePath = path.normalize(`${baseDirectory}/my_host.${process.platform === 'win32' ? 'bat' : 'js'}`);
+const filePath = path.normalize(`${baseDirectory}/my_host.${process.platform === 'win32' ? 'bat' : 'sh'}`);
 
 interface IBaseNativeHost {
 	name: string;
@@ -42,7 +42,7 @@ interface IFirefoxNativeHost extends Omit<IChromeNativeHost, 'allowed_origins'> 
 const json: IChromeNativeHost = {
 	"name": "eu.zatsunenomokou.chromenativebridge",
 	"description": "Z-Toolbox integration with native messaging support",
-	"path": (process.platform === 'win32' ? filePath : 'node ' + JSON.stringify(filePath)),
+	"path": filePath,
 	"type": "stdio",
 	"allowed_origins": [
 		// "chrome-extension://gojepdjljocnjlifemonhphjnafigcfe/"
@@ -265,7 +265,7 @@ async function installForBrowser(browser: browsers, isUninstall=false) : Promise
 					});
 				}
 
-				fs.symlinkSync(installPath, manifestPath);
+				fs.symlinkSync(manifestPath, installPath);
 			}
 
 			return true;
