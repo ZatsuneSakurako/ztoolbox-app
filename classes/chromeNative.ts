@@ -13,6 +13,7 @@ import Dict = NodeJS.Dict;
 import {WebsiteData, IJsonWebsiteData} from "../browserViews/js/websiteData";
 import {JsonSerialize} from "./JsonSerialize";
 import {NotificationResponse} from "./bo/notify";
+import {websitesData} from "./Settings";
 
 
 
@@ -95,7 +96,7 @@ io.on("connection", (socket: socket) => {
 	});
 
 	socket.on('getWebsitesData', function (cb) {
-		const data = settings.getObject<Dict<IJsonWebsiteData>>('websitesData');
+		const data = settings.getObject<Dict<IJsonWebsiteData>>(websitesData);
 		if (!!data) {
 			cb({
 				error: false,
@@ -122,7 +123,7 @@ io.on("connection", (socket: socket) => {
 		}
 
 		setBadge(count);
-		settings.set<IJsonWebsiteData>('websitesData', data);
+		settings.set<IJsonWebsiteData>(websitesData, data);
 
 
 

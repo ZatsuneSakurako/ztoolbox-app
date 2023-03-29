@@ -34,7 +34,8 @@ interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
 
 export const defaultStorageFilename = '/settings.json';
 export const storageDirKey = 'storageDir';
-export const keysStoredInApp = Object.freeze([storageDirKey]);
+export const websitesData = 'websitesData';
+export const keysStoredInApp = Object.freeze([storageDirKey, websitesData]);
 export class Settings extends EventEmitter implements ISettings {
 	readonly #defaultStorageDir: string;
 	storageDir:string;

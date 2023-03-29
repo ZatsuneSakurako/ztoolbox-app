@@ -5,6 +5,7 @@ import {clipboard} from "./clipboard";
 import {onSettingUpdate} from "../classes/chromeNative";
 import {onOpen, updateAutoStart} from "./manageProtocolAndAutostart";
 import {settings} from "../main";
+import {websitesData} from "../classes/Settings";
 
 
 
@@ -79,7 +80,7 @@ function onReady() {
 
 	settings.on('change', function (key:any, oldValue: any, newValue: any) {
 		// Exclude some preference to prevent event loops
-		if (!['websitesData'].includes(key)) {
+		if (![websitesData].includes(key)) {
 			onSettingUpdate(key, oldValue, newValue)
 				.catch(console.error)
 			;
