@@ -5,32 +5,15 @@ import * as fs from "fs-extra";
 import path from "path";
 import debounce from "lodash.debounce";
 
-import {PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings";
+import {ISettings, PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings";
 import {resourcePath} from "./constants";
 import {app} from "electron";
-import Dict = NodeJS.Dict;
 import {JsonSerialize} from "./JsonSerialize";
+import Dict = NodeJS.Dict;
+
 const settings : SettingsConfig = require(path.normalize(resourcePath + "/browserViews/js/settings/settings")).default;
 
 
-
-interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
-	get(key:string):RandomJsonData|undefined;
-
-	getString(key:string):string|undefined;
-	getNumber(key:string):number|undefined;
-	getBoolean(key:string):boolean|undefined;
-	getDate(key:string):Date|undefined;
-	getObject<T extends object>(key: string):T | undefined
-
-	has(key:string):boolean;
-	set(key:string, value:RandomJsonData|JsonSerialize<any>):this;
-	delete(key:string):boolean;
-	clear():void;
-	toJSON():RandomJsonData;
-	// @ts-ignore
-	forEach(callbackFn: (value:RandomJsonData, key:string, map:Map<string, RandomJsonData>) => void, thisArgs?:any)
-}
 
 export const defaultStorageFilename = '/settings.json';
 export const storageDirKey = 'storageDir';

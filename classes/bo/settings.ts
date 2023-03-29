@@ -1,3 +1,6 @@
+import {EventEmitter} from "events";
+import {JsonSerialize} from "../JsonSerialize";
+
 interface Dict<T> {
 	[key: string]: T | undefined;
 }
@@ -90,3 +93,30 @@ export type SettingsConfig = Dict<SettingConfig>;
 
 export type PrimitivesValues = string | number | boolean | null;
 export type RandomJsonData = PrimitivesValues | Dict<RandomJsonData|PrimitivesValues> | PrimitivesValues[];
+
+export interface ISettings extends EventEmitter, Map<string, RandomJsonData> {
+	get(key: string): RandomJsonData | undefined;
+
+	getString(key: string): string | undefined;
+
+	getNumber(key: string): number | undefined;
+
+	getBoolean(key: string): boolean | undefined;
+
+	getDate(key: string): Date | undefined;
+
+	getObject<T extends object>(key: string): T | undefined
+
+	has(key: string): boolean;
+
+	set(key: string, value: RandomJsonData | JsonSerialize<any>): this;
+
+	delete(key: string): boolean;
+
+	clear(): void;
+
+	toJSON(): RandomJsonData;
+
+	// @ts-ignore
+	forEach(callbackFn: (value: RandomJsonData, key: string, map: Map<string, RandomJsonData>) => void, thisArgs?: any)
+}
