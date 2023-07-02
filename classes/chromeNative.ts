@@ -1,7 +1,7 @@
 import http from "http";
 import {
 	ClientToServerEvents, IChromeExtensionName,
-	InterServerEvents, ISendNotificationOptions, preferenceData,
+	InterServerEvents, ISendNotificationOptions, preferenceData, ResponseCallback,
 	ServerToClientEvents,
 	SocketData, SocketMessage
 } from "./bo/chromeNative";
@@ -116,6 +116,31 @@ io.on("connection", (socket: socket) => {
 			result: await getWsClientNames()
 		});
 	});
+
+	socket.on('openUrl', async function (browserName:string, url: string, cb: ResponseCallback<void>) {
+
+		const sockets = await io.fetchSockets();
+		let targetSocket: RemoteSocket<ServerToClientEvents, SocketData>|null = null;
+		for (let client of sockets) {
+			if (client.data.browserName === browserName) {
+				targetSocket = client;
+				break;
+			}
+		}
+
+		if (!targetSocket) {
+			cb({
+				error: true
+			});
+			return;
+		}
+
+		targetSocket.emit('openUrl', url);
+		cb({
+			error: false,
+			result: undefined
+		});
+	});
 });
 
 export function ping(socket: socket): Promise<'pong'> {
@@ -167,9 +192,10 @@ export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
 
 	const sockets = await io.fetchSockets();
 	for (let client of sockets) {
+		if (!client.data.userAgent) continue;
 		output.push({
 			browserName: client.data.browserName ?? 'Unknown',
-			userAgent: client.data.userAgent ?? '',
+			userAgent: client.data.userAgent,
 			extensionId: client.data.extensionId ?? ''
 		});
 	}

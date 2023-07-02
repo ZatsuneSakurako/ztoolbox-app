@@ -142,6 +142,14 @@ socket.on('sendNotification', (opts, cb) => {
 	});
 });
 
+socket.on('openUrl', (url:string) => {
+	bridge.emit({
+		error: false,
+		url,
+		type: 'openUrl'
+	});
+});
+
 socket.on('onSettingUpdate', function (preference) {
     bridge.emit({
         error: false,

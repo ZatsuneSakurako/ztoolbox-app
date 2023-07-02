@@ -17,6 +17,7 @@ export interface ServerToClientEvents {
 		newValue: preferenceData['value']
 	}): void
 	sendNotification<T>(opts: ISendNotificationOptions, cb: ResponseCallback<T>): void
+	openUrl(url:string): void
 }
 
 export interface ClientToServerEvents {
@@ -24,6 +25,7 @@ export interface ClientToServerEvents {
 	getPreferences(ids: string[], cb: ResponseCallback<preferenceData[]>): void
 	getDefaultValues(cb: ResponseCallback<SettingsConfig>): void
 	ping(cb: ResponseCallback<'pong'>): void
+	openUrl(browserName:string, url: string, cb: ResponseCallback<void>): void
 	getWsClientNames(cb: ResponseCallback<IChromeExtensionName[]>): void
 	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
 	updateSocketData(data: Partial<IChromeExtensionName & {notificationSupport: boolean}>): void
