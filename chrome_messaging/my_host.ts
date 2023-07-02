@@ -142,12 +142,23 @@ socket.on('sendNotification', (opts, cb) => {
 	});
 });
 
-socket.on('openUrl', (url:string) => {
+socket.on('openUrl', (url:string, cb) => {
+	const _id = randomId();
 	bridge.emit({
 		error: false,
+		_id,
 		url,
 		type: 'openUrl'
 	});
+    bridgeEventEmitter.on('commandReply', function listener(message) {
+        if (!message || message._id !== _id) return;
+
+        bridgeEventEmitter.off('commandReply', listener);
+        cb({
+            error: false,
+            result: message.data
+        });
+    });
 });
 
 socket.on('onSettingUpdate', function (preference) {

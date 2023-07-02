@@ -117,7 +117,7 @@ io.on("connection", (socket: socket) => {
 		});
 	});
 
-	socket.on('openUrl', async function (browserName:string, url: string, cb: ResponseCallback<void>) {
+	socket.on('openUrl', async function (browserName:string, url: string, cb: ResponseCallback<boolean>) {
 
 		const sockets = await io.fetchSockets();
 		let targetSocket: RemoteSocket<ServerToClientEvents, SocketData>|null = null;
@@ -135,10 +135,17 @@ io.on("connection", (socket: socket) => {
 			return;
 		}
 
-		targetSocket.emit('openUrl', url);
-		cb({
-			error: false,
-			result: undefined
+		targetSocket.emit('openUrl', url, function (response) {
+			if (response.error === false) {
+				cb({
+					error: false,
+					result: response.result
+				});
+			} else {
+				cb({
+					error: true
+				});
+			}
 		});
 	});
 });
