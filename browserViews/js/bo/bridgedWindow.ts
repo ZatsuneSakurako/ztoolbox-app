@@ -4,6 +4,7 @@ import {NotificationResponse} from "../../../classes/bo/notify";
 import {Dict} from "./Dict";
 import {IJsonWebsiteData} from "./websiteData";
 import {getInstallStatesResult, installResult} from "../../../classes/bo/chromeNativeInstallers";
+import {IChromeExtensionName} from "../../../classes/bo/chromeNative";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -13,7 +14,7 @@ export interface IZnmApi {
 	digCmd(domain: string): Promise<string>
 	preferenceFileDialog(prefId:string): Promise<{ canceled: boolean, filePaths: string[] }|string>
 	_(key: string): Promise<string>
-	getWsClientNames(): Promise<string[]>
+	getWsClientNames(): Promise<IChromeExtensionName[]>
 
 	getProcessArgv(): Promise<string[]>
 	getVersionState(): Promise<VersionState|null>

@@ -121,7 +121,7 @@ socket.on('ping', function (cb) {
             result: 'pong'
         });
     });
-})
+});
 
 socket.on('sendNotification', (opts, cb) => {
 	const _id = randomId();

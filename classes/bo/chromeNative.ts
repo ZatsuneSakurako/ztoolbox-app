@@ -24,6 +24,7 @@ export interface ClientToServerEvents {
 	getPreferences(ids: string[], cb: ResponseCallback<preferenceData[]>): void
 	getDefaultValues(cb: ResponseCallback<SettingsConfig>): void
 	ping(cb: ResponseCallback<'pong'>): void
+	getWsClientNames(cb: ResponseCallback<IChromeExtensionName[]>): void
 	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
 	updateSocketData(data: Partial<IChromeExtensionName & {notificationSupport: boolean}>): void
 	getWebsitesData(cb: ResponseCallback<Dict<IJsonWebsiteData>>): void
@@ -36,6 +37,7 @@ export interface SocketData extends Partial<IChromeExtensionName> {
 }
 
 export interface IChromeExtensionName {
+	browserName: string,
 	userAgent: string,
 	extensionId: string
 }

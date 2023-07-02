@@ -1,0 +1,9 @@
+<ul id="wsClientNames" class="list-style-inside list-style-disc">
+	{%- for client in wsClientNames %}
+		{% if client.extensionId is empty %}
+			<li>{{ client.browserName }}</li>
+		{% else %}
+			<li title="{{ client.userAgent }}">{{ client.extensionId }} : {{ client.browserName }}</li>
+		{% endif %}
+	{%- endfor -%}
+</ul>

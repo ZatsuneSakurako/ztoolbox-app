@@ -1,17 +1,15 @@
-import {BrowserWindow} from 'electron';
 import http from "http";
 import {
-	ClientToServerEvents,
+	ClientToServerEvents, IChromeExtensionName,
 	InterServerEvents, ISendNotificationOptions, preferenceData,
 	ServerToClientEvents,
 	SocketData, SocketMessage
 } from "./bo/chromeNative";
 import {settings} from "../main";
-import {setBadge, showSection} from "./windowManager";
+import {showSection} from "./windowManager";
 import {Server, Socket, RemoteSocket} from "socket.io";
 import Dict = NodeJS.Dict;
-import {WebsiteData, IJsonWebsiteData} from "../browserViews/js/websiteData";
-import {JsonSerialize} from "./JsonSerialize";
+import {IJsonWebsiteData} from "../browserViews/js/websiteData";
 import {NotificationResponse} from "./bo/notify";
 import {websitesData} from "./Settings";
 
@@ -77,7 +75,7 @@ io.on("connection", (socket: socket) => {
 			error: false,
 			result: 'pong'
 		});
-	})
+	});
 
 	socket.on('showSection', function (sectionName, cb) {
 		showSection(sectionName);
@@ -90,6 +88,9 @@ io.on("connection", (socket: socket) => {
 	socket.on('updateSocketData', function (data) {
 		if ('notificationSupport' in data) {
 			socket.data.notificationSupport = data.notificationSupport;
+		}
+		if ('browserName' in data) {
+			socket.data.browserName = data.browserName;
 		}
 		socket.data.extensionId = data.extensionId;
 		socket.data.userAgent = data.userAgent;
@@ -109,27 +110,11 @@ io.on("connection", (socket: socket) => {
 		}
 	});
 
-	socket.on('sendWebsitesData', function (websiteData:Dict<IJsonWebsiteData>) {
-		const data : Dict<JsonSerialize<IJsonWebsiteData>> = {};
-		let count : number = 0;
-		for (let [name, raw] of Object.entries(websiteData)) {
-			if (!raw) continue;
-
-			const newInstance = new WebsiteData();
-			newInstance.fromJSON(raw);
-			data[name] = newInstance;
-
-			count += newInstance.count;
-		}
-
-		setBadge(count);
-		settings.set<IJsonWebsiteData>(websitesData, data);
-
-
-
-		for (let browserWindow of BrowserWindow.getAllWindows()) {
-			browserWindow.webContents.send('websiteDataUpdate', websiteData);
-		}
+	socket.on('getWsClientNames', async function (cb) {
+		cb({
+			error: false,
+			result: await getWsClientNames()
+		});
 	});
 });
 
@@ -177,16 +162,16 @@ export async function sendNotification(opts: ISendNotificationOptions): Promise<
 	return null;
 }
 
-export async function getWsClientNames(): Promise<string[]> {
-	const output : string[] = [];
+export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
+	const output : IChromeExtensionName[] = [];
 
 	const sockets = await io.fetchSockets();
 	for (let client of sockets) {
-		if (client.data) {
-			output.push(`${client.data.extensionId} ${client.data.notificationSupport ? '(notification support)' : ''} : ${client.data.userAgent}`);
-		} else {
-			output.push('Unknown');
-		}
+		output.push({
+			browserName: client.data.browserName ?? 'Unknown',
+			userAgent: client.data.userAgent ?? '',
+			extensionId: client.data.extensionId ?? ''
+		});
 	}
 
 	return output;

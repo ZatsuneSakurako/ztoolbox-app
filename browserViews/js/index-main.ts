@@ -5,6 +5,7 @@ import {VersionState} from "../../classes/bo/versionState";
 import {Dict} from "./bo/Dict";
 import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers";
 import {twigRender} from "./twigRenderHelper.js";
+import {IChromeExtensionName} from "../../classes/bo/chromeNative";
 
 declare var CodeMirror : any;
 declare var window : BridgedWindow;
@@ -111,11 +112,22 @@ interface IVariousInfosData {
 	versionState?: VersionState | null
 	internetAddress?: string
 	chromeNativeInstallersStates?: chromeNativeInstallers.getInstallStatesResult
-	wsClientNames?: string[]
+	wsClientNames?: IChromeExtensionName[]
 }
 async function refreshData() {
 	const $variousInfos = document.querySelector('#variousInfos');
-	if (!$variousInfos) return;
+	if (!$variousInfos || $variousInfos.classList.contains('loaded')) {
+		console.info('wsClientNames update');
+		const $wsClientNames = document.querySelector<HTMLUListElement>('ul#wsClientNames');
+		if ($wsClientNames) {
+			const elements = await twigRender('_wsClientNames', {
+				wsClientNames: await window.znmApi.getWsClientNames()
+			});
+			$wsClientNames.replaceWith(...elements);
+		}
+		return;
+	}
+	$variousInfos.classList.add('loaded');
 
 	const infosData : IVariousInfosData = {},
 		promises : Promise<any>[] = []
@@ -167,11 +179,19 @@ async function refreshData() {
 	$variousInfos.append(...elements);
 }
 
+window.addEventListener('focus', function () {
+	const input = document.querySelector<HTMLInputElement>('input[name="menu"][type="radio"]:checked');
+	if (input?.value === 'infos') {
+		refreshData()
+			.catch(console.error)
+		;
+	}
+});
+
 window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	if (e.detail.newSection !== 'infos') {
 		return;
 	}
-	window.removeEventListener('showSection', fn, false);
 
 	refreshData()
 		.catch(console.error)
