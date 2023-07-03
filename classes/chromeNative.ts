@@ -203,7 +203,8 @@ export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
 		output.push({
 			browserName: client.data.browserName ?? 'Unknown',
 			userAgent: client.data.userAgent,
-			extensionId: client.data.extensionId ?? ''
+			extensionId: client.data.extensionId ?? '',
+			notificationSupport: client.data.notificationSupport ?? false
 		});
 	}
 

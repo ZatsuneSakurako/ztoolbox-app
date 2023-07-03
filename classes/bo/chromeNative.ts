@@ -35,13 +35,13 @@ export interface ClientToServerEvents {
 export interface InterServerEvents {}
 
 export interface SocketData extends Partial<IChromeExtensionName> {
-	notificationSupport?: boolean
 }
 
 export interface IChromeExtensionName {
-	browserName: string,
-	userAgent: string,
+	browserName: string
+	userAgent: string
 	extensionId: string
+	notificationSupport?: boolean
 }
 
 export interface ISendNotificationOptions {

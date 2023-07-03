@@ -3,7 +3,7 @@
 		{% if client.extensionId is empty %}
 			<li>{{ client.browserName }}</li>
 		{% else %}
-			<li title="{{ client.userAgent }}">{{ client.extensionId }} : {{ client.browserName }}</li>
+			<li title="{{ client.userAgent }}">{{ client.extensionId }}{% if client.notificationSupport %} (notification support){% endif %} : {{ client.browserName }}</li>
 		{% endif %}
 	{%- endfor -%}
 </ul>
