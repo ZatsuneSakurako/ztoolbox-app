@@ -45,6 +45,9 @@ const settings:SettingsConfig = {
 	"installChromeMessaging": {
 		"type": "button"
 	},
+	"testNotification": {
+		"type": "button"
+	},
 
 
 

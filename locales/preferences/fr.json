@@ -7,6 +7,8 @@
 	"installChromeMessaging_title": "Installation chrome native",
 	"installChromeMessaging_title_off": "Désinstallation chrome native",
 	"installChromeMessaging_description": "Autoriser la connexion de l'app avec les navigateurs",
+	"testNotification_title": "Test de notification",
+	"testNotification_description": "Envoyer une notification (résultat dans la console)",
 	"quality_title": "Qualité",
 	"quality-options-worst": "Pire",
 	"quality-options-360p": "360p",

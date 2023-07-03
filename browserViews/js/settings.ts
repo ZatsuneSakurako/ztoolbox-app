@@ -362,6 +362,14 @@ document.addEventListener('click', function onPrefButtonClick(e: MouseEvent) {
 				})
 			;
 			break;
+		case 'testNotification':
+			window.znmApi.sendNotification('Notification test')
+				.then(result => {
+					console.debug('testNotification', result);
+					button.disabled = false;
+				}, console.error)
+			;
+			break;
 		default:
 			console.warn('onPrefButtonClick', button.name);
 	}
