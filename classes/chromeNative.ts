@@ -6,12 +6,14 @@ import {
 	SocketData, SocketMessage
 } from "./bo/chromeNative";
 import {settings} from "../main";
-import {showSection} from "./windowManager";
+import {setBadge, showSection} from "./windowManager";
 import {Server, Socket, RemoteSocket} from "socket.io";
 import Dict = NodeJS.Dict;
-import {IJsonWebsiteData} from "../browserViews/js/websiteData";
+import {IJsonWebsiteData, WebsiteData} from "../browserViews/js/websiteData";
 import {NotificationResponse} from "./bo/notify";
 import {websitesData} from "./Settings";
+import {JsonSerialize} from "./JsonSerialize";
+import {BrowserWindow} from "electron";
 
 
 
@@ -107,6 +109,29 @@ io.on("connection", (socket: socket) => {
 			cb({
 				error: 'NOT_FOUND'
 			})
+		}
+	});
+
+	socket.on('sendWebsitesData', function (websiteData:Dict<IJsonWebsiteData>) {
+		const data : Dict<JsonSerialize<IJsonWebsiteData>> = {};
+		let count : number = 0;
+		for (let [name, raw] of Object.entries(websiteData)) {
+			if (!raw) continue;
+
+			const newInstance = new WebsiteData();
+			newInstance.fromJSON(raw);
+			data[name] = newInstance;
+
+			count += newInstance.count;
+		}
+
+		setBadge(count);
+		settings.set<IJsonWebsiteData>(websitesData, data);
+
+
+
+		for (let browserWindow of BrowserWindow.getAllWindows()) {
+			browserWindow.webContents.send('websiteDataUpdate', websiteData);
 		}
 	});
 
