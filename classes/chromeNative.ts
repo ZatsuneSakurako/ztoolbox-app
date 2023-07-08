@@ -91,6 +91,15 @@ io.on("connection", (socket: socket) => {
 		if ('notificationSupport' in data) {
 			socket.data.notificationSupport = data.notificationSupport;
 		}
+		if ('sendingWebsitesDataSupport' in data) {
+			socket.data.sendingWebsitesDataSupport = data.sendingWebsitesDataSupport;
+
+			if (data.sendingWebsitesDataSupport && !interval_refreshWebsites) {
+				refreshWebsitesData()
+					.catch(console.error)
+				;
+			}
+		}
 		if ('browserName' in data) {
 			socket.data.browserName = data.browserName;
 		}
@@ -109,29 +118,6 @@ io.on("connection", (socket: socket) => {
 			cb({
 				error: 'NOT_FOUND'
 			})
-		}
-	});
-
-	socket.on('sendWebsitesData', function (websiteData:Dict<IJsonWebsiteData>) {
-		const data : Dict<JsonSerialize<IJsonWebsiteData>> = {};
-		let count : number = 0;
-		for (let [name, raw] of Object.entries(websiteData)) {
-			if (!raw) continue;
-
-			const newInstance = new WebsiteData();
-			newInstance.fromJSON(raw);
-			data[name] = newInstance;
-
-			count += newInstance.count;
-		}
-
-		setBadge(count);
-		settings.set<IJsonWebsiteData>(websitesData, data);
-
-
-
-		for (let browserWindow of BrowserWindow.getAllWindows()) {
-			browserWindow.webContents.send('websiteDataUpdate', websiteData);
 		}
 	});
 
@@ -187,6 +173,78 @@ export function ping(socket: socket): Promise<'pong'> {
 	});
 }
 
+function _getWebsitesData(socket: remoteSocket): Promise<Dict<IJsonWebsiteData>> {
+	return new Promise((resolve, reject) => {
+		socket.emit('getWebsitesData', function (response) {
+			if (response.error === false) {
+				resolve(response.result);
+			} else {
+				reject('Error : ' + response.error);
+			}
+		});
+	});
+}
+
+let interval_refreshWebsites : {
+	timer: NodeJS.Timer
+	delayInMinutes: number
+}|null = null;
+export function refreshWebsitesInterval() : void {
+	const checkDelay = settings.getNumber('check_delay') ?? 5;
+	if (interval_refreshWebsites) {
+		if (interval_refreshWebsites.delayInMinutes !== checkDelay) {
+			clearInterval(interval_refreshWebsites.timer);
+		}
+	}
+	if (!interval_refreshWebsites) {
+		interval_refreshWebsites = {
+			timer: setInterval(refreshWebsitesData, checkDelay * 60 * 1000),
+			delayInMinutes: checkDelay
+		}
+	}
+}
+export async function refreshWebsitesData() : Promise<boolean> {
+	refreshWebsitesInterval();
+
+
+
+	const sockets = await io.fetchSockets();
+
+	let targetSocket : remoteSocket|null = null;
+	for (let client of sockets) {
+		if (client.data.sendingWebsitesDataSupport === true) {
+			targetSocket = client;
+			break;
+		}
+	}
+	if (!targetSocket) return false;
+
+
+	const websiteData = await _getWebsitesData(targetSocket),
+		data : Dict<JsonSerialize<IJsonWebsiteData>> = {}
+	;
+	let count : number = 0;
+	for (let [name, raw] of Object.entries(websiteData)) {
+		if (!raw) continue;
+
+		const newInstance = new WebsiteData();
+		newInstance.fromJSON(raw);
+		data[name] = newInstance;
+
+		count += newInstance.count;
+	}
+
+	setBadge(count);
+	settings.set<IJsonWebsiteData>(websitesData, data);
+
+
+	for (let browserWindow of BrowserWindow.getAllWindows()) {
+		browserWindow.webContents.send('websiteDataUpdate', websiteData);
+	}
+
+	return true;
+}
+
 export async function onSettingUpdate(id: string, oldValue: preferenceData['value'], newValue: preferenceData['value']): Promise<void> {
 	const sockets = await io.fetchSockets();
 	for (let socket of sockets) {
@@ -229,7 +287,8 @@ export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
 			browserName: client.data.browserName ?? 'Unknown',
 			userAgent: client.data.userAgent,
 			extensionId: client.data.extensionId ?? '',
-			notificationSupport: client.data.notificationSupport ?? false
+			notificationSupport: client.data.notificationSupport ?? false,
+			sendingWebsitesDataSupport: client.data.sendingWebsitesDataSupport ?? false
 		});
 	}
 

@@ -11,6 +11,7 @@ export interface ServerToClientEvents {
 	'ws open'(data: SocketMessage<{ connected: string }>): void
 	log(...data: any[]): void
 	ping(cb: ResponseCallback<'pong'>): void
+	getWebsitesData(cb: ResponseCallback<Dict<IJsonWebsiteData>>): void
 	onSettingUpdate(preference: {
 		id: preferenceData['id'],
 		oldValue: preferenceData['value'],
@@ -28,9 +29,8 @@ export interface ClientToServerEvents {
 	openUrl(browserName:string, url: string, cb: ResponseCallback<boolean>): void
 	getWsClientNames(cb: ResponseCallback<IChromeExtensionName[]>): void
 	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
-	updateSocketData(data: Partial<IChromeExtensionName & {notificationSupport: boolean}>): void
+	updateSocketData(data: Partial<IChromeExtensionName>): void
 	getWebsitesData(cb: ResponseCallback<Dict<IJsonWebsiteData>>): void
-	sendWebsitesData(websiteData: Dict<IJsonWebsiteData>): void
 }
 export interface InterServerEvents {}
 
@@ -42,6 +42,7 @@ export interface IChromeExtensionName {
 	userAgent: string
 	extensionId: string
 	notificationSupport?: boolean
+	sendingWebsitesDataSupport?: boolean
 }
 
 export interface ISendNotificationOptions {
