@@ -11,7 +11,7 @@ input[type='checkbox'],
 input[type='radio'],
 select,
 #searchInput
-	color: rgba($textColor, 0.8)
+	color: lighten($textColor, 80%)
 
 select:hover
 	color: unset !important
@@ -24,7 +24,13 @@ input[type='number'],
 input[type='url'],
 textarea,
 
-#tooltip
+#tooltip,
+p,
+.list-style-inside.list-style-disc,
+details summary
+	color: rgba($textColor, 0.5)
+
+details summary ~ *
 	color: rgba($textColor, 0.5)
 
 /*			---- Disabled / Hint text ----			*/

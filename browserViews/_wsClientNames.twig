@@ -1,16 +1,21 @@
-<ul id="wsClientNames" class="list-style-inside list-style-disc">
+<ul id="wsClientNames" class="list-style-inside">
 	{%- for client in wsClientNames %}
 		{% if client.extensionId is empty %}
 			<li>{{ client.browserName }}</li>
 		{% else %}
-			<li title="{{ client.userAgent }}">{{ client.extensionId }}
-				{%- if client.notificationSupport or client.sendingWebsitesDataSupport -%}
-					&nbsp;(support&nbsp;:&nbsp;
-					{%- if client.notificationSupport -%}notification{%- endif -%}
-					{%- if client.notificationSupport and client.sendingWebsitesDataSupport %}, {% endif -%}
-					{%- if client.sendingWebsitesDataSupport -%}websites data{%- endif -%}
-					)
-				{%- endif %}&nbsp;: {{ client.browserName -}}
+			<li title="{{ client.extensionId -}}">
+				<details>
+					<summary>{{ client.browserName }}
+						{%- if client.notificationSupport or client.sendingWebsitesDataSupport -%}
+							&nbsp;(support&nbsp;:&nbsp;
+							{%- if client.notificationSupport -%}notification{%- endif -%}
+							{%- if client.notificationSupport and client.sendingWebsitesDataSupport %}, {% endif -%}
+							{%- if client.sendingWebsitesDataSupport -%}websites data{%- endif -%}
+							)
+						{%- endif -%}
+					</summary>
+					<p>{{ client.userAgent }}</p>
+				</details>
 			</li>
 		{% endif %}
 	{%- endfor -%}
