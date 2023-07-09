@@ -1,0 +1,17 @@
+{
+	"website_notif": "{{website}} notification",
+	"website_notif_plural": "{{website}} notifications",
+	"website_not_logged": "No {{website}} account logged",
+
+	"not_logged": "Not logged",
+	"no_website_logged": "No account logged",
+	"inbox": "Inbox",
+	"spam": "Spam",
+
+	"open_folder": "Open folder",
+
+	"count_new_notif": "{{count}} new notification",
+	"count_new_notif_plural": "{{count}} new notifications",
+
+	"all_viewed": "Everything viewed"
+}

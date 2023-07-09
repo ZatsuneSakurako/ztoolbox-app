@@ -1,0 +1,17 @@
+{
+	"website_notif": "Notification {{website}}",
+	"website_notif_plural": "Notifications {{website}}",
+	"website_not_logged": "Aucun compte {{website}} connecté",
+
+	"not_logged": "Non connecté",
+	"no_website_logged": "Aucun compte connecté",
+	"inbox": "Boîte de réception",
+	"spam": "Pourriel",
+
+	"open_folder": "Ouvrir le dossier",
+
+	"count_new_notif": "{{count}} nouvelle notification",
+	"count_new_notif_plural": "{{count}} nouvelles notifications",
+
+	"all_viewed": "Tout est vu"
+}

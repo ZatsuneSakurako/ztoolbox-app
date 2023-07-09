@@ -122,7 +122,6 @@ ipcMain.handle('getWsClientNames', async function (event, args) {
 ipcMain.handle('i18n', async (event, key) => {
 	const _ = await i18n;
 	return _(key, {
-		nsSeparator: '.',
 		defaultValue: ''
 	});
 });
