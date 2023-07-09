@@ -18,7 +18,8 @@ const settings : SettingsConfig = require(path.normalize(resourcePath + "/browse
 export const defaultStorageFilename = '/settings.json';
 export const storageDirKey = 'storageDir';
 export const websitesData = 'websitesData';
-export const keysStoredInApp = Object.freeze([storageDirKey, websitesData]);
+export const websitesDataLastRefresh = 'websitesDataLastRefresh';
+export const keysStoredInApp = Object.freeze([storageDirKey, websitesData, websitesDataLastRefresh]);
 export class Settings extends EventEmitter implements ISettings {
 	readonly #defaultStorageDir: string;
 	storageDir:string;
@@ -269,7 +270,7 @@ export class Settings extends EventEmitter implements ISettings {
 		return value;
 	}
 
-	set<T extends object>(key:string, value:RandomJsonData|JsonSerialize<T>|Dict<JsonSerialize<T>>):this {
+	set<T extends object>(key:string, value:Date|RandomJsonData|JsonSerialize<T>|Dict<JsonSerialize<T>>):this {
 		let _value:any|undefined = value instanceof JsonSerialize ?
 			value.toJSON()
 			:

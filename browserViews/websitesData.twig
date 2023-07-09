@@ -1,40 +1,46 @@
 <section class="websites-data grid no-r-gap">
-    <h1 class="grid-12">
-        Websites data
-    </h1>
-    {% for item in websitesData %}
-        {%- set website = item.websiteName -%}
-        {%- set data = item.websiteData -%}
-    <div class="grid-3">
-        <a class="buttonItem websiteItem cursor" href="{{ data.href }}" target="_blank"
-           data-logged="{{ data.logged }}" data-website="{{ website }}">
+	<h1 class="grid-12">
+		Websites data
+		<time datetime="{{ lastUpdate }}">{{ lastUpdate | date("m/d/Y H:i:s", "Europe/Paris") }}</time>
+	</h1>
+	<div>
+		<button class="buttonItem cursor only-icon" {% if disableRefreshButton %} disabled{% endif %} data-refresh-websites>
+			<i class="material-icons">refresh</i>
+		</button>
+	</div>
+	{% for item in websitesData %}
+		{%- set website = item.websiteName -%}
+		{%- set data = item.websiteData -%}
+	<div class="grid-3">
+		<a class="buttonItem websiteItem cursor" href="{{ data.href }}" target="_blank"
+		   data-logged="{{ data.logged }}" data-website="{{ website }}">
 
-            <img class="icon" src="{{ data.websiteIcon }}" alt="" />
+			<img class="icon" src="{{ data.websiteIcon }}" alt="" />
 
-            <div class="title" data-count="{{ data.logged ? data.count : '' }}">{{website}}</div>
-            <div class="websiteData">
-                {% if data.logged and folder.folderUrl and folder.folderCount -%}
-                    {%- for folderData in data.folders -%}
-                        {% set folderTitle = folderData[0] %}
-                        {% set folder = folderData[1] %}
-                        <a class="folder" href="{{ folder.folderCount }}" target="_blank"
-                           data-folder-count="{{ folder.folderCount }}"
-                           data-folder-url="{{ folder.folderUrl }}">{{folderTitle}}</a>
-                    {%- endfor -%}
-                {%- endif %}
+			<div class="title" data-count="{{ data.logged ? data.count : '' }}">{{website}}</div>
+			<div class="websiteData">
+				{% if data.logged and folder.folderUrl and folder.folderCount -%}
+					{%- for folderData in data.folders -%}
+						{% set folderTitle = folderData[0] %}
+						{% set folder = folderData[1] %}
+						<a class="folder" href="{{ folder.folderCount }}" target="_blank"
+						   data-folder-count="{{ folder.folderCount }}"
+						   data-folder-url="{{ folder.folderUrl }}">{{folderTitle}}</a>
+					{%- endfor -%}
+				{%- endif %}
 
-                {% if data.logged and not folder.folderUrl -%}
-                    {%- for folderData in data.folders -%}
-                        {% set folderTitle = folderData[0] %}
-                        {% set folder = folderData[1] %}
-                        <span class="folder" data-folder-count="{{ folder.folderCount }}">{{folderTitle}}</span>
-                    {%- endfor -%}
-                {%- endif %}
+				{% if data.logged and not folder.folderUrl -%}
+					{%- for folderData in data.folders -%}
+						{% set folderTitle = folderData[0] %}
+						{% set folder = folderData[1] %}
+						<span class="folder" data-folder-count="{{ folder.folderCount }}">{{folderTitle}}</span>
+					{%- endfor -%}
+				{%- endif %}
 
-                {% if not data.logged -%}
-                <span class="folder" data-translate-id="not_logged" v-if="!data.logged"></span>
-                {%- endif %}
-            </div>
-        </a>
-    </div>{% endfor %}
+				{% if not data.logged -%}
+				<span class="folder" data-translate-id="not_logged" v-if="!data.logged"></span>
+				{%- endif %}
+			</div>
+		</a>
+	</div>{% endfor %}
 </section>

@@ -20,7 +20,23 @@ loadTranslations()
 	.catch(console.error)
 ;
 
-async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>) {
+document.addEventListener('click', function (evt) {
+	const element = (<HTMLElement>evt.target).closest('[data-refresh-websites]');
+	if (!element) {
+		return;
+	}
+
+	const refreshButtons = [...document.querySelectorAll<HTMLButtonElement>('button[data-refresh-websites]')];
+	for (let refreshButton of refreshButtons) {
+		refreshButton.disabled = true;
+	}
+
+	window.znmApi.refreshWebsitesData()
+		.catch(console.error)
+	;
+});
+let enableButtonTimer:NodeJS.Timer|null = null;
+async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>, lastUpdate:Date) {
 	const container = document.querySelector('#websitesData');
 	if (!container) {
 		throw new Error('#websitesData not found');
@@ -43,9 +59,25 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>) {
 		count += instance.count;
 	}
 
+	let disableRefreshButton = (Date.now() - lastUpdate.getTime()) < 60 * 1000;
+	if (enableButtonTimer) {
+		clearTimeout(enableButtonTimer);
+		enableButtonTimer = null;
+	}
 	const elements = await twigRender('websitesData', {
-		websitesData
+		websitesData,
+		lastUpdate,
+		disableRefreshButton
 	});
+
+	if (disableRefreshButton) {
+		enableButtonTimer = setTimeout(() => {
+			const refreshButtons = [...document.querySelectorAll<HTMLButtonElement>('button[data-refresh-websites]')];
+			for (let refreshButton of refreshButtons) {
+				refreshButton.disabled = false;
+			}
+		}, 60 * 1000);
+	}
 
 	const section = elements.item(0);
 	if (!section || elements.length > 1) {
@@ -101,18 +133,28 @@ async function onLoad() {
 
 
 
-	window.znmApi.getPreferences('websitesData')
+	window.znmApi.getPreferences('websitesData', 'websitesDataLastRefresh')
 		.then(async (result) => {
+			const websitesDataLastRefresh = result.websitesDataLastRefresh instanceof Date ?
+				result.websitesDataLastRefresh
+				:
+				new Date(result.websitesDataLastRefresh as unknown as string)
+			;
 			if (!!result) {
-				loadWebsitesData(result.websitesData as unknown as Dict<IJsonWebsiteData>)
+				loadWebsitesData(result.websitesData as unknown as Dict<IJsonWebsiteData>, websitesDataLastRefresh)
 					.catch(console.error)
 				;
 			}
 		})
 		.catch(console.error)
 	;
-	window.znmApi.onWebsiteDataUpdate(function (data) {
-		loadWebsitesData(data)
+	window.znmApi.onWebsiteDataUpdate(function (data, lastUpdate) {
+		const websitesDataLastRefresh = lastUpdate instanceof Date ?
+			lastUpdate
+			:
+			new Date(lastUpdate as unknown as string)
+		;
+		loadWebsitesData(data, websitesDataLastRefresh)
 			.catch(console.error)
 		;
 	});

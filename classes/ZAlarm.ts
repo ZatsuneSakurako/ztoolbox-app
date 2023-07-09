@@ -3,21 +3,48 @@ import cronParser from 'cron-parser';
 export type Callback = (date:Date) => void;
 
 export class ZAlarm {
-	private repeat: boolean;
+	private _cronOrDate: Date | string;
 	private timer: NodeJS.Timeout | null = null;
 
 	private constructor(cronOrDate: Date, callback:Callback)
 	private constructor(cronOrDate: Date | string, callback:Callback, repeat: boolean)
-	private constructor(private cronOrDate: Date | string, private callback:Callback, repeat?: boolean) {
-		if (cronOrDate instanceof Date) {
-			this.repeat = false;
-		} else {
-			this.repeat = repeat ?? true;
+	private constructor(cronOrDate: Date | string, private callback:Callback, private _repeat?: boolean) {
+		this.cronOrDate = cronOrDate;
+	}
 
-			// Make sure to have a valid cron string
-			cronParser.parseExpression(cronOrDate);
+
+
+	get repeat(): boolean {
+		if (this.cronOrDate instanceof Date) {
+			return false;
+		} else {
+			return this._repeat ?? true;
 		}
 	}
+	get cronOrDate(): Date | string {
+		return this._cronOrDate;
+	}
+	set cronOrDate(newValue: Date | string) {
+		if (newValue === this._cronOrDate) {
+			// If same value, no action needed
+			return;
+		}
+		if (!(newValue instanceof Date)) {
+			// Make sure to have a valid cron string
+			cronParser.parseExpression(newValue);
+		}
+		this._cronOrDate = newValue;
+
+		// Restart existing timer
+		if (this.timer) {
+			this.clear();
+			this.start()
+				.catch(console.error)
+			;
+		}
+	}
+
+
 
 	static sleep(ms: number): Promise<void> {
 		return new Promise(resolve => {

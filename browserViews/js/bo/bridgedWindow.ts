@@ -36,7 +36,8 @@ export interface IZnmApi {
 	onUpdatePreference(cb: (preferenceId: string, newValue: any) => void): void
 	onShowSection(cb: (sectionName:string) => void): void
 	onThemeUpdate(cb: (theme:string, background_color:string) => void): void
-	onWebsiteDataUpdate(cb: (data: Dict<IJsonWebsiteData>) => void): void
+	onWebsiteDataUpdate(cb: (data: Dict<IJsonWebsiteData>, lastUpdate:Date|string) => void): void
+	refreshWebsitesData(): Promise<void>
 }
 
 export type BridgedWindow = Window & typeof globalThis & {

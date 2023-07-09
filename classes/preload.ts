@@ -31,12 +31,12 @@ ipcRenderer.on('themeUpdate', function (e, theme:string, background_color:string
 	}
 });
 
-const websiteDataUpdateCb:((data: Dict<IJsonWebsiteData>) => void)[] = [];
+const websiteDataUpdateCb:((data: Dict<IJsonWebsiteData>, lastUpdate:Date) => void)[] = [];
 // noinspection JSUnusedLocalSymbols
-ipcRenderer.on('websiteDataUpdate', function (e, data: Dict<IJsonWebsiteData>) {
+ipcRenderer.on('websiteDataUpdate', function (e, data: Dict<IJsonWebsiteData>, lastUpdate:Date) {
 	console.info('websiteDataUpdate');
 	for (let cb of websiteDataUpdateCb) {
-		cb(data);
+		cb(data, lastUpdate);
 	}
 })
 
@@ -90,8 +90,11 @@ const znmApi:IZnmApi = {
 	onThemeUpdate: (cb:(theme:string, background_color:string) => void) => {
 		themeUpdateCb.push(cb);
 	},
-	onWebsiteDataUpdate: (cb:(data: Dict<IJsonWebsiteData>) => void) => {
+	onWebsiteDataUpdate: (cb:(data: Dict<IJsonWebsiteData>, lastUpdate:Date) => void) => {
 		websiteDataUpdateCb.push(cb);
+	},
+	refreshWebsitesData: () => {
+		return ipcRenderer.invoke('refreshWebsitesData');
 	}
 };
 

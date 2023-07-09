@@ -11,9 +11,10 @@ import {Server, Socket, RemoteSocket} from "socket.io";
 import Dict = NodeJS.Dict;
 import {IJsonWebsiteData, WebsiteData} from "../browserViews/js/websiteData";
 import {NotificationResponse} from "./bo/notify";
-import {websitesData} from "./Settings";
+import {websitesData, websitesDataLastRefresh} from "./Settings";
 import {JsonSerialize} from "./JsonSerialize";
-import {BrowserWindow} from "electron";
+import {BrowserWindow, ipcMain} from "electron";
+import {ZAlarm} from "./ZAlarm";
 
 
 
@@ -94,10 +95,15 @@ io.on("connection", (socket: socket) => {
 		if ('sendingWebsitesDataSupport' in data) {
 			socket.data.sendingWebsitesDataSupport = data.sendingWebsitesDataSupport;
 
-			if (data.sendingWebsitesDataSupport && !interval_refreshWebsites) {
-				refreshWebsitesData()
-					.catch(console.error)
-				;
+			if (data.sendingWebsitesDataSupport && !zAlarm_refreshWebsites) {
+				const lastRefresh = settings.getDate(websitesDataLastRefresh);
+				if (!!lastRefresh && Date.now() - lastRefresh.getTime() > 5 * 60 * 1000) {
+					refreshWebsitesData()
+						.catch(console.error)
+					;
+				} else {
+					refreshWebsitesInterval();
+				}
 			}
 		}
 		if ('browserName' in data) {
@@ -185,27 +191,31 @@ function _getWebsitesData(socket: remoteSocket): Promise<Dict<IJsonWebsiteData>>
 	});
 }
 
-let interval_refreshWebsites : {
-	timer: NodeJS.Timer
-	delayInMinutes: number
-}|null = null;
+let zAlarm_refreshWebsites : ZAlarm|null = null;
 export function refreshWebsitesInterval() : void {
 	const checkDelay = settings.getNumber('check_delay') ?? 5;
-	if (interval_refreshWebsites) {
-		if (interval_refreshWebsites.delayInMinutes !== checkDelay) {
-			clearInterval(interval_refreshWebsites.timer);
-		}
-	}
-	if (!interval_refreshWebsites) {
-		interval_refreshWebsites = {
-			timer: setInterval(refreshWebsitesData, checkDelay * 60 * 1000),
-			delayInMinutes: checkDelay
-		}
+	if (zAlarm_refreshWebsites) {
+		zAlarm_refreshWebsites.cronOrDate = `*/${checkDelay} * * * *`;
+	} else {
+		zAlarm_refreshWebsites = ZAlarm.start(`*/${checkDelay} * * * *`, refreshWebsitesData);
 	}
 }
+ipcMain.handle('refreshWebsitesData', function () {
+	refreshWebsitesData()
+		.catch(console.error)
+	;
+});
 export async function refreshWebsitesData() : Promise<boolean> {
-	refreshWebsitesInterval();
+	const lastRefresh = settings.getDate(websitesDataLastRefresh);
+	if (!!lastRefresh && Date.now() - lastRefresh.getTime() < 60 * 1000) {
+		console.warn('Less than one minute, not refreshing');
+		return false;
+	}
 
+
+	const currentRefresh = new Date();
+	settings.set(websitesDataLastRefresh, currentRefresh);
+	refreshWebsitesInterval();
 
 
 	const sockets = await io.fetchSockets();
@@ -239,11 +249,12 @@ export async function refreshWebsitesData() : Promise<boolean> {
 
 
 	for (let browserWindow of BrowserWindow.getAllWindows()) {
-		browserWindow.webContents.send('websiteDataUpdate', websiteData);
+		browserWindow.webContents.send('websiteDataUpdate', websiteData, currentRefresh);
 	}
 
 	return true;
 }
+
 
 export async function onSettingUpdate(id: string, oldValue: preferenceData['value'], newValue: preferenceData['value']): Promise<void> {
 	const sockets = await io.fetchSockets();
