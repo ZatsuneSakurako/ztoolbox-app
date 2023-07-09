@@ -144,7 +144,6 @@ export async function refreshWebsitesData() : Promise<boolean> {
 		const newInstance = new WebsiteData();
 
 		const currentNotificationState = currentData[name]?.notificationState;
-		console.log(name, currentNotificationState)
 		if (currentNotificationState) {
 			raw.notificationState = currentNotificationState
 		}
