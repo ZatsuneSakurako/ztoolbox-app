@@ -3,11 +3,6 @@
 		Websites data
 		<time datetime="{{ lastUpdate }}">{{ lastUpdate | date("m/d/Y H:i:s", "Europe/Paris") }}</time>
 	</h1>
-	<div>
-		<button class="buttonItem cursor only-icon" {% if disableRefreshButton %} disabled{% endif %} data-refresh-websites>
-			<i class="material-icons">refresh</i>
-		</button>
-	</div>
 	{% for item in websitesData %}
 		{%- set website = item.websiteName -%}
 		{%- set data = item.websiteData -%}
@@ -43,4 +38,9 @@
 			</div>
 		</a>
 	</div>{% endfor %}
+	<div>
+		<button class="buttonItem cursor only-icon" {% if disableRefreshButton %} disabled{% endif %} data-refresh-websites>
+			<i class="material-icons">refresh</i>
+		</button>
+	</div>
 </section>
