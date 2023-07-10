@@ -66,7 +66,7 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>, lastUpda
 	}
 	const elements = await twigRender('websitesData', {
 		websitesData,
-		lastUpdate,
+		lastUpdate: !isNaN(lastUpdate.getTime()) ? lastUpdate : undefined,
 		disableRefreshButton
 	});
 
