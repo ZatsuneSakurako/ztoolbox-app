@@ -25,8 +25,8 @@ export class WebsiteData implements JsonSerialize<IJsonWebsiteData> {
 
 	fromJSON(data: IJsonWebsiteData) {
 		this.notificationState = {
-			count: data.count !== undefined ? data.count : 0,
-			logged: data.logged !== undefined ? data.logged : false
+			count: data.notificationState?.count !== undefined ? data.notificationState.count : 0,
+			logged: data.notificationState?.logged !== undefined ? data.notificationState.logged : false
 		};
 
 		this.count = data.count !== undefined ? data.count : 0;
