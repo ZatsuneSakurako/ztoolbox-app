@@ -1,7 +1,7 @@
 <section class="websites-data grid no-r-gap">
 	<h1 class="grid-12">
 		Websites data
-		{% if lastUpdate %}<time datetime="{{ lastUpdate }}">{{ lastUpdate | date("m/d/Y H:i:s", "Europe/Paris") }}</time>{% endif %}
+		{% if lastUpdate %}<time datetime="{{ lastUpdate.toIsoString() }}">{{ lastUpdate | date("m/d/Y H:i:s", "Europe/Paris") }}</time>{% endif %}
 	</h1>
 	{% for item in websitesData %}
 		{%- set website = item.websiteName -%}
