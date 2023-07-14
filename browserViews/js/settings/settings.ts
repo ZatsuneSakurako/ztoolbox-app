@@ -51,6 +51,11 @@ const settings:SettingsConfig = {
 
 
 
+	"check_enabled": {
+		"type": "bool",
+		"value": false,
+		"group": "web_extension"
+	},
 	"check_delay": {
 		"type": "integer",
 		"value": 5,

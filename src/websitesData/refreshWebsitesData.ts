@@ -62,6 +62,10 @@ ipcMain.handle('refreshWebsitesData', function () {
 });
 refreshWebsitesInterval();
 export async function refreshWebsitesData() {
+	if (!settings.getBoolean('check_enabled')) {
+		return;
+	}
+
 	const lastRefresh = settings.getDate(websitesDataLastRefresh);
 	if (!!lastRefresh && Date.now() - lastRefresh.getTime() < 60 * 1000) {
 		console.warn('Less than one minute, not refreshing');
@@ -87,9 +91,21 @@ export async function refreshWebsitesData() {
 			continue;
 		}
 
+
+		let dataUrl : string|null = null;
+		try {
+			dataUrl = api.dataURL
+		} catch (e) {
+			console.error(e);
+		}
+		if (!dataUrl) {
+			continue;
+		}
+
+
 		let rawHtml : string|null = null;
 		try {
-			const response = await websitesDataSession.fetch(api.dataURL);
+			const response = await websitesDataSession.fetch(dataUrl);
 			rawHtml = await response.text();
 		} catch (e) {
 			console.error(e);

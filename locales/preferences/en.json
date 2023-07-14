@@ -25,6 +25,7 @@
 
 
 
+	"check_enabled_title": "Automatic deviantArt/freshRss data refresh enabled",
 	"check_delay_title":  "deviantArt/freshRss verification delay (minutes)",
 	"freshRss_baseUrl_title": "URL of your FreshRss instance (should end with /i/)",
 	"notify_checkedData_title": "Show a notification for deviantArt/freshRss",

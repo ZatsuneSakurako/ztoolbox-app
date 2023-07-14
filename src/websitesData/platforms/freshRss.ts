@@ -8,6 +8,9 @@ export class FreshRss implements WebsiteApi {
 	}
 
 	get dataURL() {
+		if (this.#freshRssBaseUrl === undefined) {
+			throw new Error('NO_FRESH_RSS_BASE_URL');
+		}
 		return `${this.#freshRssBaseUrl}?a=normal&state=3`;
 	}
 	defaultFavicon='https://icons.duckduckgo.com/ip2/www.freshrss.org.ico'
