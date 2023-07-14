@@ -32,7 +32,7 @@ export interface IZnmApi {
 
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse>
 
-	twigRender(templateName: string, context: any): Promise<string>
+	nunjuckRender(templateName: string, context: any): Promise<string>
 	onUpdatePreference(cb: (preferenceId: string, newValue: any) => void): void
 	onShowSection(cb: (sectionName:string) => void): void
 	onThemeUpdate(cb: (theme:string, background_color:string) => void): void

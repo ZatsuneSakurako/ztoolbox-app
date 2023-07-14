@@ -4,7 +4,7 @@ import ddgWhatIsMyIp from "./ddgWhatIsMyIp.js";
 import {VersionState} from "../../classes/bo/versionState";
 import {Dict} from "./bo/Dict";
 import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers";
-import {twigRender} from "./twigRenderHelper.js";
+import {nunjuckRender} from "./nunjuckRenderHelper.js";
 import {IChromeExtensionName} from "../../classes/bo/chromeNative";
 
 declare var CodeMirror : any;
@@ -120,7 +120,7 @@ async function refreshData() {
 		console.info('wsClientNames update');
 		const $wsClientNames = document.querySelector<HTMLUListElement>('ul#wsClientNames');
 		if ($wsClientNames) {
-			const elements = await twigRender('_wsClientNames', {
+			const elements = await nunjuckRender('_wsClientNames', {
 				wsClientNames: await window.znmApi.getWsClientNames()
 			});
 			$wsClientNames.replaceWith(...elements);
@@ -171,7 +171,7 @@ async function refreshData() {
 	);
 	await Promise.allSettled(promises);
 
-	const elements = await twigRender('variousInfos', infosData)
+	const elements = await nunjuckRender('variousInfos', infosData)
 	const $loader = $variousInfos.querySelector('.loader-container');
 	if ($loader) {
 		$loader.remove();

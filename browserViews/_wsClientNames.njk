@@ -1,6 +1,6 @@
 <ul id="wsClientNames" class="list-style-inside">
 	{%- for client in wsClientNames %}
-		{% if client.extensionId is empty %}
+		{% if client.extensionId|length === 0 %}
 			<li>{{ client.browserName }}</li>
 		{% else %}
 			<li title="{{ client.extensionId -}}">

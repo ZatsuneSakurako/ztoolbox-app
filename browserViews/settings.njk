@@ -19,7 +19,7 @@
 
 					{% if conf.type in ['color', 'string'] %}
 						<input
-							type="{{ conf.type == 'string' ? 'text' : conf.type }}" id="pref-{{ id }}" name="{{ id }}"
+							type="{% if conf.type == 'string' %}text{% else %}{{ conf.type }}{% endif %}" id="pref-{{ id }}" name="{{ id }}"
 							data-on-change="" disabled="disabled"/>
 					{% endif %}
 
@@ -35,7 +35,7 @@
 
 					{% if conf.type == 'integer' %}
 						<input
-							type="{{ conf.rangeInput ? 'range' : 'number' }}"
+							type="{% if conf.rangeInput %}range{% else %}number{% endif %}"
 							{%- if conf.minValue >= 0 %}min="{{ conf.minValue }}" {% endif %}
 							{%- if conf.maxValue >= 0 %}max="{{ conf.maxValue }}" {% endif %}
 							{%- if conf.stepValue >= 0 %}step="{{ conf.stepValue }}" {% endif %}
@@ -55,7 +55,7 @@
 
 					{% if conf.type in ['path', 'paths'] and conf.opts.asFile %}
 						<label class="button small" for="pref-{{ id }}_file"
-							   data-translate-id="{{ conf.opts.asFile ? 'select_file' : 'select_path' }}"></label>
+							   data-translate-id="{% if conf.opts.asFile %}select_file{% else %}select_path{% endif %}"></label>
 					{% endif %}
 
 					{% if conf.type in ['path', 'paths'] and conf.opts.asFile %}

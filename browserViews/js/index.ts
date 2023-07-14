@@ -8,7 +8,7 @@ import {IJsonWebsiteData} from "./bo/websiteData";
 import {WebsiteData} from "./websiteData.js";
 import {Dict} from "./bo/Dict";
 import {updateClassesFor} from "./labelChecked.js";
-import {twigRender} from "./twigRenderHelper.js";
+import {nunjuckRender} from "./nunjuckRenderHelper.js";
 
 declare var window : BridgedWindow;
 
@@ -64,7 +64,7 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>, lastUpda
 		clearTimeout(enableButtonTimer);
 		enableButtonTimer = null;
 	}
-	const elements = await twigRender('websitesData', {
+	const elements = await nunjuckRender('websitesData', {
 		websitesData,
 		lastUpdate: !isNaN(lastUpdate.getTime()) ? lastUpdate : undefined,
 		disableRefreshButton

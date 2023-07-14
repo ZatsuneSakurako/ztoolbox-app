@@ -23,7 +23,7 @@
 	<p>Chrome native installations :</p>
 	<ul class="list-style-inside list-style-disc">
 		{%- for browser, item in chromeNativeInstallersStates -%}
-			<li title="{{ item != false ? item.path : '' }}">{%- if item == false -%}❌{%- else -%}✅{%- endif %} {{ browser }}</li>
+			<li title="{% if item %}{{ item.path }}"{% endif %}>{%- if item == false -%}❌{%- else -%}✅{%- endif %} {{ browser }}</li>
 		{%- endfor -%}
 	</ul>
 {%- endif %}

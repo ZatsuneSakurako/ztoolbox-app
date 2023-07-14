@@ -181,7 +181,7 @@ ipcMain.handle('chromeNative_installStates', async () : ReturnType<typeof Chrome
 });
 
 nunjucks.configure(path.normalize(`${resourcePath}/browserViews/`));
-ipcMain.handle('twigRender', async (e, templateName:string, context:any) => {
+ipcMain.handle('nunjuckRender', async (e, templateName:string, context:any) => {
 	return nunjucks.render(`${templateName}.njk`, context);
 });
 

@@ -1,6 +1,6 @@
 import {BridgedWindow} from "../bo/bridgedWindow";
 import {Color} from "./color.js";
-import {twigRender} from "../twigRenderHelper.js";
+import {nunjuckRender} from "../nunjuckRenderHelper.js";
 
 declare var window : BridgedWindow;
 
@@ -96,7 +96,7 @@ export async function themeCacheUpdate(theme: string, background_color: string) 
 
 
 
-	const style = await twigRender("backgroundTheme", {
+	const style = await nunjuckRender("backgroundTheme", {
 		"isDarkTheme": (theme === "dark"),
 		"isLightTheme": (theme === "light"),
 		"baseColor_hsl": baseColor_hsl,

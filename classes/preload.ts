@@ -3,7 +3,7 @@ import {IZnmApi, PreferenceTypes} from "../browserViews/js/bo/bridgedWindow";
 import {NotificationResponse} from "./bo/notify";
 import Dict = NodeJS.Dict;
 import {IJsonWebsiteData} from "../browserViews/js/bo/websiteData";
-import {getInstallStates} from "./chromeNativeInstallers";
+import {nunjuckRender} from "../browserViews/js/nunjuckRenderHelper.js";
 
 const isFileProtocol = self.location.protocol === 'file:';
 
@@ -111,8 +111,8 @@ const znmApi:IZnmApi = {
 		return ipcRendererInvoke('sendNotification', message, title, sound);
 	},
 
-	twigRender: (templateName:string, context:any) => {
-		return ipcRendererInvoke('twigRender', templateName, context)
+	nunjuckRender: (templateName:string, context:any) => {
+		return ipcRendererInvoke('nunjuckRender', templateName, context)
 	},
 	onUpdatePreference: (cb:(preferenceId:string, newValue:any) => void) => {
 		updatePreferenceCb.push(cb);
