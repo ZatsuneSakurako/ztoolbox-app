@@ -7,8 +7,15 @@ import {getInstallStates} from "./chromeNativeInstallers";
 
 // https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
 
+const isFileProtocol = self.location.protocol === 'file:';
+
 const updatePreferenceCb:((preferenceId:string, newValue:any) => void)[] = [];
 ipcRenderer.on('updatePreference', function (e, preferenceId:string, newValue:any) {
+	if (!isFileProtocol) {
+		console.warn('Not file protocol, ignoring');
+		return;
+	}
+
 	console.info(preferenceId, newValue);
 	for (let cb of updatePreferenceCb) {
 		cb(preferenceId, newValue);
@@ -17,6 +24,11 @@ ipcRenderer.on('updatePreference', function (e, preferenceId:string, newValue:an
 
 const showSectionCb:((sectionName:string) => void)[] = [];
 ipcRenderer.on('showSection', function (e, sectionName:string) {
+	if (!isFileProtocol) {
+		console.warn('Not file protocol, ignoring');
+		return;
+	}
+
 	console.info(`showSection`, sectionName);
 	for (let cb of showSectionCb) {
 		cb(sectionName);
@@ -25,6 +37,11 @@ ipcRenderer.on('showSection', function (e, sectionName:string) {
 
 const themeUpdateCb:((theme:string, background_color:string) => void)[] = [];
 ipcRenderer.on('themeUpdate', function (e, theme:string, background_color:string) {
+	if (!isFileProtocol) {
+		console.warn('Not file protocol, ignoring');
+		return;
+	}
+
 	console.info('themeUpdate', theme, background_color);
 	for (let cb of themeUpdateCb) {
 		cb(theme, background_color);
@@ -34,52 +51,67 @@ ipcRenderer.on('themeUpdate', function (e, theme:string, background_color:string
 const websiteDataUpdateCb:((data: Dict<IJsonWebsiteData>, lastUpdate:Date) => void)[] = [];
 // noinspection JSUnusedLocalSymbols
 ipcRenderer.on('websiteDataUpdate', function (e, data: Dict<IJsonWebsiteData>, lastUpdate:Date) {
+	if (!isFileProtocol) {
+		console.warn('Not file protocol, ignoring');
+		return;
+	}
+
 	console.info('websiteDataUpdate');
 	for (let cb of websiteDataUpdateCb) {
 		cb(data, lastUpdate);
 	}
 })
 
-contextBridge.exposeInMainWorld(
-	'process',
-	{
-		versions: process.versions
+if (isFileProtocol) {
+	contextBridge.exposeInMainWorld(
+		'process',
+		{
+			versions: process.versions
+		}
+	);
+}
+
+function ipcRendererInvoke(channel: string, ...args: any[]) {
+	if (!isFileProtocol) {
+		console.warn('Not file protocol, ignoring');
+		return Promise.reject(new Error('NOT_FILE_PROTOCOL'));
 	}
-);
+	return ipcRenderer.invoke(channel, ...args);
+}
 
 const znmApi:IZnmApi = {
-	nonce: () => ipcRenderer.invoke('nonce-ipc'),
-	openExternal: (url: string) => ipcRenderer.invoke('openExternal', url),
-	digCmd: (domain: string) => ipcRenderer.invoke('digCmd', domain),
-	preferenceFileDialog: (prefId) => ipcRenderer.invoke('preferenceFileDialog', prefId),
-	_: (key:string) => ipcRenderer.invoke('i18n', key),
-	getWsClientNames: () => ipcRenderer.invoke('getWsClientNames'),
+	nonce: () => ipcRendererInvoke('nonce-ipc'),
+	openExternal: (url: string) => ipcRendererInvoke('openExternal', url),
+	digCmd: (domain: string) => ipcRendererInvoke('digCmd', domain),
+	preferenceFileDialog: (prefId) => ipcRendererInvoke('preferenceFileDialog', prefId),
+	_: (key:string) => ipcRendererInvoke('i18n', key),
+	getWsClientNames: () => ipcRendererInvoke('getWsClientNames'),
 
-	getProcessArgv: () => ipcRenderer.invoke('getProcessArgv'),
-	getVersionState: () => ipcRenderer.invoke('getVersionState'),
+	getProcessArgv: () => ipcRendererInvoke('getProcessArgv'),
+	getVersionState: () => ipcRendererInvoke('getVersionState'),
 
 	getPreference(preferenceId:string, type?:PreferenceTypes) {
-		return ipcRenderer.invoke('getPreference', preferenceId, type)
+		return ipcRendererInvoke('getPreference', preferenceId, type)
 	},
 	getPreferences(...preferenceIds:string[]) {
-		return ipcRenderer.invoke('getPreferences', ...preferenceIds)
+		return ipcRendererInvoke('getPreferences', ...preferenceIds)
 	},
 	savePreference(preferenceId:string, newValue:any) {
-		return ipcRenderer.invoke('savePreference', preferenceId, newValue)
+		return ipcRendererInvoke('savePreference', preferenceId, newValue)
 	},
 	chromeNative_install(isUninstall?: boolean) {
-		return ipcRenderer.invoke('chromeNative_install', isUninstall);
+		return ipcRendererInvoke('chromeNative_install', isUninstall);
 	},
 	chromeNative_installStates() {
-		return ipcRenderer.invoke('chromeNative_installStates');
+		return ipcRendererInvoke('chromeNative_installStates');
 	},
 
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse> {
-		return ipcRenderer.invoke('sendNotification', message, title, sound);
+		return ipcRendererInvoke('sendNotification', message, title, sound);
 	},
 
 	twigRender: (templateName:string, context:any) => {
-		return ipcRenderer.invoke('twigRender', templateName, context)
+		return ipcRendererInvoke('twigRender', templateName, context)
 	},
 	onUpdatePreference: (cb:(preferenceId:string, newValue:any) => void) => {
 		updatePreferenceCb.push(cb);
@@ -94,7 +126,7 @@ const znmApi:IZnmApi = {
 		websiteDataUpdateCb.push(cb);
 	},
 	refreshWebsitesData: () => {
-		return ipcRenderer.invoke('refreshWebsitesData');
+		return ipcRendererInvoke('refreshWebsitesData');
 	}
 };
 

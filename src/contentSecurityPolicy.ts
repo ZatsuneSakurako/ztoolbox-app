@@ -10,11 +10,22 @@ ipcMain.handle('nonce-ipc', async (event, ...args) => {
 app.whenReady()
 	.then(function () {
 		session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+			let protocol : string = '';
+			try {
+				protocol = new URL(details.url).protocol
+			} catch (e) {
+				console.error(e);
+			}
+			if (protocol !== 'file:') {
+				// If not file protocol, leave current csp headers
+				callback({});
+				return;
+			}
+
 			callback({
 				responseHeaders: {
 					...details.responseHeaders,
 					'Content-Security-Policy': [
-						// 'default-src \'none\'; script-src \'self\'; object-src \'none\'; style-src \'self\' \'unsafe-inline\'; img-src \'self\'; media-src \'self\'; frame-src \'self\'; font-src \'self\'; connect-src \'none\'"',
 						`default-src 'none'; script-src 'self' https://unpkg.com/ 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' https://icons.duckduckgo.com https://www.deviantart.com; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src https://api.duckduckgo.com`
 					]
 				}
