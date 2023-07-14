@@ -38,7 +38,7 @@ export interface IZnmApi {
 	onThemeUpdate(cb: (theme:string, background_color:string) => void): void
 	onWebsiteDataUpdate(cb: (data: Dict<IJsonWebsiteData>, lastUpdate:Date|string) => void): void
 	refreshWebsitesData(): Promise<void>
-	openLoginUrl(website:string): Promise<void>
+	openLoginUrl(website:string): Promise<boolean>
 }
 
 export type BridgedWindow = Window & typeof globalThis & {

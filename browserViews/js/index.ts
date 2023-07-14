@@ -94,6 +94,24 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>, lastUpda
 		navigator.setAppBadge(count);
 	}
 }
+document.addEventListener('click', function (e) {
+	const target = (<Element> e.target).closest<HTMLButtonElement>('button[data-login-website]');
+	if (!target) return;
+
+	target.disabled = true;
+	e.preventDefault();
+	e.stopImmediatePropagation();
+
+	const website = target.dataset.loginWebsite;
+	if (!website) return;
+
+	window.znmApi.openLoginUrl(website)
+		.then(result => {
+			if (result) target.disabled = false;
+		})
+		.catch(console.error)
+	;
+});
 
 themeOnLoad()
 	.then(styleTheme => {

@@ -16,7 +16,14 @@
 
 			<img class="icon" src="{{ data.websiteIcon }}" alt="" />
 
-			<div class="title" data-count="{% if data.logged %}{{ data.count }}"{% endif %}>{{website}}</div>
+			<div class="title" data-count="{% if data.logged %}{{ data.count }}"{% endif %}>
+				{{-website-}}
+			</div>
+			<button class="btn-login" data-login-website="{{ website }}">
+				<span class="material-icons">
+					{%- if data.logged %}logout{% else %}login{% endif -%}
+				</span>
+			</button>
 			<div class="websiteData">
 				{% if data.logged and folder.folderUrl and folder.folderCount -%}
 					{%- for folderData in data.folders -%}

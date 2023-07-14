@@ -194,6 +194,27 @@ section .buttonItem .title
 section .buttonItem .title[data-count]::after
 	content: " (" attr(data-count) ")"
 
+section a.websiteItem
+	display: grid
+	grid-template-columns: 1fr 40px
+	grid-template-rows: 1fr 1fr
+	gap: 0 0
+	grid-auto-flow: row
+	grid-template-areas: "title btn-login" "websiteData btn-login"
+
+	.title
+		grid-area: title
+	.btn-login
+		grid-area: btn-login
+	.websiteData
+		grid-area: websiteData
+
+section .websiteItem .btn-login
+	font-size: inherit
+	height: auto
+	margin: 0
+	min-height: 0
+	width: auto
 
 section .websiteItem .websiteData .folder[data-folder-url]
 	color: inherit

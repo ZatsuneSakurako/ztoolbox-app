@@ -1,7 +1,7 @@
 import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData";
 import {ZAlarm} from "../../classes/ZAlarm";
 import {settings} from "../../main";
-import {BrowserWindow, ipcMain, session} from "electron";
+import {app, BrowserWindow, ipcMain, session} from "electron";
 import {websitesData, websitesDataLastRefresh} from "../../classes/Settings";
 import {JsonSerialize} from "../../classes/JsonSerialize";
 import {WebsiteData} from "../../browserViews/js/websiteData";
@@ -60,7 +60,11 @@ ipcMain.handle('refreshWebsitesData', function () {
 		.catch(console.error)
 	;
 });
-refreshWebsitesInterval();
+app.whenReady()
+	.then(() => {
+		refreshWebsitesInterval();
+	})
+;
 export async function refreshWebsitesData() {
 	if (!settings.getBoolean('check_enabled')) {
 		return;
