@@ -12,7 +12,7 @@ import Dict = NodeJS.Dict;
 import {IJsonWebsiteData} from "../browserViews/js/websiteData";
 import {NotificationResponse} from "./bo/notify";
 import {websitesData, websitesDataLastRefresh} from "./Settings";
-import {refreshWebsitesData, refreshWebsitesInterval, zAlarm_refreshWebsites} from "./websitesData";
+import {refreshWebsitesData, refreshWebsitesInterval, zAlarm_refreshWebsites} from "../src/websitesData/refreshWebsitesData";
 
 
 
