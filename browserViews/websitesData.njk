@@ -2,8 +2,9 @@
 	<h1 class="grid-12">
 		Websites data
 		{% if lastUpdate -%}
-			{# | date("m/d/Y H:i:s", "Europe/Paris") #}
-			<time datetime="{{ lastUpdate.toISOString() }}">{{ lastUpdate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) }}</time>
+			<time datetime="{{ lastUpdate.toISOString() }}">
+				{{- lastUpdate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' }) -}}
+			</time>
 		{%- endif %}
 	</h1>
 	{% for item in websitesData %}
