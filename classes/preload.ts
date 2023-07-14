@@ -5,9 +5,9 @@ import Dict = NodeJS.Dict;
 import {IJsonWebsiteData} from "../browserViews/js/bo/websiteData";
 import {getInstallStates} from "./chromeNativeInstallers";
 
-// https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
-
 const isFileProtocol = self.location.protocol === 'file:';
+
+
 
 const updatePreferenceCb:((preferenceId:string, newValue:any) => void)[] = [];
 ipcRenderer.on('updatePreference', function (e, preferenceId:string, newValue:any) {
@@ -63,6 +63,7 @@ ipcRenderer.on('websiteDataUpdate', function (e, data: Dict<IJsonWebsiteData>, l
 })
 
 if (isFileProtocol) {
+	// https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
 	contextBridge.exposeInMainWorld(
 		'process',
 		{
