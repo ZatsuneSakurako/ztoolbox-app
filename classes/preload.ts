@@ -56,7 +56,7 @@ ipcRenderer.on('websiteDataUpdate', function (e, data: Dict<IJsonWebsiteData>, l
 		return;
 	}
 
-	console.info('websiteDataUpdate');
+	console.info('websiteDataUpdate', data, lastUpdate);
 	for (let cb of websiteDataUpdateCb) {
 		cb(data, lastUpdate);
 	}
@@ -128,6 +128,9 @@ const znmApi:IZnmApi = {
 	},
 	refreshWebsitesData: () => {
 		return ipcRendererInvoke('refreshWebsitesData');
+	},
+	openLoginUrl: (website:string) => {
+		return ipcRendererInvoke('openLoginUrl', website);
 	}
 };
 

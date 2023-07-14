@@ -24,10 +24,17 @@ export class WebsiteData implements JsonSerialize<IJsonWebsiteData> {
 	}
 
 	fromJSON(data: IJsonWebsiteData) {
-		this.notificationState = {
-			count: data.notificationState?.count !== undefined ? data.notificationState.count : 0,
-			logged: data.notificationState?.logged !== undefined ? data.notificationState.logged : false
-		};
+		if ('notificationState' in data) {
+			this.notificationState = {
+				count: data.notificationState.count !== undefined ? data.notificationState.count : 0,
+				logged: data.notificationState.logged !== undefined ? data.notificationState.logged : false
+			};
+		} else {
+			this.notificationState = {
+				count: 0,
+				logged: false
+			};
+		}
 
 		this.count = data.count !== undefined ? data.count : 0;
 		// noinspection SuspiciousTypeOfGuard

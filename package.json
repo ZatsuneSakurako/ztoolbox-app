@@ -75,6 +75,7 @@
     "esm": "npm:esm-wallaby@^3.2.26",
     "fs-extra": "^10.1.0",
     "i18next": "^22.0.3",
+    "json5": "^2.2.3",
     "locutus": "^2.0.16",
     "lodash.debounce": "^4.0.8",
     "nunjucks": "^3.2.4",

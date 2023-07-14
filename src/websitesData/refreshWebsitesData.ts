@@ -1,27 +1,15 @@
 import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData";
 import {ZAlarm} from "../../classes/ZAlarm";
 import {settings} from "../../main";
-import {BrowserWindow, ipcMain} from "electron";
+import {BrowserWindow, ipcMain, session} from "electron";
 import {websitesData, websitesDataLastRefresh} from "../../classes/Settings";
 import {JsonSerialize} from "../../classes/JsonSerialize";
 import {WebsiteData} from "../../browserViews/js/websiteData";
 import {setBadge} from "../../classes/windowManager";
-import {io, remoteSocket} from "../../classes/chromeNative";
 import {Dict} from "../../browserViews/js/bo/Dict";
 import {doNotifyWebsite} from "./doNotifyWebsite";
-
-
-function _getWebsitesData(socket: remoteSocket): Promise<Dict<IJsonWebsiteData>> {
-	return new Promise((resolve, reject) => {
-		socket.emit('getWebsitesData', function (response) {
-			if (response.error === false) {
-				resolve(response.result);
-			} else {
-				reject('Error : ' + response.error);
-			}
-		});
-	});
-}
+import {websiteApis} from "./platforms";
+import {appIcon} from "../../classes/constants";
 
 
 
@@ -37,57 +25,96 @@ export function refreshWebsitesInterval() : void {
 
 
 
+async function openLoginUrl(website:string) {
+	const api = websiteApis.get(website);
+	if (!api) {
+		return false;
+	}
+
+	const loginWindow = new BrowserWindow({
+		height: 800,
+		width: 600,
+		icon: appIcon,
+		show: true,
+		darkTheme: true,
+		webPreferences: {
+			nodeIntegration: false,
+			session: session.fromPartition('persist:websites-data', {
+				cache: true
+			})
+		}
+	});
+
+	const url = api.getLoginURL;
+	await loginWindow.loadURL(url);
+	return true;
+}
+ipcMain.handle('openLoginUrl', function (event, website) {
+	return openLoginUrl(website);
+});
+
+
+
 ipcMain.handle('refreshWebsitesData', function () {
 	refreshWebsitesData()
 		.catch(console.error)
 	;
 });
-export async function refreshWebsitesData() : Promise<boolean> {
+refreshWebsitesInterval();
+export async function refreshWebsitesData() {
 	const lastRefresh = settings.getDate(websitesDataLastRefresh);
 	if (!!lastRefresh && Date.now() - lastRefresh.getTime() < 60 * 1000) {
 		console.warn('Less than one minute, not refreshing');
 		return false;
 	}
 
-
 	const currentRefresh = new Date();
 	settings.set(websitesDataLastRefresh, currentRefresh);
 	refreshWebsitesInterval();
 
-
-	const sockets = await io.fetchSockets();
-
-	let targetSocket : remoteSocket|null = null;
-	for (let client of sockets) {
-		if (client.data.sendingWebsitesDataSupport === true) {
-			targetSocket = client;
-			break;
-		}
-	}
-	if (!targetSocket) return false;
-
-
-	const currentData = settings.getObject<Dict<IJsonWebsiteData>>(websitesData) ?? {};
-	const websiteData = await _getWebsitesData(targetSocket),
-		data : Dict<JsonSerialize<IJsonWebsiteData>> = {},
+	const currentData = settings.getObject<Dict<IJsonWebsiteData>>(websitesData) ?? {},
+		websiteData : Dict<JsonSerialize<IJsonWebsiteData>> = {},
 		promises : Promise<void>[] = []
 	;
 	let count : number = 0;
-	for (let [name, raw] of Object.entries(websiteData)) {
-		if (!raw) continue;
+	const websitesDataSession = session.fromPartition('persist:websites-data');
+	for (let [website, websiteApi] of websiteApis) {
+		const api = websiteApi,
+			cookies = await websitesDataSession.cookies.get({url: api.dataURL})
+		;
 
-		const newInstance = new WebsiteData();
-
-		const currentNotificationState = currentData[name]?.notificationState;
-		if (currentNotificationState) {
-			raw.notificationState = currentNotificationState
+		if (!cookies.length) {
+			continue;
 		}
 
-		newInstance.fromJSON(raw);
-		data[name] = newInstance;
+		let rawHtml : string|null = null;
+		try {
+			const response = await websitesDataSession.fetch(api.dataURL);
+			rawHtml = await response.text();
+		} catch (e) {
+			console.error(e);
+		}
+
+		if (rawHtml === null) {
+			console.warn(`NO_DATA ${website}`);
+			continue;
+		}
+
+		const newInstance = new WebsiteData(),
+			currentWebsiteData = currentData[website]
+		;
+		if (currentWebsiteData) {
+			newInstance.fromJSON(currentWebsiteData);
+		}
+
+		const processResult = api.getData(newInstance, rawHtml);
+		websiteData[website] = newInstance;
+		if (processResult === null) {
+			console.warn(`UNEXPECTED_RESULT ${website}`);
+		}
 
 		promises.push(
-			doNotifyWebsite(name, newInstance)
+			doNotifyWebsite(website, newInstance)
 				.catch(console.error)
 		);
 
@@ -97,8 +124,7 @@ export async function refreshWebsitesData() : Promise<boolean> {
 	await Promise.allSettled(promises);
 
 	setBadge(count);
-	settings.set<IJsonWebsiteData>(websitesData, data);
-
+	settings.set<IJsonWebsiteData>(websitesData, websiteData);
 
 	for (let browserWindow of BrowserWindow.getAllWindows()) {
 		browserWindow.webContents.send('websiteDataUpdate', websiteData, currentRefresh);

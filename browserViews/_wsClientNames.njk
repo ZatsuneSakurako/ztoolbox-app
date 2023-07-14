@@ -6,12 +6,8 @@
 			<li title="{{ client.extensionId -}}">
 				<details>
 					<summary>{{ client.browserName }}
-						{%- if client.notificationSupport or client.sendingWebsitesDataSupport -%}
-							&nbsp;(support&nbsp;:&nbsp;
-							{%- if client.notificationSupport -%}notification{%- endif -%}
-							{%- if client.notificationSupport and client.sendingWebsitesDataSupport %}, {% endif -%}
-							{%- if client.sendingWebsitesDataSupport -%}websites data{%- endif -%}
-							)
+						{%- if client.notificationSupport -%}
+							&nbsp;(support&nbsp;:&nbsp;{%- if client.notificationSupport -%}notification{%- endif -%})
 						{%- endif -%}
 					</summary>
 					<p>{{ client.userAgent }}</p>

@@ -90,39 +90,11 @@ io.on("connection", (socket: socket) => {
 		if ('notificationSupport' in data) {
 			socket.data.notificationSupport = data.notificationSupport;
 		}
-		if ('sendingWebsitesDataSupport' in data) {
-			socket.data.sendingWebsitesDataSupport = data.sendingWebsitesDataSupport;
-
-			if (data.sendingWebsitesDataSupport && !zAlarm_refreshWebsites) {
-				const lastRefresh = settings.getDate(websitesDataLastRefresh);
-				if (!!lastRefresh && Date.now() - lastRefresh.getTime() > 5 * 60 * 1000) {
-					refreshWebsitesData()
-						.catch(console.error)
-					;
-				} else {
-					refreshWebsitesInterval();
-				}
-			}
-		}
 		if ('browserName' in data) {
 			socket.data.browserName = data.browserName;
 		}
 		socket.data.extensionId = data.extensionId;
 		socket.data.userAgent = data.userAgent;
-	});
-
-	socket.on('getWebsitesData', function (cb) {
-		const data = settings.getObject<Dict<IJsonWebsiteData>>(websitesData);
-		if (!!data) {
-			cb({
-				error: false,
-				result: data
-			});
-		} else {
-			cb({
-				error: 'NOT_FOUND'
-			})
-		}
 	});
 
 	socket.on('getWsClientNames', async function (cb) {
@@ -219,8 +191,7 @@ export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
 			browserName: client.data.browserName ?? 'Unknown',
 			userAgent: client.data.userAgent,
 			extensionId: client.data.extensionId ?? '',
-			notificationSupport: client.data.notificationSupport ?? false,
-			sendingWebsitesDataSupport: client.data.sendingWebsitesDataSupport ?? false
+			notificationSupport: client.data.notificationSupport ?? false
 		});
 	}
 

@@ -123,24 +123,6 @@ socket.on('ping', function (cb) {
     });
 });
 
-socket.on('getWebsitesData', function (cb) {
-	const _id = randomId();
-	bridge.emit({
-		error: false,
-		_id,
-		type: 'getWebsitesData'
-	});
-	bridgeEventEmitter.on('commandReply', function listener(message) {
-		if (!message || message._id !== _id) return;
-
-		bridgeEventEmitter.off('commandReply', listener);
-		cb({
-			error: false,
-			result: message.data
-		});
-	});
-});
-
 socket.on('sendNotification', (opts, cb) => {
 	const _id = randomId();
 	bridge.emit({
