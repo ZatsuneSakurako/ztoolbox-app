@@ -1,6 +1,6 @@
 import {app, ipcMain, dialog} from 'electron';
 import electron from 'electron';
-import {TwingEnvironment, TwingLoaderFilesystem} from "twing";
+import nunjucks from "nunjucks";
 import * as path from "path";
 import Dict = NodeJS.Dict;
 
@@ -180,11 +180,9 @@ ipcMain.handle('chromeNative_installStates', async () : ReturnType<typeof Chrome
 	return await ChromeNativeInstallers.getInstallStates();
 });
 
-const twig = new TwingEnvironment(new TwingLoaderFilesystem(path.normalize(`${resourcePath}/browserViews/`)), {
-	cache: false // TODO store cache in some folders
-});
+nunjucks.configure(path.normalize(`${resourcePath}/browserViews/`));
 ipcMain.handle('twigRender', async (e, templateName:string, context:any) => {
-	return await twig.render(`${templateName}.twig`, context);
+	return nunjucks.render(`${templateName}.njk`, context);
 });
 
 
