@@ -9,10 +9,10 @@ interface IRenderOutputTypes {
 	'body': HTMLElement
 	'bodyElements': HTMLCollection
 }
-export async function twigRender<T, K extends keyof IRenderOutputTypes>(templateName: string, data: T, output:K): Promise<IRenderOutputTypes[K]>
-export async function twigRender<T>(templateName: string, data: T): Promise<IRenderOutputTypes['bodyElements']>
-export async function twigRender<T>(templateName: string, data: T, output:keyof IRenderOutputTypes='bodyElements'): Promise<IRenderOutputTypes[keyof IRenderOutputTypes]> {
-	const string = await window.znmApi.twigRender(templateName, data);
+export async function nunjuckRender<T, K extends keyof IRenderOutputTypes>(templateName: string, data: T, output:K): Promise<IRenderOutputTypes[K]>
+export async function nunjuckRender<T>(templateName: string, data: T): Promise<IRenderOutputTypes['bodyElements']>
+export async function nunjuckRender<T>(templateName: string, data: T, output:keyof IRenderOutputTypes='bodyElements'): Promise<IRenderOutputTypes[keyof IRenderOutputTypes]> {
+	const string = await window.znmApi.nunjuckRender(templateName, data);
 	if (output === 'string') return string;
 
 	const parser = new DOMParser(),
