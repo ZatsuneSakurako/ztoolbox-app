@@ -201,7 +201,30 @@ document.addEventListener('input', function outputUpdate(e:Event) {
 
 document.addEventListener('change', function onChange(e:Event) {
 	if (!e.target) return;
-	const $input = (<Element> e.target).closest<HTMLInputElement>(`#${settingFormId} input[data-on-change]`);
+	const $input = (<Element> e.target).closest<HTMLTextAreaElement>(`#${settingFormId} textarea[data-on-change]`);
+	if (!$input) return;
+
+	let newValue;
+	if ($input.dataset.type === 'yaml') {
+		newValue = Yaml.parse($input.value.trim());
+		if (newValue === null) {
+			newValue = {};
+		}
+	} else {
+		newValue = $input.value;
+	}
+
+	window.znmApi.savePreference($input.name, newValue)
+		.then(() => {
+			console.info('saved :', $input.name);
+		})
+		.catch(console.error)
+	;
+});
+
+document.addEventListener('change', function onChange(e:Event) {
+	if (!e.target) return;
+	const $input = (<Element> e.target).closest<HTMLInputElement>(`#${settingFormId} input[data-on-change], #${settingFormId} textarea[data-on-change]`);
 	if (!$input) return;
 
 	let inputType = $input.tagName.toLowerCase();
@@ -221,16 +244,6 @@ document.addEventListener('change', function onChange(e:Event) {
 		case 'text':
 		case 'select':
 			newValue = $input.value;
-			break;
-		case 'textarea':
-			if ($input.dataset.type === 'yaml') {
-				newValue = Yaml.parse($input.value.trim());
-				if (newValue === null) {
-					newValue = {}
-				}
-			} else {
-				newValue = $input.value;
-			}
 			break;
 		case 'number':
 		case 'range':
