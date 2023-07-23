@@ -11,6 +11,7 @@ import dotenv from "dotenv";
 import { io, Socket } from "socket.io-client";
 import {ClientToServerEvents, ServerToClientEvents} from "../classes/bo/chromeNative";
 import {fileURLToPath} from "url";
+import {clearTimeout} from "timers";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -131,8 +132,9 @@ socket.on('sendNotification', (opts, cb) => {
 		opts,
 		type: 'sendNotification'
 	});
+	let timer : NodeJS.Timer|null = null;
 	if (opts.timeoutType === 'default') {
-		setTimeout(() => {
+		timer = setTimeout(() => {
 			bridge.emit({
 				error: false,
 				_id,
@@ -142,6 +144,10 @@ socket.on('sendNotification', (opts, cb) => {
 	}
 	bridgeEventEmitter.on('commandReply', function listener(message) {
 		if (!message || message._id !== _id) return;
+
+		if (timer) {
+			clearTimeout(timer);
+		}
 
 		bridgeEventEmitter.off('commandReply', listener);
 		cb({
