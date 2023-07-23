@@ -1,6 +1,6 @@
 import {WebsiteData} from "../../browserViews/js/websiteData";
 import {i18n} from "../i18next";
-import {sendNotification} from "../../classes/chromeNative";
+import {sendNotification} from "../../classes/notify";
 import electron from "electron";
 import {settings} from "../../main";
 

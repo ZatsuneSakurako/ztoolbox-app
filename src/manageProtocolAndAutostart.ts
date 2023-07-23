@@ -8,7 +8,7 @@ import {appRootPath, autoStartArgument, zToolbox_protocol} from "../classes/cons
 import {app} from "electron";
 import path from "path";
 import {showSection} from "../classes/windowManager";
-import {notifyElectron} from "../classes/notify";
+import {sendNotification} from "../classes/notify";
 import AutoLaunch from "auto-launch";
 import {settings} from "../main";
 
@@ -135,7 +135,7 @@ export function onOpen(commandLine:string[]) {
 
 
 	if (unsupported) {
-		notifyElectron({
+		sendNotification({
 			title: 'Erreur',
 			message: 'Lien non supporté'
 		})

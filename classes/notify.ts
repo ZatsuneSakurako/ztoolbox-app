@@ -1,15 +1,41 @@
 import {Notification} from "electron";
 import {appIconPath_x3} from "./constants";
-import {NotificationResponse} from "./bo/notify";
-import {sendNotification} from "./chromeNative";
+import {NotificationResponse, NotifyElectron_Options} from "./bo/notify";
+import {io, remoteSocket} from "./chromeNative";
+import {ISendNotificationOptions, SocketMessage} from "./bo/chromeNative";
 
 
 
-type notifyElectron_options = {title:string, message:string, icon?:string | Electron.NativeImage, sound?:boolean};
-export async function notifyElectron(options:notifyElectron_options): Promise<NotificationResponse> {
-	const response = await sendNotification({
+function _notifyChromeNative<T>(socket: remoteSocket, opts: ISendNotificationOptions): Promise<T> {
+	return new Promise<T>((resolve, reject) => {
+		socket.emit('sendNotification', opts, (response:SocketMessage<T>) => {
+			if (response.error !== false) {
+				reject(response.error);
+			} else {
+				resolve(response.result);
+			}
+		});
+	});
+}
+
+async function notifyChromeNative(opts: ISendNotificationOptions): Promise<NotificationResponse|null> {
+	const sockets = await io.fetchSockets();
+	for (let client of sockets) {
+		if (!client.data.notificationSupport) continue;
+		return await _notifyChromeNative(client, opts);
+	}
+	return null;
+}
+
+
+
+
+
+export async function sendNotification(options:NotifyElectron_Options): Promise<NotificationResponse> {
+	const response = await notifyChromeNative({
 		title: options.title,
-		message: options.message
+		message: options.message,
+		timeoutType: options.timeoutType ?? 'default'
 	});
 	if (response !== null) {
 		return response;
@@ -17,7 +43,7 @@ export async function notifyElectron(options:notifyElectron_options): Promise<No
 	return _notifyElectron(options);
 }
 
-function _notifyElectron(options:notifyElectron_options):Promise<NotificationResponse> {
+function _notifyElectron(options:NotifyElectron_Options):Promise<NotificationResponse> {
 	return new Promise((resolve, reject) => {
 		if (options === null || typeof options !== 'object') {
 			reject('WrongArgument');

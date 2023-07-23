@@ -1,14 +1,13 @@
 import http from "http";
 import {
 	ClientToServerEvents, IChromeExtensionName,
-	InterServerEvents, ISendNotificationOptions, preferenceData, ResponseCallback,
+	InterServerEvents, preferenceData, ResponseCallback,
 	ServerToClientEvents,
-	SocketData, SocketMessage
+	SocketData,
 } from "./bo/chromeNative";
 import {settings} from "../main";
 import {showSection} from "./windowManager";
 import {Server, Socket, RemoteSocket} from "socket.io";
-import {NotificationResponse} from "./bo/notify";
 import "../src/websitesData/refreshWebsitesData";
 
 
@@ -157,26 +156,7 @@ export async function onSettingUpdate(id: string, oldValue: preferenceData['valu
 	}
 }
 
-function _sendNotification<T>(socket: remoteSocket, opts: ISendNotificationOptions): Promise<T> {
-	return new Promise<T>((resolve, reject) => {
-		socket.emit('sendNotification', opts, (response:SocketMessage<T>) => {
-			if (response.error !== false) {
-				reject(response.error);
-			} else {
-				resolve(response.result);
-			}
-		});
-	});
-}
 
-export async function sendNotification(opts: ISendNotificationOptions): Promise<NotificationResponse|null> {
-	const sockets = await io.fetchSockets();
-	for (let client of sockets) {
-		if (!client.data.notificationSupport) continue;
-		return await _sendNotification(client, opts);
-	}
-	return null;
-}
 
 export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
 	const output : IChromeExtensionName[] = [];

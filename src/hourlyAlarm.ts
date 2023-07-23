@@ -1,6 +1,6 @@
 import {ZAlarm} from "../classes/ZAlarm";
 import i18next from "i18next";
-import {notifyElectron} from "../classes/notify";
+import {sendNotification} from "../classes/notify";
 import {settings} from "../main";
 
 const zAlarm = ZAlarm.start('0 * * * *', function (date:Date) {
@@ -14,7 +14,7 @@ const zAlarm = ZAlarm.start('0 * * * *', function (date:Date) {
 			})
 		;
 
-		notifyElectron({
+		sendNotification({
 			title: 'Z-Toolbox - Hourly alarm',
 			message: msg,
 			sound: false

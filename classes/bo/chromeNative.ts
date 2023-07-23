@@ -1,6 +1,5 @@
+import {Notification} from "electron";
 import {RandomJsonData, SettingsConfig} from "./settings";
-import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData";
-import Dict = NodeJS.Dict;
 
 export type SocketMessage<T> = {error: false} & {result: T} | {error: true|string};
 export type ResponseCallback<T> = (response:SocketMessage<T>) => void;
@@ -57,4 +56,5 @@ export interface ISendNotificationOptions {
 	 * This url must be available from the browser
 	 */
 	iconURL?: string
+	timeoutType?: Notification['timeoutType']
 }

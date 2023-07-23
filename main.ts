@@ -5,7 +5,7 @@ import * as path from "path";
 import Dict = NodeJS.Dict;
 
 import {Settings} from './classes/Settings';
-import {notifyElectron} from "./classes/notify";
+import {sendNotification} from "./classes/notify";
 import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow";
 import {versionState} from "./classes/versionState";
 import {getWsClientNames, server, io} from "./classes/chromeNative";
@@ -167,7 +167,7 @@ ipcMain.handle('savePreference', (e, preferenceId:string, newValue:any) => {
 });
 
 ipcMain.handle('sendNotification', async (e, message: string, title?: string, sound?: boolean) => {
-	return await notifyElectron({
+	return await sendNotification({
 		message,
 		title: title || app.name,
 		sound

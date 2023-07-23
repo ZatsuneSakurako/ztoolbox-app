@@ -131,6 +131,15 @@ socket.on('sendNotification', (opts, cb) => {
 		opts,
 		type: 'sendNotification'
 	});
+	if (opts.timeoutType === 'default') {
+		setTimeout(() => {
+			bridge.emit({
+				error: false,
+				_id,
+				type: 'clearNotification'
+			});
+		}, 2 * 60000); // 2min
+	}
 	bridgeEventEmitter.on('commandReply', function listener(message) {
 		if (!message || message._id !== _id) return;
 
