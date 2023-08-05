@@ -2,14 +2,17 @@ import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData";
 import {ZAlarm} from "../../classes/ZAlarm";
 import {settings} from "../../main";
 import {app, BrowserWindow, ipcMain, session} from "electron";
+import {i18n} from "../i18next";
+import electron from "electron";
 import {websitesData, websitesDataLastRefresh} from "../../classes/Settings";
 import {JsonSerialize} from "../../classes/JsonSerialize";
 import {WebsiteData} from "../../browserViews/js/websiteData";
 import {setBadge} from "../../classes/windowManager";
 import {Dict} from "../../browserViews/js/bo/Dict";
-import {doNotifyWebsite} from "./doNotifyWebsite";
+import {doNotifyWebsite, IDoNotifyWebsiteResult} from "./doNotifyWebsite";
 import {websiteApis} from "./platforms";
 import {appIcon} from "../../classes/constants";
+import {sendNotification} from "../../classes/notify";
 
 
 
@@ -82,7 +85,7 @@ export async function refreshWebsitesData() {
 
 	const currentData = settings.getObject<Dict<IJsonWebsiteData>>(websitesData) ?? {},
 		websiteData : Dict<JsonSerialize<IJsonWebsiteData>> = {},
-		promises : Promise<void>[] = []
+		promises : Promise<IDoNotifyWebsiteResult|void>[] = []
 	;
 	let count : number = 0;
 	const websitesDataSession = session.fromPartition('persist:websites-data');
@@ -141,7 +144,42 @@ export async function refreshWebsitesData() {
 		count += newInstance.count;
 	}
 
-	await Promise.allSettled(promises);
+	const result = (await Promise.allSettled(promises)),
+		notificationMessage : IDoNotifyWebsiteResult[] = []
+	;
+
+	for (let item of result) {
+		if (item.status === 'fulfilled' && !!item.value) {
+			notificationMessage.push(item.value);
+		}
+	}
+
+	if (notificationMessage.length) {
+		const i18ex = await i18n;
+		sendNotification({
+			'title': i18ex('websitesData.website_notif', {
+				'websites': notificationMessage
+					.map(value => value.website)
+					.join(', ')
+			}),
+			'message': notificationMessage
+				.map(value => {
+					return notificationMessage.length > 1 ? `${value.website} : ${value.message}` : value.message
+				})
+				.join('\n')
+		})
+			.then(notificationResponse => {
+				if (notificationResponse?.response === 'click') {
+					for (let item of notificationMessage) {
+						if (item.href) {
+							electron.shell.openExternal(item.href);
+						}
+					}
+				}
+			})
+			.catch(console.error)
+		;
+	}
 
 	setBadge(count);
 	settings.set<IJsonWebsiteData>(websitesData, websiteData);

@@ -1,6 +1,5 @@
 {
-	"website_notif": "{{website}} notification",
-	"website_notif_plural": "{{website}} notifications",
+	"website_notif": "Notification {{websites}}",
 	"website_not_logged": "No {{website}} account logged",
 
 	"not_logged": "Not logged",
