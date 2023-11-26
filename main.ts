@@ -20,6 +20,7 @@ import {i18n} from "./src/i18next";
 import './src/manageProtocolAndAutostart';
 import {appRootPath, resourcePath} from "./classes/constants";
 import * as ChromeNativeInstallers from "./classes/chromeNativeInstallers";
+import {getNetConnectionAddress} from "./src/getNetConnectionAddress";
 
 
 
@@ -183,6 +184,15 @@ ipcMain.handle('chromeNative_installStates', async () : ReturnType<typeof Chrome
 nunjucks.configure(path.normalize(`${resourcePath}/browserViews/`));
 ipcMain.handle('nunjuckRender', async (e, templateName:string, context:any) => {
 	return nunjucks.render(`${templateName}.njk`, context);
+});
+
+ipcMain.handle('getNetConnectionAddress', async (e, host:string, timeout:number=5000) => {
+	try {
+		return await getNetConnectionAddress(host, timeout);
+	} catch (e) {
+		console.error(e);
+		return null;
+	}
 });
 
 

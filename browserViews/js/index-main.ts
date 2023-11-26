@@ -1,6 +1,5 @@
 import {BridgedWindow} from "./bo/bridgedWindow";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
-import ddgWhatIsMyIp from "./ddgWhatIsMyIp.js";
 import {VersionState} from "../../classes/bo/versionState";
 import {Dict} from "./bo/Dict";
 import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers";
@@ -149,9 +148,9 @@ async function refreshData() {
 			.catch(console.error)
 	);
 	promises.push(
-		ddgWhatIsMyIp(true)
+		window.znmApi.getNetConnectionAddress('zatsunenomokou.eu')
 			.then(result => {
-				infosData.internetAddress = result;
+				infosData.internetAddress = result.address;
 			})
 			.catch(console.error)
 	);

@@ -5,6 +5,7 @@ import {Dict} from "./Dict";
 import {IJsonWebsiteData} from "./websiteData";
 import {getInstallStatesResult, installResult} from "../../../classes/bo/chromeNativeInstallers";
 import {IChromeExtensionName} from "../../../classes/bo/chromeNative";
+import * as net from "node:net";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -33,6 +34,9 @@ export interface IZnmApi {
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse>
 
 	nunjuckRender(templateName: string, context: any): Promise<string>
+
+	getNetConnectionAddress(host: string, timeout?: number): Promise<net.AddressInfo>
+
 	onUpdatePreference(cb: (preferenceId: string, newValue: any) => void): void
 	onShowSection(cb: (sectionName:string) => void): void
 	onThemeUpdate(cb: (theme:string, background_color:string) => void): void

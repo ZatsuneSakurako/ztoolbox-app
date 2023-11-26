@@ -114,6 +114,11 @@ const znmApi:IZnmApi = {
 	nunjuckRender: (templateName:string, context:any) => {
 		return ipcRendererInvoke('nunjuckRender', templateName, context)
 	},
+
+	getNetConnectionAddress: (host:string, timeout?:number) => {
+		return ipcRendererInvoke('getNetConnectionAddress', host, timeout);
+	},
+
 	onUpdatePreference: (cb:(preferenceId:string, newValue:any) => void) => {
 		updatePreferenceCb.push(cb);
 	},
