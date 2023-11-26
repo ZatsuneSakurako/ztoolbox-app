@@ -16,6 +16,7 @@ export interface ServerToClientEvents {
 		newValue: preferenceData['value']
 	}): void
 	sendNotification<T>(opts: ISendNotificationOptions, cb: ResponseCallback<T>): void
+	clearNotifications(): void
 	openUrl(url:string, cb: ResponseCallback<boolean>): void
 }
 

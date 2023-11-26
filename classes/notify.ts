@@ -42,6 +42,14 @@ export async function sendNotification(options:NotifyElectron_Options): Promise<
 	}
 	return _notifyElectron(options);
 }
+process.on('exit', async function () {
+	const sockets = await io.fetchSockets();
+	for (let client of sockets) {
+		if (!client.data.notificationSupport) continue;
+		await client.emit('clearNotifications');
+	}
+	process.exit(0);
+});
 
 function _notifyElectron(options:NotifyElectron_Options):Promise<NotificationResponse> {
 	return new Promise((resolve, reject) => {

@@ -132,22 +132,28 @@ socket.on('sendNotification', (opts, cb) => {
 		opts,
 		type: 'sendNotification'
 	});
+
+	const sendClearNotification = function sendClearNotification() {
+		bridge.emit({
+			error: false,
+			_id,
+			type: 'clearNotification'
+		});
+	};
+
 	let timer : NodeJS.Timer|null = null;
 	if (opts.timeoutType === 'default') {
-		timer = setTimeout(() => {
-			bridge.emit({
-				error: false,
-				_id,
-				type: 'clearNotification'
-			});
-		}, 2 * 60000); // 2min
+		timer = setTimeout(sendClearNotification, 2 * 60000); // 2min
 	}
+	socket.on('clearNotifications', sendClearNotification);
+
 	bridgeEventEmitter.on('commandReply', function listener(message) {
 		if (!message || message._id !== _id) return;
 
 		if (timer) {
 			clearTimeout(timer);
 		}
+		socket.off('clearNotifications', sendClearNotification);
 
 		bridgeEventEmitter.off('commandReply', listener);
 		cb({
