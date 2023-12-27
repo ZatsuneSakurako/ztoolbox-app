@@ -2,7 +2,7 @@
   "name": "ztoolbox",
   "version": "0.1.0",
   "description": "A toolbox Electron application",
-  "packageManager": "yarn@3.2.4",
+  "packageManager": "yarn@4.0.2",
   "main": "index.cjs",
   "module": "main.js",
   "type": "module",
