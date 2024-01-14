@@ -2,6 +2,7 @@ import {app, BrowserWindow} from "electron";
 import {appIcon, browserViewPath} from "./constants";
 import path from "path";
 import {fileURLToPath} from "url";
+import {getWsClientDatas} from "./chromeNative";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,7 +51,14 @@ export function createWindow(showSection?: string) {
 	// mainWindow.webContents.openDevTools()
 
 	mainWindow.once('ready-to-show', () => {
-		mainWindow?.show()
+		mainWindow?.show();
+
+		getWsClientDatas()
+			.then(getWsClientDatas => {
+				mainWindow.webContents.send('wsClientDatasUpdate', getWsClientDatas);
+			})
+			.catch(console.error)
+		;
 	});
 
 	// Emitted when the window is closed.
