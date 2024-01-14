@@ -1,5 +1,6 @@
 import {Notification} from "electron";
 import {RandomJsonData, SettingsConfig} from "./settings";
+import {Dict} from "../../browserViews/js/bo/Dict";
 
 export type SocketMessage<T> = {error: false} & {result: T} | {error: true|string};
 export type ResponseCallback<T> = (response:SocketMessage<T>) => void;
@@ -28,11 +29,11 @@ export interface ClientToServerEvents {
 	openUrl(browserName:string, url: string, cb: ResponseCallback<boolean>): void
 	getWsClientNames(cb: ResponseCallback<IChromeExtensionName[]>): void
 	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
-	updateSocketData(data: Partial<IChromeExtensionName>): void
+	updateSocketData(data: Partial<IChromeExtensionName|IChromeExtensionData>): void
 }
 export interface InterServerEvents {}
 
-export interface SocketData extends Partial<IChromeExtensionName> {
+export interface SocketData extends IChromeExtensionName, IChromeExtensionData {
 }
 
 export interface IChromeExtensionName {
@@ -40,6 +41,20 @@ export interface IChromeExtensionName {
 	userAgent: string
 	extensionId: string
 	notificationSupport?: boolean
+}
+export interface IChromeExtensionData extends IChromeExtensionName {
+	tabData?: {
+		name: string
+		faviconUrl: string
+		error?: string
+		statusCode?: number
+
+		url?: string
+		domain?: string
+		ip?: string
+		ipMore: string|false
+		openGraph: Dict<string>
+	}
 }
 
 export interface ISendNotificationOptions {

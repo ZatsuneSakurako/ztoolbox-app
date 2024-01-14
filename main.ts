@@ -8,7 +8,7 @@ import {Settings} from './classes/Settings';
 import {sendNotification} from "./classes/notify";
 import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow";
 import {versionState} from "./classes/versionState";
-import {getWsClientNames, server, io} from "./classes/chromeNative";
+import {server, io, getWsClientDatas} from "./classes/chromeNative";
 import {createWindow, getMainWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
 import {SettingConfig} from "./classes/bo/settings";
@@ -116,9 +116,9 @@ ipcMain.handle('preferenceFileDialog', async function (event, prefId:string): Pr
 });
 
 // noinspection JSUnusedLocalSymbols
-ipcMain.handle('getWsClientNames', async function (event, args) {
-	return await getWsClientNames();
-})
+ipcMain.handle('getWsClientDatas', async function (event, args) {
+	return await getWsClientDatas();
+});
 
 ipcMain.handle('i18n', async (event, key) => {
 	const _ = await i18n;

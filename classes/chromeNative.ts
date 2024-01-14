@@ -1,6 +1,6 @@
 import http from "http";
 import {
-	ClientToServerEvents, IChromeExtensionName,
+	ClientToServerEvents, IChromeExtensionData, IChromeExtensionName,
 	InterServerEvents, preferenceData, ResponseCallback,
 	ServerToClientEvents,
 	SocketData,
@@ -9,6 +9,8 @@ import {settings} from "../main";
 import {showSection} from "./windowManager";
 import {Server, Socket, RemoteSocket} from "socket.io";
 import "../src/websitesData/refreshWebsitesData";
+import {BrowserWindow} from "electron";
+import {c} from "locutus";
 
 
 
@@ -86,11 +88,27 @@ io.on("connection", (socket: socket) => {
 		if ('notificationSupport' in data) {
 			socket.data.notificationSupport = data.notificationSupport;
 		}
-		if ('browserName' in data) {
+		if ('browserName' in data && data.browserName) {
 			socket.data.browserName = data.browserName;
 		}
-		socket.data.extensionId = data.extensionId;
-		socket.data.userAgent = data.userAgent;
+		if ('extensionId' in data && data.extensionId) {
+			socket.data.extensionId = data.extensionId;
+		}
+		if ('userAgent' in data && data.userAgent) {
+			socket.data.userAgent = data.userAgent;
+		}
+		if ('tabData' in data && data.tabData) {
+			socket.data.tabData = data.tabData;
+		}
+
+		getWsClientDatas()
+			.then(getWsClientDatas => {
+				for (let browserWindow of BrowserWindow.getAllWindows()) {
+					browserWindow.webContents.send('wsClientDatasUpdate', getWsClientDatas);
+				}
+			})
+			.catch(console.error)
+		;
 	});
 
 	socket.on('getWsClientNames', async function (cb) {
@@ -169,6 +187,24 @@ export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
 			userAgent: client.data.userAgent,
 			extensionId: client.data.extensionId ?? '',
 			notificationSupport: client.data.notificationSupport ?? false
+		});
+	}
+
+	return output;
+}
+
+export async function getWsClientDatas(): Promise<IChromeExtensionData[]> {
+	const output : IChromeExtensionData[] = [];
+
+	const sockets = await io.fetchSockets();
+	for (let client of sockets) {
+		if (!client.data.userAgent) continue;
+		output.push({
+			browserName: client.data.browserName ?? 'Unknown',
+			userAgent: client.data.userAgent,
+			extensionId: client.data.extensionId ?? '',
+			notificationSupport: client.data.notificationSupport ?? false,
+			tabData: client.data.tabData ?? undefined
 		});
 	}
 

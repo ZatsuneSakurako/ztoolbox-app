@@ -9,6 +9,7 @@ import {WebsiteData} from "./websiteData.js";
 import {Dict} from "./bo/Dict";
 import {updateClassesFor} from "./labelChecked.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
+import {wsClientDatasDisplay, wsClientDatasUpdate} from "./wsClientDatas.js";
 
 declare var window : BridgedWindow;
 
@@ -126,7 +127,19 @@ window.znmApi.onThemeUpdate(function (theme, background_color) {
 	themeCacheUpdate(theme, background_color)
 		.catch(console.error)
 	;
-})
+});
+
+window.znmApi.onWsClientDatasUpdate(function (wsClientDatas) {
+	wsClientDatasUpdate(wsClientDatas)
+		.catch(console.error)
+	;
+});
+
+window.addEventListener("focus", function () {
+	wsClientDatasDisplay()
+		.catch(console.error)
+	;
+});
 
 document.addEventListener('click', function (e) {
 	const link : HTMLLinkElement|null = (<HTMLElement>e.target).closest('a[target=_blank]');

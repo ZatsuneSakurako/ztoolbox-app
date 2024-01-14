@@ -45,7 +45,8 @@ header
 	display: contents
 
 button,
-label
+label,
+.cursor
 	cursor: pointer
 
 header button,
@@ -194,13 +195,12 @@ section .buttonItem .title
 section .buttonItem .title[data-count]::after
 	content: " (" attr(data-count) ")"
 
-section a.websiteItem
+section a.websiteItem,
+section div.wsClientDatasItem
 	display: grid
-	grid-template-columns: 1fr 40px
 	grid-template-rows: 1fr 1fr
 	gap: 0 0
 	grid-auto-flow: row
-	grid-template-areas: "title btn-login" "websiteData btn-login"
 
 	.title
 		grid-area: title
@@ -208,6 +208,24 @@ section a.websiteItem
 		grid-area: btn-login
 	.websiteData
 		grid-area: websiteData
+	.wsClientDatas
+		grid-area: wsClientDatas
+
+section a.websiteItem
+	grid-template-columns: 1fr 40px
+	grid-template-areas: "title btn-login" "websiteData btn-login"
+
+section div.wsClientDatasItem
+	grid-template-columns: 1fr
+	grid-template-rows: auto 1fr
+	grid-template-areas: "title" "wsClientDatas"
+
+section div.wsClientDatas a
+	display: inline-block
+	margin-right: 0.2em
+
+section div.wsClientDatasItem:not(.activated) .openGraphData
+	display: none
 
 section .websiteItem .btn-login
 	font-size: inherit
@@ -228,7 +246,8 @@ section .websiteItem .websiteData .folder[data-folder-url]
 		font-family: 'Material Icons' /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
 		font-size: 1.5em
 
-section .websiteItem .websiteData
+section .websiteItem .websiteData,
+section .websiteItem .wsClientDatas
 	padding-left: 21px
 	font-size: 0.9em
 	display: flex

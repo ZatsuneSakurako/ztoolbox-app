@@ -4,6 +4,7 @@ import {NotificationResponse} from "./bo/notify";
 import Dict = NodeJS.Dict;
 import {IJsonWebsiteData} from "../browserViews/js/bo/websiteData";
 import {nunjuckRender} from "../browserViews/js/nunjuckRenderHelper.js";
+import {IChromeExtensionData} from "./bo/chromeNative";
 
 const isFileProtocol = self.location.protocol === 'file:';
 
@@ -62,6 +63,19 @@ ipcRenderer.on('websiteDataUpdate', function (e, data: Dict<IJsonWebsiteData>, l
 	}
 })
 
+const wsClientDatasUpdateCb:((data: IChromeExtensionData[]) => void)[] = [];
+// noinspection JSUnusedLocalSymbols
+ipcRenderer.on('wsClientDatasUpdate', function (e, data: IChromeExtensionData[]) {
+	if (!isFileProtocol) {
+		console.warn('Not file protocol, ignoring');
+		return;
+	}
+
+	for (let cb of wsClientDatasUpdateCb) {
+		cb(data);
+	}
+})
+
 if (isFileProtocol) {
 	// https://www.electronjs.org/docs/api/context-bridge#contextbridgeexposeinmainworldapikey-api
 	contextBridge.exposeInMainWorld(
@@ -86,7 +100,7 @@ const znmApi:IZnmApi = {
 	digCmd: (domain: string) => ipcRendererInvoke('digCmd', domain),
 	preferenceFileDialog: (prefId) => ipcRendererInvoke('preferenceFileDialog', prefId),
 	_: (key:string) => ipcRendererInvoke('i18n', key),
-	getWsClientNames: () => ipcRendererInvoke('getWsClientNames'),
+	getWsClientDatas: () => ipcRendererInvoke('getWsClientDatas'),
 
 	getProcessArgv: () => ipcRendererInvoke('getProcessArgv'),
 	getVersionState: () => ipcRendererInvoke('getVersionState'),
@@ -130,6 +144,9 @@ const znmApi:IZnmApi = {
 	},
 	onWebsiteDataUpdate: (cb:(data: Dict<IJsonWebsiteData>, lastUpdate:Date) => void) => {
 		websiteDataUpdateCb.push(cb);
+	},
+	onWsClientDatasUpdate: (cb:(data: IChromeExtensionData[]) => void) => {
+		wsClientDatasUpdateCb.push(cb);
 	},
 	refreshWebsitesData: () => {
 		return ipcRendererInvoke('refreshWebsitesData');

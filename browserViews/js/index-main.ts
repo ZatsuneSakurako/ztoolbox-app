@@ -120,7 +120,7 @@ async function refreshData() {
 		const $wsClientNames = document.querySelector<HTMLUListElement>('ul#wsClientNames');
 		if ($wsClientNames) {
 			const elements = await nunjuckRender('_wsClientNames', {
-				wsClientNames: await window.znmApi.getWsClientNames()
+				wsClientNames: await window.znmApi.getWsClientDatas()
 			});
 			$wsClientNames.replaceWith(...elements);
 		}
@@ -162,7 +162,7 @@ async function refreshData() {
 			.catch(console.error)
 	);
 	promises.push(
-		window.znmApi.getWsClientNames()
+		window.znmApi.getWsClientDatas()
 			.then(result => {
 				infosData.wsClientNames = result;
 			})

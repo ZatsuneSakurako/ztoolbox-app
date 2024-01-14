@@ -4,7 +4,7 @@ import {NotificationResponse} from "../../../classes/bo/notify";
 import {Dict} from "./Dict";
 import {IJsonWebsiteData} from "./websiteData";
 import {getInstallStatesResult, installResult} from "../../../classes/bo/chromeNativeInstallers";
-import {IChromeExtensionName} from "../../../classes/bo/chromeNative";
+import {IChromeExtensionData} from "../../../classes/bo/chromeNative";
 import * as net from "node:net";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
@@ -15,7 +15,7 @@ export interface IZnmApi {
 	digCmd(domain: string): Promise<string>
 	preferenceFileDialog(prefId:string): Promise<{ canceled: boolean, filePaths: string[] }|string>
 	_(key: string): Promise<string>
-	getWsClientNames(): Promise<IChromeExtensionName[]>
+	getWsClientDatas(): Promise<IChromeExtensionData[]>
 
 	getProcessArgv(): Promise<string[]>
 	getVersionState(): Promise<VersionState|null>
@@ -41,6 +41,7 @@ export interface IZnmApi {
 	onShowSection(cb: (sectionName:string) => void): void
 	onThemeUpdate(cb: (theme:string, background_color:string) => void): void
 	onWebsiteDataUpdate(cb: (data: Dict<IJsonWebsiteData>, lastUpdate:Date|string) => void): void
+	onWsClientDatasUpdate(cb: (data: IChromeExtensionData[]) => void): void
 	refreshWebsitesData(): Promise<void>
 	openLoginUrl(website:string): Promise<boolean>
 }
