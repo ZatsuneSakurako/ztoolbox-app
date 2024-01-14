@@ -30,7 +30,6 @@ async function _wsClientDatasDisplay() {
 		tabPageServerIp_alias.tabPageServerIp_alias;
 
 		const tagIpAlias  = <Dict<string>>(tabPageServerIp_alias.tabPageServerIp_alias);
-		console.dir(tagIpAlias)
 		for (let wsClientData of wsClientDatas) {
 			if (wsClientData.tabData?.ip && wsClientData.tabData.ip in tagIpAlias) {
 				wsClientData.tabData.ipMore = tagIpAlias[wsClientData.tabData.ip] ?? false;

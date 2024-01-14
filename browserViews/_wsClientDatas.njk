@@ -5,7 +5,7 @@
 	<div class="grid-3">
 		<div class="buttonItem wsClientDatasItem{% if client.tabData.openGraph %} cursor{% endif %}">
 			{%- if client.tabData.faviconUrl -%}
-			<object class="icon" type="image/jpeg" data="{{ client.tabData.faviconUrl }}" width="32" height="32"></object>
+			<img class="icon" src="{{ client.tabData.faviconUrl }}" width="32" height="32" alt="" crossorigin="anonymous" />
 			{%- else -%}
 			<span class="icon material-icons">tab</span>
 			{%- endif %}
