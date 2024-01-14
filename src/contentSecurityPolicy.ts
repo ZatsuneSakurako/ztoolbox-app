@@ -26,7 +26,7 @@ app.whenReady()
 				responseHeaders: {
 					...details.responseHeaders,
 					'Content-Security-Policy': [
-						`default-src 'none'; script-src 'self' https://unpkg.com/ 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' https://* 'nonce-${nonce}'; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src https://api.duckduckgo.com`
+						`default-src 'none'; script-src 'self' https://unpkg.com/ 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src https://api.duckduckgo.com`
 					]
 				}
 			})
