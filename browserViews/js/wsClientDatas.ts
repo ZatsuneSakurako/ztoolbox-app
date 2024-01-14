@@ -38,7 +38,6 @@ async function _wsClientDatasDisplay() {
 		}
 	}
 
-	console.debug('wsClientDatasDisplay', wsClientDatas);
 	const elements = await nunjuckRender('_wsClientDatas', {
 		wsClientDatas
 	});
