@@ -99,6 +99,20 @@ io.on("connection", (socket: socket) => {
 		}
 		if ('tabData' in data && data.tabData) {
 			socket.data.tabData = data.tabData;
+
+			if (typeof socket.data.tabData?.url === 'string') {
+				let url:URL|undefined = undefined;
+				try {
+					url = new URL(socket.data.tabData?.url)
+				} catch (e) {
+					console.error(e);
+				}
+
+				if (url && url.protocol === 'chrome:') {
+					socket.data.tabData.url = undefined;
+					socket.data.tabData.domain = undefined;
+				}
+			}
 		}
 
 		getWsClientDatas()
