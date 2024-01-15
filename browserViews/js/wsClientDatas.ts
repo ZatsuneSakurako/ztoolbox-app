@@ -23,6 +23,11 @@ async function _wsClientDatasDisplay() {
 		throw new Error('#wsClientDatas not found');
 	}
 
+	wsClientDatas.sort((a, b) => {
+		if (a.browserName === b.browserName) return 0;
+		return a.browserName > b.browserName ? 1 : -1;
+	});
+
 	const tabPageServerIp_alias = await window.znmApi.getPreferences('tabPageServerIp_alias')
 		.catch(console.error)
 	;
