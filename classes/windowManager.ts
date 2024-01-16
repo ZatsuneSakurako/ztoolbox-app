@@ -82,7 +82,7 @@ export function getMainWindow(): Electron.BrowserWindow | null {
 			continue;
 		}
 
-		const urlPath = url.pathname.replace(/^\//, '');
+		const urlPath = (process.platform === 'linux') ? url.pathname : url.pathname.replace(/^\//, '');
 		if (path.normalize(urlPath).toLowerCase() === browserViewPath.toLowerCase()) {
 			return browserWindow;
 		}
