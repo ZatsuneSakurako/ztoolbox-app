@@ -125,6 +125,19 @@ io.on("connection", (socket: socket) => {
 		;
 	});
 
+	socket.on('disconnect', reason => {
+		console.log(`Socket disconnected : ${reason}`);
+
+		getWsClientDatas()
+			.then(getWsClientDatas => {
+				for (let browserWindow of BrowserWindow.getAllWindows()) {
+					browserWindow.webContents.send('wsClientDatasUpdate', getWsClientDatas);
+				}
+			})
+			.catch(console.error)
+		;
+	})
+
 	socket.on('getWsClientNames', async function (cb) {
 		cb({
 			error: false,
