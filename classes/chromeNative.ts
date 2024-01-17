@@ -88,16 +88,16 @@ io.on("connection", (socket: socket) => {
 		if ('notificationSupport' in data) {
 			socket.data.notificationSupport = data.notificationSupport;
 		}
-		if ('browserName' in data && data.browserName) {
+		if ('browserName' in data && data.browserName !== undefined) {
 			socket.data.browserName = data.browserName;
 		}
-		if ('extensionId' in data && data.extensionId) {
+		if ('extensionId' in data && data.extensionId !== undefined) {
 			socket.data.extensionId = data.extensionId;
 		}
-		if ('userAgent' in data && data.userAgent) {
+		if ('userAgent' in data && data.userAgent !== undefined) {
 			socket.data.userAgent = data.userAgent;
 		}
-		if ('tabData' in data && data.tabData) {
+		if ('tabData' in data) {
 			socket.data.tabData = data.tabData;
 
 			if (typeof socket.data.tabData?.url === 'string') {

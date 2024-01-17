@@ -54,7 +54,7 @@ export interface IChromeExtensionData extends IChromeExtensionName {
 		ip?: string
 		ipMore: string|false
 		openGraph: Dict<string>
-	}
+	} | null
 }
 
 export interface ISendNotificationOptions {
