@@ -32,7 +32,7 @@
 				{%- endif -%}
 			</div>
 			{% if client.tabData.openGraph %}
-				{% set data = client.tabData %}
+				{% set data = client.tabData.openGraph %}
 				<div class="openGraphData">
 					<img class="og-image" src="{{ data.image }}" alt="" loading="lazy" />
 					<div class="title ellipse">{% if data.title %}{{ data.title }}{% else %}⚠️ (No title) {% endif %}</div>
