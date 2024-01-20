@@ -110,6 +110,19 @@ function dragoverHandler(target:HTMLElement, e:DragEvent) {
 		throw new Error('NO_DATA_TRANSFERT');
 	}
 	e.preventDefault();
+
+	const transferredData = e.dataTransfer.getData(appDataType);
+	let data : IWsMoveSourceData|undefined = undefined;
+	try {
+		data = JSON.parse(transferredData);
+	} catch (e) {
+		console.error(e);
+	}
+	if (typeof data === 'object' && data && data.id === target.id) {
+		// No Self tab "moving"
+		e.dataTransfer.dropEffect = "none";
+		return;
+	}
 	e.dataTransfer.dropEffect = "move";
 }
 function dropHandler(target:HTMLElement, e:DragEvent) {
@@ -128,6 +141,10 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 	}
 	if (!data || typeof data !== 'object' || !data.id || !data.tabDataUrl) {
 		throw new Error('DATA_TRANSFERT_DATA_ERROR');
+	}
+	if (typeof data === 'object' && data && data.id === target.id) {
+		// No Self tab "moving"
+		return;
 	}
 
 	console.debug('Moving ', data, 'to', 'to', target.id);
