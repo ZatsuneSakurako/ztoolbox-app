@@ -230,16 +230,21 @@ section div.wsClientDatasItem
 		margin: 10px 5px 5px
 
 section a.websiteItem
-	grid-template-columns: 40px 1fr 40px
+	grid-template-columns: 40px auto 40px
 	grid-template-areas: "itemIcon title btn-login" "itemIcon websiteData btn-login"
 
 section div.wsClientDatasItem
 	grid-template-columns: 40px 1fr
-	grid-template-rows: 1fr 1fr
+	grid-template-rows: auto auto
 	grid-template-areas: "itemIcon title" "itemIcon wsClientDatas"
+
 	&.activated
 		grid-template-rows: auto auto auto
 		grid-template-areas: "itemIcon title" "itemIcon wsClientDatas" "openGraphData openGraphData"
+
+	.title,
+	.wsClientDatas
+		margin-bottom: 0.5em
 
 section div.wsClientDatas a
 	display: inline-block
