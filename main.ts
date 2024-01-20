@@ -8,7 +8,7 @@ import {Settings} from './classes/Settings';
 import {sendNotification} from "./classes/notify";
 import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow";
 import {versionState} from "./classes/versionState";
-import {server, io, getWsClientDatas} from "./classes/chromeNative";
+import {server, io, getWsClientDatas, moveWsClientUrl} from "./classes/chromeNative";
 import {createWindow, getMainWindow} from "./classes/windowManager";
 import {execSync} from "child_process";
 import {SettingConfig} from "./classes/bo/settings";
@@ -21,6 +21,7 @@ import './src/manageProtocolAndAutostart';
 import {appRootPath, resourcePath} from "./classes/constants";
 import * as ChromeNativeInstallers from "./classes/chromeNativeInstallers";
 import {getNetConnectionAddress} from "./src/getNetConnectionAddress";
+import {IWsMoveSourceData} from "./classes/bo/chromeNative";
 
 
 
@@ -117,8 +118,12 @@ ipcMain.handle('preferenceFileDialog', async function (event, prefId:string): Pr
 
 // noinspection JSUnusedLocalSymbols
 ipcMain.handle('getWsClientDatas', async function (event, args) {
-	return await getWsClientDatas();
+	return Object.fromEntries(await getWsClientDatas());
 });
+
+ipcMain.handle('moveWsClientUrl', async function (event, srcData:IWsMoveSourceData, targetId:string) {
+	return await moveWsClientUrl(srcData, targetId);
+})
 
 ipcMain.handle('i18n', async (event, key) => {
 	const _ = await i18n;

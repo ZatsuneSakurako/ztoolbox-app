@@ -1,7 +1,7 @@
 import http from "http";
 import {
 	ClientToServerEvents, IChromeExtensionData, IChromeExtensionName,
-	InterServerEvents, preferenceData, ResponseCallback,
+	InterServerEvents, IWsMoveSourceData, preferenceData, ResponseCallback,
 	ServerToClientEvents,
 	SocketData,
 } from "./bo/chromeNative";
@@ -10,7 +10,6 @@ import {showSection} from "./windowManager";
 import {Server, Socket, RemoteSocket} from "socket.io";
 import "../src/websitesData/refreshWebsitesData";
 import {BrowserWindow} from "electron";
-import {c} from "locutus";
 
 
 
@@ -118,7 +117,7 @@ io.on("connection", (socket: socket) => {
 		getWsClientDatas()
 			.then(getWsClientDatas => {
 				for (let browserWindow of BrowserWindow.getAllWindows()) {
-					browserWindow.webContents.send('wsClientDatasUpdate', getWsClientDatas);
+					browserWindow.webContents.send('wsClientDatasUpdate', Object.fromEntries(getWsClientDatas));
 				}
 			})
 			.catch(console.error)
@@ -131,7 +130,7 @@ io.on("connection", (socket: socket) => {
 		getWsClientDatas()
 			.then(getWsClientDatas => {
 				for (let browserWindow of BrowserWindow.getAllWindows()) {
-					browserWindow.webContents.send('wsClientDatasUpdate', getWsClientDatas);
+					browserWindow.webContents.send('wsClientDatasUpdate', Object.fromEntries(getWsClientDatas));
 				}
 			})
 			.catch(console.error)
@@ -220,13 +219,13 @@ export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
 	return output;
 }
 
-export async function getWsClientDatas(): Promise<IChromeExtensionData[]> {
-	const output : IChromeExtensionData[] = [];
+export async function getWsClientDatas(): Promise<Map<string, IChromeExtensionData>> {
+	const output = new Map<string, IChromeExtensionData>();
 
 	const sockets = await io.fetchSockets();
 	for (let client of sockets) {
 		if (!client.data.userAgent) continue;
-		output.push({
+		output.set(client.id, {
 			browserName: client.data.browserName ?? 'Unknown',
 			userAgent: client.data.userAgent,
 			extensionId: client.data.extensionId ?? '',
@@ -236,4 +235,38 @@ export async function getWsClientDatas(): Promise<IChromeExtensionData[]> {
 	}
 
 	return output;
+}
+
+export async function moveWsClientUrl(srcData:IWsMoveSourceData, targetId:string) {
+	const sockets = await io.fetchSockets();
+	let targetSocket: RemoteSocket<ServerToClientEvents, SocketData>|null = null,
+		sourceTargetSocket: RemoteSocket<ServerToClientEvents, SocketData>|null = null
+	;
+	for (let client of sockets) {
+		if (client.id === targetId) {
+			targetSocket = client;
+		}
+		if (client.id === srcData.id) {
+			sourceTargetSocket = client;
+		}
+		if (!!targetSocket && !!sourceTargetSocket) {
+			break;
+		}
+	}
+
+	if (!targetSocket) {
+		throw new Error('MV_CLIENT_URL_TARGET_NOT_FOUND');
+	}
+
+	targetSocket.emit('openUrl', srcData.tabDataUrl, function (response) {
+		if (response.error === false) {
+			if (sourceTargetSocket) {
+				sourceTargetSocket.emit('closeActiveUrl', srcData.tabDataUrl);
+			} else {
+				console.error('CANNOT_CLOSE_TAB_' + srcData.id);
+			}
+		} else {
+			console.error(response);
+		}
+	});
 }

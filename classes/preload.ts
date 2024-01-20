@@ -63,9 +63,9 @@ ipcRenderer.on('websiteDataUpdate', function (e, data: Dict<IJsonWebsiteData>, l
 	}
 })
 
-const wsClientDatasUpdateCb:((data: IChromeExtensionData[]) => void)[] = [];
+const wsClientDatasUpdateCb:((data: Dict<IChromeExtensionData>) => void)[] = [];
 // noinspection JSUnusedLocalSymbols
-ipcRenderer.on('wsClientDatasUpdate', function (e, data: IChromeExtensionData[]) {
+ipcRenderer.on('wsClientDatasUpdate', function (e, data: Dict<IChromeExtensionData>) {
 	if (!isFileProtocol) {
 		console.warn('Not file protocol, ignoring');
 		return;
@@ -101,6 +101,7 @@ const znmApi:IZnmApi = {
 	preferenceFileDialog: (prefId) => ipcRendererInvoke('preferenceFileDialog', prefId),
 	_: (key:string) => ipcRendererInvoke('i18n', key),
 	getWsClientDatas: () => ipcRendererInvoke('getWsClientDatas'),
+	moveWsClientUrl: (data, targetId) => ipcRendererInvoke('moveWsClientUrl', data, targetId),
 
 	getProcessArgv: () => ipcRendererInvoke('getProcessArgv'),
 	getVersionState: () => ipcRendererInvoke('getVersionState'),
@@ -145,7 +146,7 @@ const znmApi:IZnmApi = {
 	onWebsiteDataUpdate: (cb:(data: Dict<IJsonWebsiteData>, lastUpdate:Date) => void) => {
 		websiteDataUpdateCb.push(cb);
 	},
-	onWsClientDatasUpdate: (cb:(data: IChromeExtensionData[]) => void) => {
+	onWsClientDatasUpdate: (cb:(data: Dict<IChromeExtensionData>) => void) => {
 		wsClientDatasUpdateCb.push(cb);
 	},
 	refreshWebsitesData: () => {

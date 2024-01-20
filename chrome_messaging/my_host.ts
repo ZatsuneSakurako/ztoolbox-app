@@ -182,6 +182,14 @@ socket.on('openUrl', (url:string, cb) => {
     });
 });
 
+socket.on('closeActiveUrl', (url:string) => {
+	bridge.emit({
+		error: false,
+		url,
+		type: 'closeActiveUrl'
+	});
+});
+
 socket.on('onSettingUpdate', function (preference) {
     bridge.emit({
         error: false,

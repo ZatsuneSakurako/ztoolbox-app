@@ -19,6 +19,7 @@ export interface ServerToClientEvents {
 	sendNotification<T>(opts: ISendNotificationOptions, cb: ResponseCallback<T>): void
 	clearNotifications(): void
 	openUrl(url:string, cb: ResponseCallback<boolean>): void
+	closeActiveUrl(url:string): void
 }
 
 export interface ClientToServerEvents {
@@ -55,6 +56,11 @@ export interface IChromeExtensionData extends IChromeExtensionName {
 		ipMore: string|false
 		openGraph: Dict<string>
 	} | null
+}
+
+export interface IWsMoveSourceData {
+	id: string
+	tabDataUrl:string
 }
 
 export interface ISendNotificationOptions {

@@ -111,7 +111,7 @@ interface IVariousInfosData {
 	versionState?: VersionState | null
 	internetAddress?: string
 	chromeNativeInstallersStates?: chromeNativeInstallers.getInstallStatesResult
-	wsClientNames?: IChromeExtensionName[]
+	wsClientNames?: Dict<IChromeExtensionName>
 }
 async function refreshData() {
 	const $variousInfos = document.querySelector('#variousInfos');

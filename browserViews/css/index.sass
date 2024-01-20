@@ -206,7 +206,7 @@ section .buttonItem .title[data-count]::after
 	content: " (" attr(data-count) ")"
 
 section a.websiteItem,
-section div.wsClientDatasItem
+section article.wsClientDatasItem
 	display: grid
 	grid-template-rows: 1fr 1fr
 	gap: 0 0
@@ -233,7 +233,7 @@ section a.websiteItem
 	grid-template-columns: 40px auto 40px
 	grid-template-areas: "itemIcon title btn-login" "itemIcon websiteData btn-login"
 
-section div.wsClientDatasItem
+section article.wsClientDatasItem
 	grid-template-columns: 40px 1fr
 	grid-template-rows: auto auto
 	grid-template-areas: "itemIcon title" "itemIcon wsClientDatas"
@@ -242,6 +242,9 @@ section div.wsClientDatasItem
 		grid-template-rows: auto auto auto
 		grid-template-areas: "itemIcon title" "itemIcon wsClientDatas" "openGraphData openGraphData"
 
+	&:not(.activated) .openGraphData
+		display: none
+
 	.title,
 	.wsClientDatas
 		margin-bottom: 0.5em
@@ -249,9 +252,6 @@ section div.wsClientDatasItem
 section div.wsClientDatas a
 	display: inline-block
 	margin-right: 0.2em
-
-section div.wsClientDatasItem:not(.activated) .openGraphData
-	display: none
 
 section .websiteItem .btn-login
 	font-size: inherit

@@ -55,7 +55,7 @@ export function createWindow(showSection?: string) {
 
 		getWsClientDatas()
 			.then(getWsClientDatas => {
-				mainWindow.webContents.send('wsClientDatasUpdate', getWsClientDatas);
+				mainWindow.webContents.send('wsClientDatasUpdate', Object.fromEntries(getWsClientDatas));
 			})
 			.catch(console.error)
 		;
