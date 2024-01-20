@@ -68,7 +68,10 @@ document.addEventListener('click', function (e) {
 	const buttonItem = target.closest<HTMLElement>('.buttonItem.wsClientDatasItem');
 	if (!buttonItem) return;
 
-	buttonItem.classList.toggle('activated');
+	const currentState = buttonItem.classList.contains('activated');
+	buttonItem.parentElement?.classList.toggle('grid-3', currentState);
+	buttonItem.parentElement?.classList.toggle('grid-6', !currentState);
+	buttonItem.classList.toggle('activated', !currentState);
 });
 
 

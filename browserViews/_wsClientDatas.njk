@@ -39,7 +39,7 @@
 					<div class="data ellipse">
 						<p>{% if data.description %}{{ data.description }}{% else %}⚠️ (No description) {% endif %}</p>
 						<h4>{% if data.url %}{{ data.url }}{% else %}⚠️ (No url) {% endif %}</h4>
-						<pre>{{ code }}</pre>
+						<pre>{{ client.tabData.openGraph | dump('\t') }}</pre>
 					</div>
 				</div>
 			{%- endif -%}
