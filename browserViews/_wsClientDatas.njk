@@ -3,6 +3,7 @@
 	<h1 class="grid-12">Web extensions</h1>
 	{%- for id, client in wsClientDatas %}
 	<div class="grid-3">
+		{% set ogData = client.tabData.openGraph %}
 		<article id="{{ id }}" title="{{ client.browserName }}" class="buttonItem wsClientDatasItem"{% if client.tabData and client.tabData.url %} data-tab-data-url="{{ client.tabData.url }}" draggable="true"{% endif %}>
 			{%- if client.tabData.faviconUrl -%}
 			<picture>
@@ -15,7 +16,7 @@
 			<div class="title">
 				{%- if client.tabData.name -%}{{ client.tabData.name }}{% else %}{{ client.browserName }}{% endif -%}
 				{%- if client.notificationSupport %} 🔔{% endif -%}
-				{%- if client.tabData.openGraph %} <span class="{% if client.tabData.openGraph %} cursor{% endif %}" data-open-graph>🌐</span>{% endif -%}
+				{%- if ogData|length %} <span class="{% if client.tabData.openGraph %} cursor{% endif %}" data-open-graph>🌐</span>{% endif -%}
 			</div>
 			<div class="wsClientDatas">
 				{%- if client.tabData -%}
@@ -31,15 +32,15 @@
 					{%- if client.tabData.domain %}<a href="https://dnschecker.org/#A/{{ client.tabData.domain }}" title="DNS Checker" target="_blank"><img src="https://dnschecker.org/themes/common/images/general/favicon-32.png" alt="" height="16" width="16"></a>{% endif -%}
 				{%- endif -%}
 			</div>
-			{% if client.tabData.openGraph %}
-				{% set data = client.tabData.openGraph %}
+			{% set ogData = client.tabData.openGraph %}
+			{% if ogData | length %}
 				<div class="openGraphData">
-					<img class="og-image" src="{{ data.image }}" alt="" loading="lazy" />
-					<div class="title ellipse">{% if data.title %}{{ data.title }}{% else %}⚠️ (No title) {% endif %}</div>
+					<img class="og-image" src="{{ ogData.image }}" alt="" loading="lazy" />
+					<div class="title ellipse">{% if ogData.title %}{{ ogData.title }}{% else %}⚠️ (No title) {% endif %}</div>
 					<div class="data ellipse">
-						<p>{% if data.description %}{{ data.description }}{% else %}⚠️ (No description) {% endif %}</p>
-						<h4>{% if data.url %}{{ data.url }}{% else %}⚠️ (No url) {% endif %}</h4>
-						<pre>{{ client.tabData.openGraph | dump('\t') }}</pre>
+						<p>{% if ogData.description %}{{ ogData.description }}{% else %}⚠️ (No description) {% endif %}</p>
+						<h4>{% if ogData.url %}{{ ogData.url }}{% else %}⚠️ (No url) {% endif %}</h4>
+						<pre>{{ ogData | dump('\t') }}</pre>
 					</div>
 				</div>
 			{%- endif -%}
