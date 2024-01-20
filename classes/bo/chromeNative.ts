@@ -28,22 +28,19 @@ export interface ClientToServerEvents {
 	getDefaultValues(cb: ResponseCallback<SettingsConfig>): void
 	ping(cb: ResponseCallback<'pong'>): void
 	openUrl(browserName:string, url: string, cb: ResponseCallback<boolean>): void
-	getWsClientNames(cb: ResponseCallback<IChromeExtensionName[]>): void
 	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
-	updateSocketData(data: Partial<IChromeExtensionName|IChromeExtensionData>): void
+	updateSocketData(data: Partial<IChromeExtensionData>): void
 }
 export interface InterServerEvents {}
 
-export interface SocketData extends IChromeExtensionName, IChromeExtensionData {
+export interface SocketData extends IChromeExtensionData {
 }
 
-export interface IChromeExtensionName {
+export interface IChromeExtensionData {
 	browserName: string
 	userAgent: string
 	extensionId: string
 	notificationSupport?: boolean
-}
-export interface IChromeExtensionData extends IChromeExtensionName {
 	tabData?: {
 		name: string
 		faviconUrl: string

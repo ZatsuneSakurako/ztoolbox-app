@@ -4,7 +4,6 @@ import {VersionState} from "../../classes/bo/versionState";
 import {Dict} from "./bo/Dict";
 import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
-import {IChromeExtensionName} from "../../classes/bo/chromeNative";
 
 declare var CodeMirror : any;
 declare var window : BridgedWindow;
@@ -111,7 +110,6 @@ interface IVariousInfosData {
 	versionState?: VersionState | null
 	internetAddress?: string
 	chromeNativeInstallersStates?: chromeNativeInstallers.getInstallStatesResult
-	wsClientNames?: Dict<IChromeExtensionName>
 }
 async function refreshData() {
 	const $variousInfos = document.querySelector('#variousInfos');
@@ -158,13 +156,6 @@ async function refreshData() {
 		window.znmApi.chromeNative_installStates()
 			.then(result => {
 				infosData.chromeNativeInstallersStates = result;
-			})
-			.catch(console.error)
-	);
-	promises.push(
-		window.znmApi.getWsClientDatas()
-			.then(result => {
-				infosData.wsClientNames = result;
 			})
 			.catch(console.error)
 	);

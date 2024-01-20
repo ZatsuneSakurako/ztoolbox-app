@@ -14,11 +14,6 @@
 	<p>Adresse ip : {{internetAddress}}</p>
 {%- endif %}
 
-{% if wsClientNames -%}
-	<p>Web extensions :</p>
-	{% include '_wsClientNames.njk' %}
-{%- endif %}
-
 {% if chromeNativeInstallersStates -%}
 	<p>Chrome native installations :</p>
 	<ul class="list-style-inside list-style-disc">

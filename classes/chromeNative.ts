@@ -1,6 +1,6 @@
 import http from "http";
 import {
-	ClientToServerEvents, IChromeExtensionData, IChromeExtensionName,
+	ClientToServerEvents, IChromeExtensionData,
 	InterServerEvents, IWsMoveSourceData, preferenceData, ResponseCallback,
 	ServerToClientEvents,
 	SocketData,
@@ -137,13 +137,6 @@ io.on("connection", (socket: socket) => {
 		;
 	})
 
-	socket.on('getWsClientNames', async function (cb) {
-		cb({
-			error: false,
-			result: await getWsClientNames()
-		});
-	});
-
 	socket.on('openUrl', async function (browserName:string, url: string, cb: ResponseCallback<boolean>) {
 
 		const sockets = await io.fetchSockets();
@@ -201,23 +194,6 @@ export async function onSettingUpdate(id: string, oldValue: preferenceData['valu
 }
 
 
-
-export async function getWsClientNames(): Promise<IChromeExtensionName[]> {
-	const output : IChromeExtensionName[] = [];
-
-	const sockets = await io.fetchSockets();
-	for (let client of sockets) {
-		if (!client.data.userAgent) continue;
-		output.push({
-			browserName: client.data.browserName ?? 'Unknown',
-			userAgent: client.data.userAgent,
-			extensionId: client.data.extensionId ?? '',
-			notificationSupport: client.data.notificationSupport ?? false
-		});
-	}
-
-	return output;
-}
 
 export async function getWsClientDatas(): Promise<Map<string, IChromeExtensionData>> {
 	const output = new Map<string, IChromeExtensionData>();
