@@ -3,9 +3,11 @@
 	<h1 class="grid-12">Web extensions</h1>
 	{%- for client in wsClientDatas %}
 	<div class="grid-3">
-		<div class="buttonItem wsClientDatasItem{% if client.tabData.openGraph %} cursor{% endif %}">
+		<div class="buttonItem wsClientDatasItem">
 			{%- if client.tabData.faviconUrl -%}
-			<img class="icon" src="{{ client.tabData.faviconUrl }}" width="32" height="32" alt="" crossorigin="anonymous" />
+			<picture>
+				<img class="icon" src="{{ client.tabData.faviconUrl }}" width="32" height="32" alt="" crossorigin="anonymous" />
+			</picture>
 			{%- else -%}
 			<span class="icon material-icons">tab</span>
 			{%- endif %}
@@ -13,7 +15,7 @@
 			<div class="title">
 				{%- if client.tabData.name -%}{{ client.tabData.name }}{% else %}{{ client.browserName }}{% endif -%}
 				{%- if client.notificationSupport %} 🔔{% endif -%}
-				{%- if client.tabData.openGraph %} 🌐{% endif -%}
+				{%- if client.tabData.openGraph %} <span class="{% if client.tabData.openGraph %} cursor{% endif %}" data-open-graph>🌐</span>{% endif -%}
 			</div>
 			<div class="wsClientDatas">
 				{%- if client.tabData -%}
@@ -28,19 +30,19 @@
 					{%- if client.tabData.ipMore and client.tabData.domain %}&nbsp;{% endif -%}
 					{%- if client.tabData.domain %}<a href="https://dnschecker.org/#A/{{ client.tabData.domain }}" title="DNS Checker" target="_blank"><img src="https://dnschecker.org/themes/common/images/general/favicon-32.png" alt="" height="16" width="16"></a>{% endif -%}
 				{%- endif -%}
-				{% if client.tabData.openGraph %}
-					{% set data = client.tabData %}
-					<div class="openGraphData">
-						<img class="og-image" src="{{ data.image }}" alt="" loading="lazy" />
-						<div class="title ellipse">{% if data.title %}{{ data.title }}{% else %}⚠️ (No title) {% endif %}</div>
-						<div class="data ellipse">
-							<p>{% if data.description %}{{ data.description }}{% else %}⚠️ (No description) {% endif %}</p>
-							<h4>{% if data.url %}{{ data.url }}{% else %}⚠️ (No url) {% endif %}</h4>
-							<pre>{{ code }}</pre>
-						</div>
-					</div>
-				{%- endif -%}
 			</div>
+			{% if client.tabData.openGraph %}
+				{% set data = client.tabData %}
+				<div class="openGraphData">
+					<img class="og-image" src="{{ data.image }}" alt="" loading="lazy" />
+					<div class="title ellipse">{% if data.title %}{{ data.title }}{% else %}⚠️ (No title) {% endif %}</div>
+					<div class="data ellipse">
+						<p>{% if data.description %}{{ data.description }}{% else %}⚠️ (No description) {% endif %}</p>
+						<h4>{% if data.url %}{{ data.url }}{% else %}⚠️ (No url) {% endif %}</h4>
+						<pre>{{ code }}</pre>
+					</div>
+				</div>
+			{%- endif -%}
 		</div>
 	</div>{% endfor %}
 	{%- endif %}

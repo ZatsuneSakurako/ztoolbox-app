@@ -56,11 +56,13 @@ async function _wsClientDatasDisplay() {
 }
 
 document.addEventListener('click', function (e) {
-	const target = (<Element> e.target).closest<HTMLElement>('.buttonItem.wsClientDatasItem');
+	const target = (<Element> e.target).closest<HTMLElement>('.buttonItem.wsClientDatasItem [data-open-graph]');
 	if (!target) return;
 
-	const currentState = target.classList.contains('activated');
-	target.classList.toggle('activated', !currentState);
+	const buttonItem = target.closest<HTMLElement>('.buttonItem.wsClientDatasItem');
+	if (!buttonItem) return;
+
+	buttonItem.classList.toggle('activated');
 })
 
 

@@ -166,7 +166,7 @@ section .buttonItem
 	flex-direction: column
 	margin: 7px 0
 	min-height: 42px
-	padding: 7px 14px 7px 42px
+	padding: 7px 14px 7px 5px
 	position: relative
 	text-align: left
 
@@ -182,13 +182,20 @@ section .buttonItem .ellipse
 section .buttonItem.tabPageServerIp .title
 	-webkit-line-clamp: 1
 
-section .buttonItem .icon
-	font-size: 32px
-	left: 3px
-	position: absolute
-	top: 50%
-	transform: translateY(-50%)
-	width: 32px
+//section .buttonItem .icon
+//	font-size: 32px
+//	left: 3px
+//	position: absolute
+//	top: 50%
+//	transform: translateY(-50%)
+//	width: 32px
+
+section .buttonItem picture,
+section .buttonItem .icon.material-icons
+	display: flex
+	align-items: center
+	justify-content: flex-start
+	height: 100%
 
 
 section .buttonItem .title
@@ -205,6 +212,11 @@ section div.wsClientDatasItem
 	gap: 0 0
 	grid-auto-flow: row
 
+	& > picture,
+	& > .icon,
+	.icon.material-icons
+		grid-area: itemIcon
+		max-width: 32px
 	.title
 		grid-area: title
 	.btn-login
@@ -213,15 +225,21 @@ section div.wsClientDatasItem
 		grid-area: websiteData
 	.wsClientDatas
 		grid-area: wsClientDatas
+	.openGraphData
+		grid-area: openGraphData
+		margin: 10px 5px 5px
 
 section a.websiteItem
-	grid-template-columns: 1fr 40px
-	grid-template-areas: "title btn-login" "websiteData btn-login"
+	grid-template-columns: 40px 1fr 40px
+	grid-template-areas: "itemIcon title btn-login" "itemIcon websiteData btn-login"
 
 section div.wsClientDatasItem
-	grid-template-columns: 1fr
-	grid-template-rows: auto 1fr
-	grid-template-areas: "title" "wsClientDatas"
+	grid-template-columns: 40px 1fr
+	grid-template-rows: 1fr 1fr
+	grid-template-areas: "itemIcon title" "itemIcon wsClientDatas"
+	&.activated
+		grid-template-rows: auto auto auto
+		grid-template-areas: "itemIcon title" "itemIcon wsClientDatas" "openGraphData openGraphData"
 
 section div.wsClientDatas a
 	display: inline-block
