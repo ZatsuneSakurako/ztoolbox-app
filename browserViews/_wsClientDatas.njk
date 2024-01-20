@@ -3,7 +3,7 @@
 	<h1 class="grid-12">Web extensions</h1>
 	{%- for id, client in wsClientDatas %}
 	<div class="grid-3">
-		<article id="{{ id }}" class="buttonItem wsClientDatasItem"{% if client.tabData and client.tabData.url %} data-tab-data-url="{{ client.tabData.url }}" draggable="true"{% endif %}>
+		<article id="{{ id }}" title="{{ client.browserName }}" class="buttonItem wsClientDatasItem"{% if client.tabData and client.tabData.url %} data-tab-data-url="{{ client.tabData.url }}" draggable="true"{% endif %}>
 			{%- if client.tabData.faviconUrl -%}
 			<picture>
 				<img class="icon" src="{{ client.tabData.faviconUrl }}" width="32" height="32" alt="" crossorigin="anonymous" />
