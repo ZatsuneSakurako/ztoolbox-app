@@ -29,7 +29,7 @@
 
 					<a href="https://dnslytics.com/ip/{{ client.tabData.ip }}" title="DNSlytics" target="_blank"><img src="https://dnslytics.com/favicon.ico" alt="" height="16" width="16"></a>{% endif -%}
 					{%- if client.tabData.ipMore and client.tabData.domain %}&nbsp;{% endif -%}
-					{%- if client.tabData.domain %}<a href="https://dnschecker.org/#A/{{ client.tabData.domain }}" title="DNS Checker" target="_blank"><img src="https://dnschecker.org/themes/common/images/general/favicon-32.png" alt="" height="16" width="16"></a>{% endif -%}
+					{%- if client.tabData.domain %}<a href="https://dnschecker.org/#A/{{ client.tabData.domain }}" title="DNS Checker" target="_blank"><img src="https://dnschecker.org/themes/common/images/general/favicon-32.png" alt="" height="16" width="16"></a> <button class="material-icons" title="Dig domain" data-dig-cmd="{{ client.tabData.domain }}">dns</button>{% endif -%}
 				{%- endif -%}
 			</div>
 			{% set ogData = client.tabData.openGraph %}

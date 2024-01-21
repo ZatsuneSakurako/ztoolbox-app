@@ -15,10 +15,7 @@ function nonNullable<T>(element:T|null): NonNullable<T> {
 	return element;
 }
 
-const main_input = nonNullable(document.querySelector<HTMLInputElement>('input#main_input')),
-	main_textarea_input = nonNullable(document.querySelector<HTMLTextAreaElement>('textarea#main_textarea_input')),
-	main_textarea_output = nonNullable(document.querySelector<HTMLTextAreaElement>('textarea#main_textarea_output'))
-;
+const main_textarea_output = nonNullable(document.querySelector<HTMLTextAreaElement>('textarea#main_textarea_output'));
 
 
 
@@ -196,67 +193,20 @@ window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	}
 }, false);
 
-document.addEventListener('change', function onMenuChange(e) {
-	const target = (<Element> e.target).closest<HTMLInputElement>('input[name="main_input_type"][type="radio"]');
-	if (!target) return;
-
-	if (main_input) {
-		const onMainInputs = [...document.querySelectorAll<HTMLElement>('[data-main-input]')];
-		for (let element of onMainInputs) {
-			const value = element.dataset.mainInput
-			element.classList.toggle('hidden', value !== target.value);
-		}
-	}
-});
 
 
 
-
-
-async function onCopyTextArea(isCut:boolean) {
-	try {
-		await navigator.clipboard.writeText(main_textarea_input.value);
-		if (isCut) {
-			main_textarea_input.value = '';
-		}
-	} catch (e) {
-		console.error(e);
-		return;
-	}
-
-	window.znmApi.sendNotification(await window.znmApi._(isCut ? 'textarea_clipped' : 'textarea_copied'))
-		.catch(console.error)
-	;
-}
-
-document.addEventListener('click', function(e) {
-	const target = (<HTMLElement>e.target).closest<HTMLElement>('#copyTextArea,#cutTextArea');
-	if (!target) return;
-
-	onCopyTextArea(target.id === 'cutTextArea')
-		.catch(console.error)
-	;
-});
-
-document.addEventListener('click', function onPasteTextArea(e) {
-	const target = (<HTMLElement>e.target).closest<HTMLElement>('#pasteTextArea');
-	if (!target) return;
-
-	navigator.clipboard.readText()
-		.then(value => {
-			main_textarea_input.value = value
-		})
-		.catch(console.error)
-	;
-});
 
 
 document.addEventListener('click', function digCmd(e) {
-	const target = (<HTMLElement>e.target).closest<HTMLElement>('#digCmd');
-	if (!target) return;
+	const target = (<HTMLElement>e.target).closest<HTMLElement>('[data-dig-cmd]'),
+		dataDigValue = target?.dataset.digCmd
+	;
+	if (!dataDigValue) return;
 
-	window.znmApi.digCmd(main_input.value)
+	window.znmApi.digCmd(dataDigValue)
 		.then(result => {
+			main_textarea_output.parentElement?.classList.remove('hidden');
 			main_textarea_output.value = result;
 		})
 		.catch(console.error)

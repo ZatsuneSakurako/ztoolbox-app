@@ -11,26 +11,9 @@ main.grid
 	div.display-contents(data-menu-show='main')
 		section#wsClientDatas
 
-	div.grid-12.grid.display-contents(data-menu-show='main')
-		div.grid-3
-			label(for="main_textarea_input", data-translate-id="textarea") Text area
-			textarea#main_textarea_input
-		div.grid-3
-			input#main_input_type_text.hidden(name="main_input_type", value="text", type="radio")
-			label.button.checkable.material-icons(for="main_input_type_text", title="Text") text_fields
-			input#main_input_type_dns.hidden(name="main_input_type", value="dns", type="radio", checked="checked")
-			label.button.checkable.material-icons(for="main_input_type_dns", title="DNS / IP") dns
-			input#main_input(type="text")
-		div.grid-6.grid-row-2
-			label(for="main_textarea_output", data-translate-id="output") Output
-			textarea#main_textarea_output(readonly)
-
-		div.grid-3
-			button#cutTextArea.material-icons() content_cut
-			button#copyTextArea.material-icons() content_copy
-			button#pasteTextArea.material-icons() content_paste
-		div.grid-3
-			button#digCmd(data-main-input="dns") Dig domain
+	div.grid-12.hidden(data-menu-show='main')
+		label(for="main_textarea_output", data-translate-id="output") Output
+		textarea#main_textarea_output(readonly)
 
 	div.grid-12(data-menu-show='code-tester')
 		button(data-reload-iframe="", data-translate-id="runCode") Run code !
