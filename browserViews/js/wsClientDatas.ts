@@ -69,8 +69,8 @@ document.addEventListener('click', function (e) {
 	if (!buttonItem) return;
 
 	const currentState = buttonItem.classList.contains('activated');
-	buttonItem.parentElement?.classList.toggle('grid-3', currentState);
-	buttonItem.parentElement?.classList.toggle('grid-6', !currentState);
+	buttonItem.parentElement?.classList.toggle('grid-4', currentState);
+	buttonItem.parentElement?.classList.toggle('grid-5', !currentState);
 	buttonItem.classList.toggle('activated', !currentState);
 });
 

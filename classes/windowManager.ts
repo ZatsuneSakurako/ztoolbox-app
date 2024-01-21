@@ -24,10 +24,10 @@ export function setBadge(count: number) {
 export function createWindow(showSection?: string) {
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
-		width: 1000,
-		height: 800,
-		minHeight: 400,
-		minWidth: 400,
+		width: 800,
+		height: 600,
+		minHeight: 600,
+		minWidth: 600,
 		icon: appIcon,
 		show: false,
 		darkTheme: true,
