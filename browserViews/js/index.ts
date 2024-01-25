@@ -179,6 +179,14 @@ async function onLoad() {
 		})
 		.catch(console.error)
 	;
+	window.znmApi.getWsClientDatas()
+		.then(wsClientDatas => {
+			wsClientDatasUpdate(wsClientDatas)
+				.catch(console.error)
+			;
+		})
+		.catch(console.error)
+	;
 	window.znmApi.onWebsiteDataUpdate(function (data, lastUpdate) {
 		const websitesDataLastRefresh = lastUpdate instanceof Date ?
 			lastUpdate

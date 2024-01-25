@@ -52,13 +52,6 @@ export function createWindow(showSection?: string) {
 
 	mainWindow.once('ready-to-show', () => {
 		mainWindow?.show();
-
-		getWsClientDatas()
-			.then(getWsClientDatas => {
-				mainWindow.webContents.send('wsClientDatasUpdate', Object.fromEntries(getWsClientDatas));
-			})
-			.catch(console.error)
-		;
 	});
 
 	// Emitted when the window is closed.
