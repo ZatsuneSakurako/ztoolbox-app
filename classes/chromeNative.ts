@@ -107,7 +107,7 @@ io.on("connection", (socket: socket) => {
 					console.error(e);
 				}
 
-				if (url && url.protocol === 'chrome:') {
+				if (url && ['chrome:', 'moz-extension:', 'edge:'].includes(url.protocol)) {
 					socket.data.tabData.url = undefined;
 					socket.data.tabData.domain = undefined;
 				}
