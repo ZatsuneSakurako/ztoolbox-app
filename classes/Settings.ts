@@ -1,17 +1,14 @@
-// @ts-ignore
-import * as classUtils from "class-utils";
 import {EventEmitter} from "events";
-import * as fs from "fs-extra";
+import fs from "fs-extra";
 import path from "path";
 import debounce from "lodash.debounce";
 
-import {ISettings, PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings";
-import {resourcePath} from "./constants";
+import {ISettings, PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings.js";
 import {app} from "electron";
-import {JsonSerialize} from "./JsonSerialize";
+import {JsonSerialize} from "./JsonSerialize.js";
 import Dict = NodeJS.Dict;
 
-const settings : SettingsConfig = require(path.normalize(resourcePath + "/browserViews/js/settings/settings")).default;
+const settings : SettingsConfig = (await import("../browserViews/js/settings/settings.js")).default;
 
 
 

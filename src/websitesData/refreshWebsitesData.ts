@@ -1,18 +1,18 @@
-import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData";
-import {ZAlarm} from "../../classes/ZAlarm";
-import {settings} from "../../main";
+import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData.js";
+import {ZAlarm} from "../../classes/ZAlarm.js";
+import {settings} from "../../main.js";
 import {app, BrowserWindow, ipcMain, session} from "electron";
-import {i18n} from "../i18next";
+import {i18n} from "../i18next.js";
 import electron from "electron";
-import {websitesData, websitesDataLastRefresh} from "../../classes/Settings";
-import {JsonSerialize} from "../../classes/JsonSerialize";
-import {WebsiteData} from "../../browserViews/js/websiteData";
-import {setBadge} from "../../classes/windowManager";
-import {Dict} from "../../browserViews/js/bo/Dict";
-import {doNotifyWebsite, IDoNotifyWebsiteResult} from "./doNotifyWebsite";
-import {websiteApis} from "./platforms";
-import {appIcon} from "../../classes/constants";
-import {sendNotification} from "../../classes/notify";
+import {websitesData, websitesDataLastRefresh} from "../../classes/Settings.js";
+import {JsonSerialize} from "../../classes/JsonSerialize.js";
+import {WebsiteData} from "../../browserViews/js/websiteData.js";
+import {setBadge} from "../../classes/windowManager.js";
+import {Dict} from "../../browserViews/js/bo/Dict.js";
+import {doNotifyWebsite, IDoNotifyWebsiteResult} from "./doNotifyWebsite.js";
+import {websiteApis} from "./platforms/index.js";
+import {appIcon} from "../../classes/constants.js";
+import {sendNotification} from "../../classes/notify.js";
 
 
 

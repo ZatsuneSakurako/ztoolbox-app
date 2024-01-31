@@ -1,11 +1,11 @@
 import i18next from "i18next";
 
-import frTranslation from "../locales/fr.json";
-import enTranslation from "../locales/en.json";
-import frPreferencesTranslation from "../locales/preferences/fr.json";
-import enPreferencesTranslation from "../locales/preferences/en.json";
-import frWebsitesDataTranslation from "../locales/websitesData/fr.json";
-import enWebsitesDataTranslation from "../locales/websitesData/en.json";
+import frTranslation from "../locales/fr.json" assert {type: 'json'};
+import enTranslation from "../locales/en.json" assert {type: 'json'};
+import frPreferencesTranslation from "../locales/preferences/fr.json" assert {type: 'json'};
+import enPreferencesTranslation from "../locales/preferences/en.json" assert {type: 'json'};
+import frWebsitesDataTranslation from "../locales/websitesData/fr.json" assert {type: 'json'};
+import enWebsitesDataTranslation from "../locales/websitesData/en.json" assert {type: 'json'};
 import {app} from "electron";
 
 export const i18n = i18next

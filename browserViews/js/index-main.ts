@@ -1,8 +1,8 @@
-import {BridgedWindow} from "./bo/bridgedWindow";
+import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
-import {VersionState} from "../../classes/bo/versionState";
-import {Dict} from "./bo/Dict";
-import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers";
+import {VersionState} from "../../classes/bo/versionState.js";
+import {Dict} from "./bo/Dict.js";
+import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
 
 declare var CodeMirror : any;

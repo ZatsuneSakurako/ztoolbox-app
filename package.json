@@ -4,7 +4,6 @@
   "description": "A toolbox Electron application",
   "packageManager": "yarn@4.0.2",
   "main": "index.cjs",
-  "module": "main.js",
   "type": "module",
   "scripts": {
     "start": "NODE_OPTIONS=\"--enable-source-maps\" yarn electron .",
@@ -51,8 +50,8 @@
     "@types/yargs": "^17.0.24",
     "cross-fetch": "^4.0.0",
     "del": "^7.0.0",
-    "electron": "^25.3.1",
-    "electron-builder": "^24.4.0",
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
     "gulp-pug": "^5.0.0",

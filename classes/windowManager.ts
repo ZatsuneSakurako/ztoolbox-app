@@ -1,8 +1,7 @@
 import {app, BrowserWindow} from "electron";
-import {appIcon, browserViewPath} from "./constants";
+import {appIcon, browserViewPath} from "./constants.js";
 import path from "path";
 import {fileURLToPath} from "url";
-import {getWsClientDatas} from "./chromeNative";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

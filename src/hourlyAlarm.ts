@@ -1,7 +1,7 @@
-import {ZAlarm} from "../classes/ZAlarm";
+import {ZAlarm} from "../classes/ZAlarm.js";
 import i18next from "i18next";
-import {sendNotification} from "../classes/notify";
-import {settings} from "../main";
+import {sendNotification} from "../classes/notify.js";
+import {settings} from "../main.js";
 
 const zAlarm = ZAlarm.start('0 * * * *', function (date:Date) {
 	console.info(date.toLocaleString('fr'));

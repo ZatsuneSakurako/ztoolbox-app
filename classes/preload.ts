@@ -1,10 +1,9 @@
 import {contextBridge, ipcRenderer} from "electron";
-import {IZnmApi, PreferenceTypes} from "../browserViews/js/bo/bridgedWindow";
-import {NotificationResponse} from "./bo/notify";
+import {IZnmApi, PreferenceTypes} from "../browserViews/js/bo/bridgedWindow.js";
+import {NotificationResponse} from "./bo/notify.js";
 import Dict = NodeJS.Dict;
-import {IJsonWebsiteData} from "../browserViews/js/bo/websiteData";
-import {nunjuckRender} from "../browserViews/js/nunjuckRenderHelper.js";
-import {IChromeExtensionData} from "./bo/chromeNative";
+import {IJsonWebsiteData} from "../browserViews/js/bo/websiteData.js";
+import {IChromeExtensionData} from "./bo/chromeNative.js";
 
 const isFileProtocol = self.location.protocol === 'file:';
 

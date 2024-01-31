@@ -2,11 +2,11 @@ import './index-main.js';
 import './settings.js';
 import {loadTranslations} from "./translation-api.js";
 import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
-import {BridgedWindow} from "./bo/bridgedWindow";
-import {ShowSectionEvent} from "./bo/showSectionEvent";
-import {IJsonWebsiteData} from "./bo/websiteData";
+import {BridgedWindow} from "./bo/bridgedWindow.js";
+import {ShowSectionEvent} from "./bo/showSectionEvent.js";
+import {IJsonWebsiteData} from "./bo/websiteData.js";
 import {WebsiteData} from "./websiteData.js";
-import {Dict} from "./bo/Dict";
+import {Dict} from "./bo/Dict.js";
 import {updateClassesFor} from "./labelChecked.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
 import {wsClientDatasDisplay, wsClientDatasUpdate} from "./wsClientDatas.js";
@@ -36,7 +36,7 @@ document.addEventListener('click', function (evt) {
 		.catch(console.error)
 	;
 });
-let enableButtonTimer:NodeJS.Timer|null = null;
+let enableButtonTimer:ReturnType<typeof setTimeout>|null = null;
 async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>, lastUpdate:Date) {
 	const container = document.querySelector('#websitesData');
 	if (!container) {

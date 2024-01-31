@@ -1,6 +1,6 @@
-import {WebsiteData} from "../../browserViews/js/websiteData";
-import {i18n} from "../i18next";
-import {settings} from "../../main";
+import {WebsiteData} from "../../browserViews/js/websiteData.js";
+import {i18n} from "../i18next.js";
+import {settings} from "../../main.js";
 
 export interface IDoNotifyWebsiteResult {
 	website: string

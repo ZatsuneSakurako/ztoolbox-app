@@ -1,2 +1,8 @@
 require = require("esm")(module/* , options */);
-module.exports = require("./main.js");
+const {app} = require("electron");
+app.whenReady().then(() => {
+	console.log('This code may execute before the above import')
+	import('./main.js')
+		.catch(console.error)
+	;
+});

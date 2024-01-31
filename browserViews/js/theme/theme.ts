@@ -1,4 +1,4 @@
-import {BridgedWindow} from "../bo/bridgedWindow";
+import {BridgedWindow} from "../bo/bridgedWindow.js";
 import {Color} from "./color.js";
 import {nunjuckRender} from "../nunjuckRenderHelper.js";
 

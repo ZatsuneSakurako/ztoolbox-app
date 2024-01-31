@@ -2,7 +2,7 @@
 import {stripHtml as _stripHtml} from 'string-strip-html';
 import 'locutus';
 
-import {BridgedWindow} from "./bo/bridgedWindow";
+import {BridgedWindow} from "./bo/bridgedWindow.js";
 // @ts-ignore
 const parentWindow : BridgedWindow = window.parent;
 

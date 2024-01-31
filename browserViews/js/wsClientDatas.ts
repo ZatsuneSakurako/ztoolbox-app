@@ -1,7 +1,7 @@
 import {IChromeExtensionData, IWsMoveSourceData} from "../../classes/bo/chromeNative.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
-import {BridgedWindow} from "./bo/bridgedWindow";
-import {Dict} from "./bo/Dict";
+import {BridgedWindow} from "./bo/bridgedWindow.js";
+import {Dict} from "./bo/Dict.js";
 
 declare var window : BridgedWindow;
 

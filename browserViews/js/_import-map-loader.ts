@@ -1,4 +1,4 @@
-import {BridgedWindow} from "./bo/bridgedWindow";
+import {BridgedWindow} from "./bo/bridgedWindow.js";
 // @ts-ignore
 const parentWindow : BridgedWindow = window.parent;
 const baseDir = self.parent.location.href.replace(/[^/]+$/, '');

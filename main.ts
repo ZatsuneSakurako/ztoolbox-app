@@ -4,24 +4,24 @@ import nunjucks from "nunjucks";
 import * as path from "path";
 import Dict = NodeJS.Dict;
 
-import {Settings} from './classes/Settings';
-import {sendNotification} from "./classes/notify";
-import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow";
-import {versionState} from "./classes/versionState";
-import {server, io, getWsClientDatas, moveWsClientUrl} from "./classes/chromeNative";
-import {createWindow, getMainWindow} from "./classes/windowManager";
+import {Settings} from './classes/Settings.js';
+import {sendNotification} from "./classes/notify.js";
+import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow.js";
+import {versionState} from "./classes/versionState.js";
+import {server, io, getWsClientDatas, moveWsClientUrl} from "./classes/chromeNative.js";
+import {createWindow, getMainWindow} from "./classes/windowManager.js";
 import {execSync} from "child_process";
-import {SettingConfig} from "./classes/bo/settings";
-import './src/clipboard';
-import './src/contentSecurityPolicy';
-import './src/contextMenu';
-import './src/hourlyAlarm';
-import {i18n} from "./src/i18next";
-import './src/manageProtocolAndAutostart';
-import {appRootPath, resourcePath} from "./classes/constants";
-import * as ChromeNativeInstallers from "./classes/chromeNativeInstallers";
-import {getNetConnectionAddress} from "./src/getNetConnectionAddress";
-import {IWsMoveSourceData} from "./classes/bo/chromeNative";
+import {SettingConfig} from "./classes/bo/settings.js";
+import './src/clipboard.js';
+import './src/contentSecurityPolicy.js';
+import './src/contextMenu.js';
+import './src/hourlyAlarm.js';
+import {i18n} from "./src/i18next.js";
+import './src/manageProtocolAndAutostart.js';
+import {appRootPath, resourcePath} from "./classes/constants.js";
+import * as ChromeNativeInstallers from "./classes/chromeNativeInstallers.js";
+import {getNetConnectionAddress} from "./src/getNetConnectionAddress.js";
+import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 
 
 

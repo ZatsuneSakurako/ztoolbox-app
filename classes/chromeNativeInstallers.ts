@@ -1,5 +1,5 @@
 import * as path from "path";
-import * as fs from "fs-extra";
+import fs from "fs-extra";
 import * as Winreg from "winreg";
 import Registry from "winreg";
 import {homedir} from "os";
@@ -10,9 +10,9 @@ import {
 	install_types,
 	installResult,
 	osList
-} from "./bo/chromeNativeInstallers";
-import {resourcePath} from "./constants";
-import {WindowsRegistry} from "./WindowsRegistry";
+} from "./bo/chromeNativeInstallers.js";
+import {resourcePath} from "./constants.js";
+import {WindowsRegistry} from "./WindowsRegistry.js";
 
 const baseDirectory = path.normalize(`${resourcePath}/chrome_messaging`);
 

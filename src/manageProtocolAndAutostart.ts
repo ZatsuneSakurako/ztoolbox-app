@@ -4,13 +4,13 @@
  */
 import shell, {which} from "shelljs";
 import ProtocolRegistry from "protocol-registry";
-import {appRootPath, autoStartArgument, zToolbox_protocol} from "../classes/constants";
+import {appRootPath, autoStartArgument, zToolbox_protocol} from "../classes/constants.js";
 import {app} from "electron";
 import path from "path";
-import {showSection} from "../classes/windowManager";
-import {sendNotification} from "../classes/notify";
+import {showSection} from "../classes/windowManager.js";
+import {sendNotification} from "../classes/notify.js";
 import AutoLaunch from "auto-launch";
-import {settings} from "../main";
+import {settings} from "../main.js";
 
 
 
@@ -160,9 +160,9 @@ export async function updateAutoStart() {
 		if (!app.isPackaged) {
 			// auto-launch trick to be able to use argument
 			// @ts-ignore
-			const fileBasedUtilities = await import('auto-launch/dist/fileBasedUtilities');
+			const fileBasedUtilities = await import('auto-launch/dist/fileBasedUtilities.js');
 			// @ts-ignore
-			const AutoLaunchLinux = await  import('auto-launch/dist/AutoLaunchLinux');
+			const AutoLaunchLinux = await  import('auto-launch/dist/AutoLaunchLinux.js');
 			const targetFilePath = AutoLaunchLinux.getFilePath(autoLaunchName),
 				isEnabled = await fileBasedUtilities.isEnabled(targetFilePath)
 			;

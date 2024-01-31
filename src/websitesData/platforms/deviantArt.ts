@@ -1,7 +1,7 @@
 import JSON5 from 'json5';
-import {WebsiteApi} from "../WebsiteApi";
-import {Dict} from "../../../browserViews/js/bo/Dict";
-import {WebsiteData} from "../../../browserViews/js/websiteData";
+import {WebsiteApi} from "../WebsiteApi.js";
+import {Dict} from "../../../browserViews/js/bo/Dict.js";
+import {WebsiteData} from "../../../browserViews/js/websiteData.js";
 
 export class DeviantArt implements WebsiteApi {
 	// Old data url dataURL:"http://www.deviantart.com/notifications/watch",

@@ -1,11 +1,11 @@
 import {app, BrowserWindow, Menu, Tray} from "electron";
-import {showSection, showWindow, toggleWindow} from "../classes/windowManager";
-import {appIcon} from "../classes/constants";
-import {clipboard} from "./clipboard";
-import {onSettingUpdate} from "../classes/chromeNative";
-import {onOpen, updateAutoStart} from "./manageProtocolAndAutostart";
-import {settings} from "../main";
-import {websitesData} from "../classes/Settings";
+import {showSection, showWindow, toggleWindow} from "../classes/windowManager.js";
+import {appIcon} from "../classes/constants.js";
+import {clipboard} from "./clipboard.js";
+import {onSettingUpdate} from "../classes/chromeNative.js";
+import {onOpen, updateAutoStart} from "./manageProtocolAndAutostart.js";
+import {settings} from "../main.js";
+import {websitesData} from "../classes/Settings.js";
 
 
 

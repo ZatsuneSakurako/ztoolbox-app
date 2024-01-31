@@ -4,11 +4,11 @@ import {
 	InterServerEvents, IWsMoveSourceData, preferenceData, ResponseCallback,
 	ServerToClientEvents,
 	SocketData,
-} from "./bo/chromeNative";
-import {settings} from "../main";
-import {showSection} from "./windowManager";
+} from "./bo/chromeNative.js";
+import {settings} from "../main.js";
+import {showSection} from "./windowManager.js";
 import {Server, Socket, RemoteSocket} from "socket.io";
-import "../src/websitesData/refreshWebsitesData";
+import "../src/websitesData/refreshWebsitesData.js";
 import {BrowserWindow} from "electron";
 
 

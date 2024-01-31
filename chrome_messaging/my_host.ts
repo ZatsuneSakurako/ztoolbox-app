@@ -9,7 +9,7 @@ import {EventEmitter} from "events";
 
 import dotenv from "dotenv";
 import { io, Socket } from "socket.io-client";
-import {ClientToServerEvents, ServerToClientEvents} from "../classes/bo/chromeNative";
+import {ClientToServerEvents, ServerToClientEvents} from "../classes/bo/chromeNative.js";
 import {fileURLToPath} from "url";
 import {clearTimeout} from "timers";
 
@@ -141,7 +141,7 @@ socket.on('sendNotification', (opts, cb) => {
 		});
 	};
 
-	let timer : NodeJS.Timer|null = null;
+	let timer : ReturnType<typeof setTimeout>|null = null;
 	if (opts.timeoutType === 'default') {
 		timer = setTimeout(sendClearNotification, 2 * 60000); // 2min
 	}

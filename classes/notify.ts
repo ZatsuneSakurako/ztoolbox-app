@@ -1,8 +1,8 @@
 import {Notification} from "electron";
-import {appIconPath_x3} from "./constants";
-import {NotificationResponse, NotifyElectron_Options} from "./bo/notify";
-import {io, remoteSocket} from "./chromeNative";
-import {ISendNotificationOptions, SocketMessage} from "./bo/chromeNative";
+import {appIconPath_x3} from "./constants.js";
+import {NotificationResponse, NotifyElectron_Options} from "./bo/notify.js";
+import {io, remoteSocket} from "./chromeNative.js";
+import {ISendNotificationOptions, SocketMessage} from "./bo/chromeNative.js";
 
 
 

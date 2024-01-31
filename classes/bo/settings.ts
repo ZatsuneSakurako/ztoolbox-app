@@ -1,5 +1,5 @@
 import {EventEmitter} from "events";
-import {JsonSerialize} from "../JsonSerialize";
+import {JsonSerialize} from "../JsonSerialize.js";
 
 interface Dict<T> {
 	[key: string]: T | undefined;

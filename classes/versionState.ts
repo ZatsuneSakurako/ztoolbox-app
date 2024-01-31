@@ -1,5 +1,5 @@
 import simpleGit from 'simple-git';
-import {VersionState} from "./bo/versionState";
+import {VersionState} from "./bo/versionState.js";
 import path from "path";
 import fs from "fs-extra";
 import {app} from "electron";

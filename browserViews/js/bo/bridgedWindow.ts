@@ -1,10 +1,10 @@
-import {VersionState} from "../../../classes/bo/versionState";
-import {RandomJsonData} from "../../../classes/bo/settings";
-import {NotificationResponse} from "../../../classes/bo/notify";
-import {Dict} from "./Dict";
-import {IJsonWebsiteData} from "./websiteData";
-import {getInstallStatesResult, installResult} from "../../../classes/bo/chromeNativeInstallers";
-import {IChromeExtensionData, IWsMoveSourceData} from "../../../classes/bo/chromeNative";
+import {VersionState} from "../../../classes/bo/versionState.js";
+import {RandomJsonData} from "../../../classes/bo/settings.js";
+import {NotificationResponse} from "../../../classes/bo/notify.js";
+import {Dict} from "./Dict.js";
+import {IJsonWebsiteData} from "./websiteData.js";
+import {getInstallStatesResult, installResult} from "../../../classes/bo/chromeNativeInstallers.js";
+import {IChromeExtensionData, IWsMoveSourceData} from "../../../classes/bo/chromeNative.js";
 import * as net from "node:net";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
