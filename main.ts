@@ -1,14 +1,10 @@
-import {app, ipcMain, dialog} from 'electron';
-import electron from 'electron';
+import electron, {app, dialog, ipcMain} from 'electron';
 import nunjucks from "nunjucks";
 import * as path from "path";
-import Dict = NodeJS.Dict;
-
-import {Settings} from './classes/Settings.js';
 import {sendNotification} from "./classes/notify.js";
 import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow.js";
 import {versionState} from "./classes/versionState.js";
-import {server, io, getWsClientDatas, moveWsClientUrl} from "./classes/chromeNative.js";
+import {getWsClientDatas, io, moveWsClientUrl, server} from "./classes/chromeNative.js";
 import {createWindow, getMainWindow} from "./classes/windowManager.js";
 import {execSync} from "child_process";
 import {SettingConfig} from "./classes/bo/settings.js";
@@ -22,7 +18,8 @@ import {appRootPath, resourcePath} from "./classes/constants.js";
 import * as ChromeNativeInstallers from "./classes/chromeNativeInstallers.js";
 import {getNetConnectionAddress} from "./src/getNetConnectionAddress.js";
 import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
-
+import {settings} from "./src/init.js";
+import Dict = NodeJS.Dict;
 
 
 server.listen({
@@ -223,4 +220,3 @@ app.on('activate', function () {
 
 
 
-export const settings = new Settings();

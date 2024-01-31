@@ -1,6 +1,5 @@
 import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData.js";
 import {ZAlarm} from "../../classes/ZAlarm.js";
-import {settings} from "../../main.js";
 import {app, BrowserWindow, ipcMain, session} from "electron";
 import {i18n} from "../i18next.js";
 import electron from "electron";
@@ -13,6 +12,7 @@ import {doNotifyWebsite, IDoNotifyWebsiteResult} from "./doNotifyWebsite.js";
 import {websiteApis} from "./platforms/index.js";
 import {appIcon} from "../../classes/constants.js";
 import {sendNotification} from "../../classes/notify.js";
+import {settings} from "../init.js";
 
 
 

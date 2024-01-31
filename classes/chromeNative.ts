@@ -5,11 +5,11 @@ import {
 	ServerToClientEvents,
 	SocketData,
 } from "./bo/chromeNative.js";
-import {settings} from "../main.js";
 import {showSection} from "./windowManager.js";
 import {Server, Socket, RemoteSocket} from "socket.io";
 import "../src/websitesData/refreshWebsitesData.js";
 import {BrowserWindow} from "electron";
+import {settings} from "../src/init.js";
 
 
 

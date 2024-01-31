@@ -10,7 +10,7 @@ import path from "path";
 import {showSection} from "../classes/windowManager.js";
 import {sendNotification} from "../classes/notify.js";
 import AutoLaunch from "auto-launch";
-import {settings} from "../main.js";
+import {settings} from "./init.js";
 
 
 

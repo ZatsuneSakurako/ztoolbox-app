@@ -4,8 +4,8 @@ import {appIcon} from "../classes/constants.js";
 import {clipboard} from "./clipboard.js";
 import {onSettingUpdate} from "../classes/chromeNative.js";
 import {onOpen, updateAutoStart} from "./manageProtocolAndAutostart.js";
-import {settings} from "../main.js";
 import {websitesData} from "../classes/Settings.js";
+import {settings} from "./init.js";
 
 
 
