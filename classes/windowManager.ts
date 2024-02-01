@@ -32,7 +32,7 @@ export function createWindow(showSection?: string) {
 		darkTheme: true,
 		webPreferences: {
 			nodeIntegration: true,
-			preload: path.resolve(__dirname, '../classes/preload.cjs')
+			preload: path.resolve(__dirname, '../classes/preload.mjs')
 		}
 	});
 
