@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A toolbox Electron application",
   "packageManager": "yarn@4.0.2",
-  "main": "index.cjs",
+  "main": "index.mjs",
   "type": "module",
   "scripts": {
     "start": "NODE_OPTIONS=\"--enable-source-maps\" yarn electron .",
