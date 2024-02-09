@@ -216,11 +216,11 @@ section article.wsClientDatasItem
 		margin: 10px 5px 5px
 
 section a.websiteItem
-	grid-template-columns: 40px auto 40px
+	grid-template-columns: 40px calc(100% - (40px * 2)) 40px
 	grid-template-areas: "itemIcon title btn-login" "itemIcon websiteData btn-login"
 
 section article.wsClientDatasItem
-	grid-template-columns: 40px 1fr
+	grid-template-columns: 40px calc(100% - 40px)
 	grid-template-rows: auto auto
 	grid-template-areas: "itemIcon title" "itemIcon wsClientDatas"
 
@@ -238,6 +238,8 @@ section article.wsClientDatasItem
 	.title,
 	.wsClientDatas
 		margin-bottom: 0.5em
+		overflow: hidden
+		text-overflow: ellipsis
 
 	.button,
 	button
