@@ -135,7 +135,7 @@ window.znmApi.onWsClientDatasUpdate(function (wsClientDatas) {
 	;
 });
 
-window.addEventListener("focus", function () {
+window.znmApi.onFocus(() => {
 	wsClientDatasDisplay()
 		.catch(console.error)
 	;

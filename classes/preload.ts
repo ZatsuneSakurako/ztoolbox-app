@@ -9,6 +9,15 @@ const isFileProtocol = self.location.protocol === 'file:';
 
 
 
+const onFocusCb:(() => void)[] = [];
+ipcRenderer.on('onFocus', function () {
+	for (let cb of onFocusCb) {
+		cb();
+	}
+});
+
+
+
 const updatePreferenceCb:((preferenceId:string, newValue:any) => void)[] = [];
 ipcRenderer.on('updatePreference', function (e, preferenceId:string, newValue:any) {
 	if (!isFileProtocol) {
@@ -125,12 +134,16 @@ const znmApi:IZnmApi = {
 		return ipcRendererInvoke('sendNotification', message, title, sound);
 	},
 
-	nunjuckRender: (templateName:string, context:any) => {
+	nunjuckRender(templateName:string, context:any) {
 		return ipcRendererInvoke('nunjuckRender', templateName, context)
 	},
 
-	getNetConnectionAddress: (host:string, timeout?:number) => {
+	getNetConnectionAddress(host:string, timeout?:number) {
 		return ipcRendererInvoke('getNetConnectionAddress', host, timeout);
+	},
+
+	onFocus(cb: () => void) {
+		onFocusCb.push(cb);
 	},
 
 	onUpdatePreference: (cb:(preferenceId:string, newValue:any) => void) => {

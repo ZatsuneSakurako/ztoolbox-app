@@ -38,6 +38,8 @@ export interface IZnmApi {
 
 	getNetConnectionAddress(host: string, timeout?: number): Promise<net.AddressInfo>
 
+	onFocus(cb: () => void): void
+
 	onUpdatePreference(cb: (preferenceId: string, newValue: any) => void): void
 	onShowSection(cb: (sectionName:string) => void): void
 	onThemeUpdate(cb: (theme:string, background_color:string) => void): void
