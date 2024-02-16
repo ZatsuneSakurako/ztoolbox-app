@@ -231,6 +231,11 @@ section article.wsClientDatasItem
 	&:not(.activated) .openGraphData
 		display: none
 
+	&.isMature
+		transition: filter .5s
+		&:not(:hover)
+			filter: blur(7px)
+
 	.og-image
 		max-height: 150px
 		max-width: 100%
