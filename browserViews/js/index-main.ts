@@ -5,7 +5,6 @@ import {Dict} from "./bo/Dict.js";
 import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
 
-declare var CodeMirror : any;
 declare var window : BridgedWindow;
 
 function nonNullable<T>(element:T|null): NonNullable<T> {
@@ -19,82 +18,9 @@ const main_textarea_output = nonNullable(document.querySelector<HTMLTextAreaElem
 
 
 
-const editors = {
-	html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
-	css: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}',
-	js: `function test(){return true;}
-document.body.classList.add('red');
-console.info("test console");
-
-const {serialize, unserialize} = locutus.php.var;
-console.dir(serialize(['test']));
-console.dir(unserialize('a:1:{i:0;s:4:"test";}'));`
-};
-
-
-
 let codeTesterLoaded = false;
 function codeTesterLoader() {
 	codeTesterLoaded = true;
-	const defaultOptions = {
-		indentWithTabs: true,
-		lineNumbers: true,
-		lineSeparator: "\n",
-		lineWrapping: true,
-		theme: 'monokai'
-	};
-
-	const htmlEditor = CodeMirror(document.querySelector('#input1'), Object.assign({
-		value: editors.html,
-		mode: 'htmlmixed'
-	}, defaultOptions));
-	const cssEditor = CodeMirror(document.querySelector('#input2'), Object.assign({
-		value: editors.css,
-		mode: 'css'
-	}, defaultOptions));
-	const jsEditor = CodeMirror(document.querySelector('#input3'), Object.assign({
-		value: editors.js,
-		mode: 'javascript'
-	}, defaultOptions));
-
-
-
-	const iframe = nonNullable(document.querySelector<HTMLIFrameElement>('iframe'));
-	window.addEventListener('message', function (e: WindowEventMap['message']) {
-		if (e.data.type === 'iframe-loaded') {
-			// @ts-ignore
-			const znm_init : (object:object)=>void = iframe.contentWindow?.znm_init;
-
-			try {
-				editors.html = htmlEditor.getValue();
-			} catch (e) {
-				console.error(e);
-			}
-
-			try {
-				editors.css = cssEditor.getValue();
-			} catch (e) {
-				console.error(e);
-			}
-
-			try {
-				editors.js = jsEditor.getValue();
-			} catch (e) {
-				console.error(e);
-			}
-
-			znm_init({
-				type: 'init',
-				html: editors.html,
-				css: editors.css,
-				js: editors.js
-			});
-		}
-	}, false);
-
-
-
-	iframe.contentWindow?.location.reload();
 }
 
 
@@ -211,14 +137,4 @@ document.addEventListener('click', function digCmd(e) {
 		})
 		.catch(console.error)
 	;
-});
-
-document.addEventListener('click', function reloadIframe(e) {
-	const target = (<HTMLElement>e.target).closest<HTMLElement>('[data-reload-iframe]');
-	if (!target) return;
-
-	const $iframe = document.querySelector<HTMLIFrameElement>('iframe#iframe');
-	if ($iframe && $iframe.contentWindow) {
-		$iframe.contentWindow.location.reload();
-	}
 });

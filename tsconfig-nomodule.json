@@ -14,7 +14,6 @@
 		"types": [
 			"node",
 			"browserify",
-			"codemirror",
 			"del",
 			"gulp-pug",
 			"sass-embedded"

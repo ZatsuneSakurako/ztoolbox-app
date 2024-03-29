@@ -6,7 +6,6 @@ const baseDir = self.parent.location.href.replace(/[^/]+$/, '');
 (async () => {
 	const importMap = {
 		"imports": {
-			"locutus": baseDir + "/lib/locutus/index.js",
 			"yaml": baseDir + "/lib/yaml/index.js"
 		}
 	}

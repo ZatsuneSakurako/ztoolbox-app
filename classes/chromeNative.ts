@@ -1,4 +1,3 @@
-import http from "http";
 import {
 	ClientToServerEvents, IChromeExtensionData,
 	InterServerEvents, IWsMoveSourceData, preferenceData, ResponseCallback,
@@ -10,13 +9,14 @@ import {Server, Socket, RemoteSocket} from "socket.io";
 import "../src/websitesData/refreshWebsitesData.js";
 import {BrowserWindow} from "electron";
 import {settings} from "../src/init.js";
+import Fastify, {FastifyInstance} from "fastify";
 
 
 
 export type socket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
 export type remoteSocket = RemoteSocket<ServerToClientEvents, SocketData>;
-export const server = http.createServer(),
-	io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server)
+export const fastifyApp: FastifyInstance = Fastify({}),
+	io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(fastifyApp.server)
 ;
 
 

@@ -1,65 +1,93 @@
-// @ts-ignore
-import {stripHtml as _stripHtml} from 'string-strip-html';
-import 'locutus';
+const editors = {
+	html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
+	css: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}',
+	js: `function test(){return true;}
+document.body.classList.add('red');
+console.info("test console");
 
-import {BridgedWindow} from "./bo/bridgedWindow.js";
-// @ts-ignore
-const parentWindow : BridgedWindow = window.parent;
+/*const {serialize, unserialize} = locutus.php.var;
+console.dir(serialize(['test']));
+console.dir(unserialize('a:1:{i:0;s:4:"test";}'));*/`
+};
 
-const stripHtml:typeof _stripHtml = (window as any).stringStripHtml.stripHtml;
-
-
-
-function clearAllSelect(sel: string) {
-	document.querySelectorAll(sel).forEach(node => {
-		node.remove();
-	})
-}
-
-async function init(data: { type:'init', js: string, css: string, html: string }) {
-	const nonce = await parentWindow.znmApi.nonce();
-	if (data.type !== 'init') {
-		return;
-	}
-
+let flemInstance : FlemInstance|null = null;
+async function init(data: { js: string, css: string, html: string }) {
 	console.info('init');
-	if (!!data.js) {
-		const keys = new Set(['Function', ...Object.keys(globalThis)]),
-			js = 'var ' +
-				[...keys]
-					.filter(n => {
-						return !['document', 'console', 'Math', 'setTimout', 'setInterval', 'clearTimeout', 'clearInterval', 'locutus'].includes(n);
-					})
-					.map(n => n + ' = void 0')
-					.join(",")
-				+ ';'
-		;
-
-		clearAllSelect('head script.onMessage');
-		const script = document.createElement('script');
-		script.nonce = nonce;
-		script.textContent = `(function(){ 'use strict'; ${js}; ${data.js} }.bind(null))()`;
-		script.classList.add('onMessage');
-		document.head.append(script);
-	}
-	if (!!data.css) {
-		clearAllSelect('head style.onMessage');
-		const css = document.createElement('style');
-		css.nonce = nonce;
-		css.textContent = data.css;
-		css.classList.add('onMessage');
-		document.head.appendChild(css);
-	}
-	if (!!data.html) {
-		document.body.textContent = '';
-		document.body.innerHTML = stripHtml(data.html, {
-			skipHtmlDecoding: true,
-			onlyStripTags: ['html', 'head', 'script']
-		}).result;
-	}
+	let opts : IFlemOptions = {
+		theme: 'material',
+		files: [
+			{
+				name: 'app.js',
+				content: data.js
+			},
+			{
+				name: 'app.css',
+				content: data.css
+			},
+			{
+				name: 'app.html',
+				content: data.html
+			},
+		],
+		links: [
+			{
+				name: 'lodash',
+				type: 'script',
+				url: 'https://unpkg.com/lodash'
+			},
+			{
+				name: 'dayjs',
+				type: 'script',
+				url: 'https://unpkg.com/dayjs'
+			},
+		]
+	};
+	flemInstance = Flems(document.body, opts);
 }
-// @ts-ignore
-window.znm_init = init;
-window.parent.postMessage({
-	type: 'iframe-loaded'
-}, window.parent.location.href);
+
+init({
+	js: editors.js,
+	css: editors.css,
+	html: editors.html
+});
+
+type FlemInstance = {
+	reload(): void
+	focus(): void
+	redraw(): void
+
+	onchange(fn: (instance:FlemInstance) => void): void
+	onload(fn: (instance:FlemInstance) => void): void
+	onloaded(fn: (instance:FlemInstance) => void): void
+}
+
+interface IFlemOptions {
+	files: {
+		name: string,
+		content: string
+		compiler?: string|Function
+	}[],
+	links: {
+		name: string,
+		type: string,
+		url: string
+	}[],
+
+	middle?: number,
+	selected?: string, // '.js',
+	color?: string, // 'rgb(38,50,56)',
+	theme?: 'material'|'none'|'default', // and 'none' or 'default'
+	resizeable?: boolean,
+	editable?: boolean,
+	toolbar?: boolean,
+	fileTabs?: boolean,
+	linkTabs?: boolean,
+	shareButton?: boolean,
+	reloadButton?: boolean,
+	console?: boolean,
+	autoReload?: boolean,
+	autoReloadDelay?: number,
+	autoHeight?: boolean
+}
+
+declare var Flems : (target:HTMLElement, opts: IFlemOptions) => FlemInstance;

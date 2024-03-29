@@ -1,10 +1,11 @@
 import electron, {app, dialog, ipcMain} from 'electron';
+import fastifyStatic from '@fastify/static';
 import nunjucks from "nunjucks";
 import * as path from "path";
 import {sendNotification} from "./classes/notify.js";
 import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow.js";
 import {versionState} from "./classes/versionState.js";
-import {getWsClientDatas, io, moveWsClientUrl, server} from "./classes/chromeNative.js";
+import {fastifyApp, getWsClientDatas, io, moveWsClientUrl} from "./classes/chromeNative.js";
 import {createWindow, getMainWindow} from "./classes/windowManager.js";
 import {execSync} from "child_process";
 import {SettingConfig} from "./classes/bo/settings.js";
@@ -22,13 +23,37 @@ import {settings} from "./src/init.js";
 import Dict = NodeJS.Dict;
 
 
-server.listen({
-	hostname: 'localhost',
+
+fastifyApp.register(fastifyStatic, {
+	root: path.join(resourcePath, 'browserViews'),
+	prefix: '/',
+	allowedPath(pathName) {
+		return pathName.endsWith('.html');
+	},
+	decorateReply: false,
+});
+fastifyApp.register(fastifyStatic, {
+	root: path.join(resourcePath, 'browserViews/js'),
+	prefix: '/js/',
+	decorateReply: false,
+});
+fastifyApp.register(fastifyStatic, {
+	root: path.join(resourcePath, 'browserViews/lib'),
+	prefix: '/lib/',
+	decorateReply: false,
+});
+fastifyApp.listen({
+	host: 'localhost',
 	port: 42080,
-}, () => {
+}, (err) => {
+	if (err) {
+		console.error(err);
+	}
 	console.log('Listening at localhost:42080');
 });
-io.listen(server);
+
+
+
 
 ipcMain.handle('openExternal', async (event, url: string) => {
 	return electron.shell.openExternal(url)

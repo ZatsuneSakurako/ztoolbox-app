@@ -15,9 +15,6 @@ main.grid
 		label(for="main_textarea_output", data-translate-id="output") Output
 		textarea#main_textarea_output(readonly)
 
-	div.grid-12(data-menu-show='code-tester')
-		button(data-reload-iframe="", data-translate-id="runCode") Run code !
-
 	div#variousInfos.grid-12(data-menu-show='infos')
 		div.loader-container
 			svg.loader(width="1em", height="1em")
@@ -28,8 +25,4 @@ main.grid
 			svg.loader(width="1em", height="1em")
 				circle(cx="0.5em", cy="0.5em", r="0.45em")
 
-	div#input1.grid-4(data-menu-show='code-tester')
-	div#input2.grid-4(data-menu-show='code-tester')
-	div#input3.grid-4(data-menu-show='code-tester')
-
-	iframe#iframe.grid-12(sandbox='allow-same-origin allow-scripts', src='iframe.html', data-menu-show='code-tester')
+	iframe#iframe.grid-12(src='http://localhost:42080/iframe.html', data-menu-show='code-tester')

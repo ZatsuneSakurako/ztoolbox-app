@@ -10,26 +10,40 @@ ipcMain.handle('nonce-ipc', async (event, ...args) => {
 app.whenReady()
 	.then(function () {
 		session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-			let protocol : string = '';
+			let url : URL|null = null;
 			try {
-				protocol = new URL(details.url).protocol
+				url = new URL(details.url)
 			} catch (e) {
 				console.error(e);
 			}
-			if (protocol !== 'file:') {
+			if (url?.protocol !== 'file:') {
 				// If not file protocol, leave current csp headers
 				callback({});
 				return;
 			}
 
+
+			if (url && url.protocol === 'file:' && url.pathname.endsWith('/browserViews/iframe.html')) {
+				callback({
+					responseHeaders: {
+						...details.responseHeaders,
+						'Content-Security-Policy': [
+							`default-src 'none'; script-src 'self' https://unpkg.com 'unsafe-inline'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src https://unpkg.com`
+						]
+					}
+				});
+				return;
+			}
+
+
 			callback({
 				responseHeaders: {
 					...details.responseHeaders,
 					'Content-Security-Policy': [
-						`default-src 'none'; script-src 'self' https://unpkg.com/ 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src https://api.duckduckgo.com`
+						`default-src 'none'; script-src 'self' https://unpkg.com 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; media-src 'self'; frame-src http://localhost:42080; font-src 'self'; connect-src https://api.duckduckgo.com https://unpkg.com`
 					]
 				}
-			})
+			});
 		});
 	})
 	.catch(console.error)
