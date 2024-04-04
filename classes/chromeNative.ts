@@ -218,15 +218,17 @@ export async function moveWsClientUrl(srcData:IWsMoveSourceData, targetId:string
 	let targetSocket: RemoteSocket<ServerToClientEvents, SocketData>|null = null,
 		sourceTargetSocket: RemoteSocket<ServerToClientEvents, SocketData>|null = null
 	;
-	for (let client of sockets) {
-		if (client.id === targetId) {
-			targetSocket = client;
-		}
-		if (client.id === srcData.id) {
-			sourceTargetSocket = client;
-		}
-		if (!!targetSocket && !!sourceTargetSocket) {
-			break;
+	if (srcData.id) {
+		for (let client of sockets) {
+			if (client.id === targetId) {
+				targetSocket = client;
+			}
+			if (client.id === srcData.id) {
+				sourceTargetSocket = client;
+			}
+			if (!!targetSocket && !!sourceTargetSocket) {
+				break;
+			}
 		}
 	}
 

@@ -57,7 +57,7 @@ export interface IChromeExtensionData {
 }
 
 export interface IWsMoveSourceData {
-	id: string
+	id?: string
 	tabDataUrl:string
 }
 

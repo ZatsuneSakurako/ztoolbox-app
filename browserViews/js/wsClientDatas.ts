@@ -108,11 +108,13 @@ function dragstartHandler(target:HTMLElement, e:DragEvent) {
 	}));
 	e.dataTransfer.effectAllowed = "move";
 }
-function dragoverHandler(target:HTMLElement, e:DragEvent) {
+function extractUriData(e:DragEvent) : IWsMoveSourceData|IWsMoveSourceData[]|void {
 	if (!e.dataTransfer) {
 		throw new Error('NO_DATA_TRANSFERT');
 	}
 	e.preventDefault();
+
+
 
 	const transferredData = e.dataTransfer.getData(appDataType);
 	let data : IWsMoveSourceData|undefined = undefined;
@@ -121,7 +123,56 @@ function dragoverHandler(target:HTMLElement, e:DragEvent) {
 	} catch (e) {
 		console.error(e);
 	}
-	if (typeof data === 'object' && data && data.id === target.id) {
+
+	if (!data) {
+		let raw : string|undefined = e.dataTransfer.getData("text/html");
+		let uriList : (string|undefined)[] | undefined = undefined
+		if (!!raw) {
+			uriList = [...raw.matchAll(/<a.*?href=("[^"]+").*?>/gm)].map<string|undefined>(item => {
+				const rawUrl = item.at(1);
+				if (rawUrl === undefined) return;
+				return JSON.parse(rawUrl);
+			});
+
+		}
+
+		if (!uriList) {
+			raw = e.dataTransfer.getData("text/uri-list");
+			if (raw) {
+				uriList = [...raw.split(/\w+:\/\//)]
+					.filter(item => !!item)
+				;
+			}
+		}
+
+		if (uriList && uriList.length) {
+			let output:  IWsMoveSourceData[] = [];
+
+			for (let url of uriList) {
+				if (!url) continue;
+
+				output.push({
+					tabDataUrl: url,
+				});
+			}
+			return output;
+		}
+	}
+
+	if (!data || typeof data !== 'object' || !data.id || !data.tabDataUrl) {
+		throw new Error('DATA_TRANSFERT_DATA_ERROR');
+	}
+
+	return data;
+}
+function dragoverHandler(target:HTMLElement, e:DragEvent) {
+	if (!e.dataTransfer) {
+		throw new Error('NO_DATA_TRANSFERT');
+	}
+	e.preventDefault();
+
+	const data = extractUriData(e);
+	if (!Array.isArray(data) && typeof data === 'object' && data && data.id === target.id) {
 		// No Self tab "moving"
 		e.dataTransfer.dropEffect = "none";
 		return;
@@ -135,13 +186,20 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 	}
 	e.preventDefault();
 
-	const transferredData = e.dataTransfer.getData(appDataType);
-	let data : IWsMoveSourceData|undefined = undefined;
-	try {
-		data = JSON.parse(transferredData);
-	} catch (e) {
-		console.error(e);
+
+	const data = extractUriData(e);
+	if (Array.isArray(data)) {
+		console.debug('Opening ', data, 'into', target.id);
+		for (let url of data) {
+			if (!url) continue;
+
+			window.znmApi.moveWsClientUrl(url, target.id)
+				.catch(console.error)
+			;
+		}
+		return;
 	}
+
 	if (!data || typeof data !== 'object' || !data.id || !data.tabDataUrl) {
 		throw new Error('DATA_TRANSFERT_DATA_ERROR');
 	}
