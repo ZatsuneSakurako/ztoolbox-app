@@ -18,6 +18,8 @@ export interface IZnmApi {
 	getWsClientDatas(): Promise<Dict<IChromeExtensionData>>
 	moveWsClientUrl(data: IWsMoveSourceData, targetId: string): Promise<void>
 
+	parseIni(rawContent: string): Promise<Dict<any>>
+
 	getProcessArgv(): Promise<string[]>
 	getVersionState(): Promise<VersionState|null>
 

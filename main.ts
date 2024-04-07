@@ -21,6 +21,7 @@ import {getNetConnectionAddress} from "./src/getNetConnectionAddress.js";
 import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 import {settings} from "./src/init.js";
 import Dict = NodeJS.Dict;
+import ini from "ini";
 
 
 
@@ -145,7 +146,11 @@ ipcMain.handle('getWsClientDatas', async function (event, args) {
 
 ipcMain.handle('moveWsClientUrl', async function (event, srcData:IWsMoveSourceData, targetId:string) {
 	return await moveWsClientUrl(srcData, targetId);
-})
+});
+
+ipcMain.handle('parseIni', async function (event, rawContent:string) {
+	return ini.parse(rawContent);
+});
 
 ipcMain.handle('i18n', async (event, key) => {
 	const _ = await i18n;

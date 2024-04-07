@@ -108,11 +108,17 @@ function dragstartHandler(target:HTMLElement, e:DragEvent) {
 	}));
 	e.dataTransfer.effectAllowed = "move";
 }
-function extractUriData(e:DragEvent) : IWsMoveSourceData|IWsMoveSourceData[]|void {
+function extractUriData(e:DragEvent) : IWsMoveSourceData|IWsMoveSourceData[]|File[]|void {
 	if (!e.dataTransfer) {
 		throw new Error('NO_DATA_TRANSFERT');
 	}
 	e.preventDefault();
+
+
+
+	if (e.dataTransfer.files.length > 0) {
+		return [...e.dataTransfer.files];
+	}
 
 
 
@@ -193,9 +199,38 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 		for (let url of data) {
 			if (!url) continue;
 
-			window.znmApi.moveWsClientUrl(url, target.id)
-				.catch(console.error)
-			;
+			if (url instanceof File) {
+				if (url.path.toLowerCase().endsWith('.url')) {
+					url.text()
+						.then(async (fileRaw) => {
+							let iniData : Dict<any>|null = null;
+							try {
+								iniData = await window.znmApi.parseIni(fileRaw);
+							} catch (e) {
+								console.error(e);
+							}
+
+							if (iniData && typeof iniData === 'object' && iniData.InternetShortcut && typeof iniData.InternetShortcut === 'object' && typeof iniData.InternetShortcut.url === 'string') {
+								const url: string = iniData.InternetShortcut.url;
+								window.znmApi.moveWsClientUrl({
+									tabDataUrl: url
+								}, target.id)
+									.catch(console.error)
+								;
+							} else {
+								console.error('Wrong file format', iniData ?? fileRaw);
+							}
+						})
+						.catch(console.error)
+					;
+				} else {
+					console.error('Wrong file format', url);
+				}
+			} else {
+				window.znmApi.moveWsClientUrl(url, target.id)
+					.catch(console.error)
+				;
+			}
 		}
 		return;
 	}
