@@ -154,6 +154,9 @@ document.addEventListener('click', function (e) {
 });
 
 async function onLoad() {
+	console.info('index - onLoad');
+	document.documentElement.classList.add('loaded');
+
 	window.znmApi.onShowSection(function (sectionName:string) {
 		if (!sectionName || sectionName === 'default') {
 			sectionName = defaultMenu;

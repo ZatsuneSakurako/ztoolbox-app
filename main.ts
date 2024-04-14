@@ -5,7 +5,7 @@ import * as path from "path";
 import {sendNotification} from "./classes/notify.js";
 import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow.js";
 import {versionState} from "./classes/versionState.js";
-import {fastifyApp, getWsClientDatas, io, moveWsClientUrl} from "./classes/chromeNative.js";
+import {fastifyApp, getWsClientDatas, moveWsClientUrl} from "./classes/chromeNative.js";
 import {createWindow, getMainWindow} from "./classes/windowManager.js";
 import {execSync} from "child_process";
 import {SettingConfig} from "./classes/bo/settings.js";

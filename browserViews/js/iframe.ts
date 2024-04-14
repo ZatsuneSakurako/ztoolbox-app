@@ -1,93 +1,68 @@
-const editors = {
-	html: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>',
-	css: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}',
-	js: `function test(){return true;}
-document.body.classList.add('red');
-console.info("test console");
-
-/*const {serialize, unserialize} = locutus.php.var;
-console.dir(serialize(['test']));
-console.dir(unserialize('a:1:{i:0;s:4:"test";}'));*/`
-};
+import {FlemInstance, IEditorData, IFlemOptions} from "./bo/iframe.js";
 
 let flemInstance : FlemInstance|null = null;
-async function init(data: { js: string, css: string, html: string }) {
+async function init(data: IEditorData) {
 	console.info('init');
 	let opts : IFlemOptions = {
 		theme: 'material',
-		files: [
-			{
-				name: 'app.js',
-				content: data.js
-			},
-			{
-				name: 'app.css',
-				content: data.css
-			},
-			{
-				name: 'app.html',
-				content: data.html
-			},
-		],
-		links: [
-			{
-				name: 'lodash',
+		shareButton: false,
+
+		files: data.files,
+        selected: data.files.find(file => {
+			return file.name.endsWith('.js')
+        })?.name,
+		links: data.libs
+			.map(lib => {
+				return {
+				name: lib,
 				type: 'script',
-				url: 'https://unpkg.com/lodash'
-			},
-			{
-				name: 'dayjs',
-				type: 'script',
-				url: 'https://unpkg.com/dayjs'
-			},
-		]
+				url: 'https://unpkg.com/' + lib
+				}
+			})
 	};
 	flemInstance = Flems(document.body, opts);
+
+	flemInstance.onchange(function (instance) {
+		window.parent.postMessage({
+			type: 'export-data',
+			files: instance.files
+				.map(file => {
+					const clonedFileData = {
+						...file
+					};
+					delete clonedFileData.doc;
+					return clonedFileData;
+				}),
+			links: instance.links.map(link => link.name)
+		}, '*');
+	})
 }
 
-init({
-	js: editors.js,
-	css: editors.css,
-	html: editors.html
+window.addEventListener('message', function (e) {
+	if (!['http://localhost:42080', 'file://'].includes(e.origin)) {
+		throw new Error(`WRONG_ORIGIN "${e.origin}"`);
+	}
+	if (!e.data && typeof e.data !== 'object') {
+		console.error('UnexpectedData', e);
+		return;
+	}
+
+	switch (e.data.type) {
+		case 'loadData':
+			init(e.data.editors)
+				.catch(console.error)
+			;
+			break;
+		default:
+			console.warn('Unknown data type', e);
+	}
+}, {
+	passive: true
 });
 
-type FlemInstance = {
-	reload(): void
-	focus(): void
-	redraw(): void
-
-	onchange(fn: (instance:FlemInstance) => void): void
-	onload(fn: (instance:FlemInstance) => void): void
-	onloaded(fn: (instance:FlemInstance) => void): void
-}
-
-interface IFlemOptions {
-	files: {
-		name: string,
-		content: string
-		compiler?: string|Function
-	}[],
-	links: {
-		name: string,
-		type: string,
-		url: string
-	}[],
-
-	middle?: number,
-	selected?: string, // '.js',
-	color?: string, // 'rgb(38,50,56)',
-	theme?: 'material'|'none'|'default', // and 'none' or 'default'
-	resizeable?: boolean,
-	editable?: boolean,
-	toolbar?: boolean,
-	fileTabs?: boolean,
-	linkTabs?: boolean,
-	shareButton?: boolean,
-	reloadButton?: boolean,
-	console?: boolean,
-	autoReload?: boolean,
-	autoReloadDelay?: number,
-	autoHeight?: boolean
-}
+console.info('iframe init !');
+window.parent.postMessage({
+	type: 'iframe-init',
+}, '*');
 
 declare var Flems : (target:HTMLElement, opts: IFlemOptions) => FlemInstance;

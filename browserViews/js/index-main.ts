@@ -4,6 +4,7 @@ import {VersionState} from "../../classes/bo/versionState.js";
 import {Dict} from "./bo/Dict.js";
 import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
+import {IEditorData} from "./bo/iframe.js";
 
 declare var window : BridgedWindow;
 
@@ -137,4 +138,63 @@ document.addEventListener('click', function digCmd(e) {
 		})
 		.catch(console.error)
 	;
+});
+
+
+
+console.info('index-main init !');
+const editors: IEditorData = {
+	files: [
+		{
+			name: 'app.html',
+			content: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>'
+		},
+		{
+			name: 'app.css',
+			content: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}'
+		},
+		{
+			name: 'app.js',
+			content: `function test(){return true;}
+document.body.classList.add('red');
+console.info("test console");
+
+/*const {serialize, unserialize} = locutus.php.var;
+console.dir(serialize(['test']));
+console.dir(unserialize('a:1:{i:0;s:4:"test";}'));*/`,
+		},
+	],
+	libs: [
+		'lodash',
+		'dayjs',
+	]
+};
+window.addEventListener('message', function (e) {
+	if (!['http://localhost:42080', 'file://'].includes(e.origin)) {
+		throw new Error(`WRONG_ORIGIN "${e.origin}"`);
+	}
+	if (!e.data && typeof e.data !== 'object') {
+		console.error('UnexpectedData', e);
+		return;
+	}
+
+	switch (e.data.type) {
+		case 'export-data':
+			editors.libs = e.data.links;
+			editors.files = e.data.files;
+			console.debug(editors);
+			break;
+		case 'iframe-init':
+			const $iframe = document.querySelector<HTMLIFrameElement>('iframe#iframe');
+			if (!$iframe?.contentWindow) {
+				throw new Error('IFRAME_NOT_FOUND');
+			}
+			$iframe.contentWindow.postMessage({
+				type: 'loadData',
+				editors
+			}, '*');
+			break;
+	}
+}, {
+	passive: true
 });
