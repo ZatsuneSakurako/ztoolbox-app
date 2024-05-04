@@ -15,8 +15,6 @@ function nonNullable<T>(element:T|null): NonNullable<T> {
 	return element;
 }
 
-const main_textarea_output = nonNullable(document.querySelector<HTMLTextAreaElement>('textarea#main_textarea_output'));
-
 
 
 let codeTesterLoaded = false;
@@ -121,24 +119,6 @@ window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 }, false);
 
 
-
-
-
-
-document.addEventListener('click', function digCmd(e) {
-	const target = (<HTMLElement>e.target).closest<HTMLElement>('[data-dig-cmd]'),
-		dataDigValue = target?.dataset.digCmd
-	;
-	if (!dataDigValue) return;
-
-	window.znmApi.digCmd(dataDigValue)
-		.then(result => {
-			main_textarea_output.parentElement?.classList.remove('hidden');
-			main_textarea_output.value = result;
-		})
-		.catch(console.error)
-	;
-});
 
 
 

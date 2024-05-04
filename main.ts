@@ -62,23 +62,6 @@ ipcMain.handle('openExternal', async (event, url: string) => {
 	;
 });
 
-ipcMain.handle('digCmd', (event, domain: string) => {
-	let result:string = '';
-	try {
-		// noinspection SpellCheckingInspection
-		result = execSync(`dig ${domain} +noall +answer`, {
-			encoding: "utf-8"
-		});
-	} catch (e) {
-		console.error(e);
-	}
-	return result
-		.split(/\r?\n/)
-		.filter(s => s.length && s[0] !== ';')
-		.join('')
-	;
-});
-
 ipcMain.handle('preferenceFileDialog', async function (event, prefId:string): Promise<{ canceled: boolean, filePaths: string[] }|string> {
 	const mainWindow = getMainWindow();
 	if (!mainWindow) return 'NO_MAIN_WINDOW';

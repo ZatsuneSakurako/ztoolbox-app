@@ -105,7 +105,6 @@ function ipcRendererInvoke(channel: string, ...args: any[]) {
 const znmApi:IZnmApi = {
 	nonce: () => ipcRendererInvoke('nonce-ipc'),
 	openExternal: (url: string) => ipcRendererInvoke('openExternal', url),
-	digCmd: (domain: string) => ipcRendererInvoke('digCmd', domain),
 	preferenceFileDialog: (prefId) => ipcRendererInvoke('preferenceFileDialog', prefId),
 	_: (key:string) => ipcRendererInvoke('i18n', key),
 	getWsClientDatas: () => ipcRendererInvoke('getWsClientDatas'),
