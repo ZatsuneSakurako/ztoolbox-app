@@ -206,6 +206,9 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 							let iniData : Dict<any>|null = null;
 							try {
 								iniData = await window.znmApi.parseIni(fileRaw);
+								if (!!iniData?.InternetShortcut && !iniData?.InternetShortcut?.url) {
+									iniData.InternetShortcut.url = iniData?.InternetShortcut?.URL;
+								}
 							} catch (e) {
 								console.error(e);
 							}
