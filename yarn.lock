@@ -3067,16 +3067,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^29.1.0":
-  version: 29.1.0
-  resolution: "electron@npm:29.1.0"
+"electron@npm:^30.0.3":
+  version: 30.0.3
+  resolution: "electron@npm:30.0.3"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^20.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: e3df818ed473d017f9fa46ed2b3561a15cf9f9bf17a8696c6e5b1b58be205d26a3709cbcdde94a67310c20137de44d25efb154e24e7a6c5be434120b7b984631
+  checksum: 0ef0b4cab72047df675af5a3f44cb5a32f45bbced9e92eb9049be1b37c9b85c1c657d14600dbcc2a32988df7d98a24d75f50b9e89c34142ea22fa90136bb2cdf
   languageName: node
   linkType: hard
 
@@ -9810,7 +9810,7 @@ __metadata:
     cron-parser: "npm:^4.9.0"
     del: "npm:^7.1.0"
     dotenv: "npm:^16.4.5"
-    electron: "npm:^29.1.0"
+    electron: "npm:^30.0.3"
     electron-builder: "npm:^24.13.3"
     esm: "npm:esm-wallaby@^3.2.26"
     fastify: "npm:^4.26.2"

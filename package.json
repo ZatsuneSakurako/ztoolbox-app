@@ -50,7 +50,7 @@
     "@types/ws": "^8.5.10",
     "@types/yargs": "^17.0.32",
     "del": "^7.1.0",
-    "electron": "^29.1.0",
+    "electron": "^30.0.3",
     "electron-builder": "^24.13.3",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
