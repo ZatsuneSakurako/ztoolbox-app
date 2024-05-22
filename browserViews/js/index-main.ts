@@ -139,9 +139,15 @@ const editors: IEditorData = {
 document.body.classList.add('red');
 console.info("test console");
 
-/*const {serialize, unserialize} = locutus.php.var;
-console.dir(serialize(['test']));
-console.dir(unserialize('a:1:{i:0;s:4:"test";}'));*/`,
+import * as uuid from 'https://jspm.dev/uuid';
+console.info('uuid v4 :', uuid.v4());
+
+const MY_NAMESPACE = window.localStorage.getItem('NAMESPACE') || uuid.v4(); // Or replace with a static uuid
+console.info(
+	'uuid v5 (sha1) :',
+	uuid.v5('Lorem Ipsum', MY_NAMESPACE)
+);
+`,
 		},
 	],
 	libs: [
