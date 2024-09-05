@@ -20,14 +20,6 @@ const baseDirectory = path.normalize(`${resourcePath}/chrome_messaging`);
 
 const filePath = path.normalize(`${baseDirectory}/my_host.${process.platform === 'win32' ? 'bat' : 'sh'}`);
 
-interface IBaseNativeHost {
-	name: string;
-	description: string;
-	path: string;
-	type: string;
-	allowed_origins?: string[];
-	allowed_extensions?: string[];
-}
 interface IChromeNativeHost {
 	name: string;
 	description: string;
@@ -221,7 +213,7 @@ export async function getInstallStates(): Promise<getInstallStatesResult> {
 
 
 
-async function installForBrowser(browser: browsers, isUninstall=false) : Promise<boolean> {
+async function uninstallForBrowser(browser: browsers) : Promise<boolean> {
 	if (process.platform !== "darwin" && process.platform !== "win32" && process.platform !== "linux") {
 		throw new Error('PLATFORM_NOT_SUPPORTED');
 	}
@@ -244,28 +236,12 @@ async function installForBrowser(browser: browsers, isUninstall=false) : Promise
 			return false;
 		}
 
-		if (isUninstall) {
-			return await installPath.destroy();
-		} else {
-			console.warn(`${browser} reg key found, installing`);
-			return await installPath.set('', Registry.REG_SZ, manifestPath);
-		}
+		return await installPath.destroy();
 	} else {
 		try {
 			const installPath = getInstallPath(browser, platform);
-			if (isUninstall) {
-				if (fs.existsSync(installPath)) {
-					fs.unlinkSync(installPath);
-				}
-			} else {
-				const baseDir = path.dirname(installPath);
-				if (!fs.existsSync(baseDir)) {
-					fs.mkdirSync(baseDir, {
-						recursive: true
-					});
-				}
-
-				fs.symlinkSync(manifestPath, installPath);
+			if (fs.existsSync(installPath)) {
+				fs.unlinkSync(installPath);
 			}
 
 			return true;
@@ -275,7 +251,12 @@ async function installForBrowser(browser: browsers, isUninstall=false) : Promise
 		}
 	}
 }
-export async function install(isUninstall=false): Promise<installResult> {
+
+/**
+ * @deprecated
+ * TODO delete / clear chrome native messing related lib/files
+ */
+export async function uninstall(): Promise<installResult> {
 	const output : BrowsersOutput<boolean> = {
 		chrome: false,
 		chromium: false,
@@ -283,7 +264,7 @@ export async function install(isUninstall=false): Promise<installResult> {
 	}
 	for (let browser of browsers) {
 		try {
-			output[browser] = await installForBrowser(browser, isUninstall);
+			output[browser] = await uninstallForBrowser(browser);
 		} catch (e) {
 			console.error(e);
 			output[browser] = false;

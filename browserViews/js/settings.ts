@@ -351,7 +351,7 @@ async function loadInstallChromeMessaging() {
 
 	$input.dataset.translateId = `preferences.installChromeMessaging_title${isUninstall ? '_off' : ''}`;
 	$input.dataset.isUninstall = isUninstall ? '1' : '';
-	$input.disabled = false;
+	$input.disabled = !isUninstall;
 }
 
 document.addEventListener('click', function onPrefButtonClick(e: MouseEvent) {
@@ -363,17 +363,21 @@ document.addEventListener('click', function onPrefButtonClick(e: MouseEvent) {
 	switch (button.name) {
 		case "installChromeMessaging":
 			button.disabled = true;
-			window.znmApi.chromeNative_install(!!button.dataset.isUninstall)
-				.then(console.dir)
-				.catch(err => {
-					console.error(err);
-				})
-				.finally(() => {
-					loadInstallChromeMessaging()
-						.catch(console.error)
-					;
-				})
-			;
+			if (!!button.dataset.isUninstall) {
+				window.znmApi.chromeNative_uninstall()
+					.then(console.dir)
+					.catch(err => {
+						console.error(err);
+					})
+					.finally(() => {
+						loadInstallChromeMessaging()
+							.catch(console.error)
+						;
+					})
+				;
+			} else {
+				console.error('Installing Chrome Native Messaging is not possible anymore')
+			}
 			break;
 		case 'testNotification':
 			window.znmApi.sendNotification('Notification test')

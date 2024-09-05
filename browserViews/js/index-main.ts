@@ -68,7 +68,7 @@ async function refreshData() {
 			.catch(console.error)
 	);
 	promises.push(
-		window.znmApi.getNetConnectionAddress('zatsunenomokou.eu')
+		window.znmApi.getNetConnectionAddress('duckduckgo.com')
 			.then(result => {
 				infosData.internetAddress = result.address;
 			})

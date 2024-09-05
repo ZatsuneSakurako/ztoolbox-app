@@ -55,11 +55,6 @@ const _yargs = yargs(hideBin(process.argv))
 				},
 				"extraFiles": [
 					{
-						"from": "chrome_messaging/",
-						"to": "resources/chrome_messaging",
-						"filter": "*"
-					},
-					{
 						"from": "images/",
 						"to": "resources/images",
 						"filter": [

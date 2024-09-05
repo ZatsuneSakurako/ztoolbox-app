@@ -20,8 +20,13 @@ export const fastifyApp: FastifyInstance = Fastify({}),
 ;
 
 
+/*
+	await chrome.storage.local.set({
+		chrome_native_token: 'VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c'
+	});
+ */
 io.use((socket, next) => {
-	const token = socket.request.headers.token;
+	const token = socket.request.headers.token ?? socket.handshake.query.token;
 	if (!token || token !== 'VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c') {
 		next(new Error("invalid"));
 	} else {
