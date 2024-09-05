@@ -157,12 +157,14 @@ export async function updateAutoStart() {
 	args.push(autoStartArgument);
 
 	if (process.platform === 'linux') {
+		args.push('--no-sandbox');
+
 		if (!app.isPackaged) {
 			// auto-launch trick to be able to use argument
 			// @ts-ignore
-			const fileBasedUtilities = await import('auto-launch/dist/fileBasedUtilities.js');
+			const fileBasedUtilities = (await import('auto-launch/dist/fileBasedUtilities.js')).default;
 			// @ts-ignore
-			const AutoLaunchLinux = await  import('auto-launch/dist/AutoLaunchLinux.js');
+			const AutoLaunchLinux = (await import('auto-launch/dist/AutoLaunchLinux.js')).default;
 			const targetFilePath = AutoLaunchLinux.getFilePath(autoLaunchName),
 				isEnabled = await fileBasedUtilities.isEnabled(targetFilePath)
 			;
