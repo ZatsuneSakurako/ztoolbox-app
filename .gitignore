@@ -8,7 +8,7 @@
 **/*.d.ts
 /*.js
 /scripts/*.js
-/chrome_messaging/*.js
+/chrome_messaging/*
 /classes/**/*.js
 /src/**/*.js
 
