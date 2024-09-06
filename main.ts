@@ -7,7 +7,6 @@ import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow.js";
 import {versionState} from "./classes/versionState.js";
 import {fastifyApp, getWsClientDatas, moveWsClientUrl} from "./classes/chromeNative.js";
 import {createWindow, getMainWindow} from "./classes/windowManager.js";
-import {execSync} from "child_process";
 import {SettingConfig} from "./classes/bo/settings.js";
 import './src/clipboard.js';
 import './src/contentSecurityPolicy.js';
@@ -16,7 +15,6 @@ import './src/hourlyAlarm.js';
 import {i18n} from "./src/i18next.js";
 import './src/manageProtocolAndAutostart.js';
 import {appRootPath, resourcePath} from "./classes/constants.js";
-import * as ChromeNativeInstallers from "./classes/chromeNativeInstallers.js";
 import {getNetConnectionAddress} from "./src/getNetConnectionAddress.js";
 import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 import {settings} from "./src/init.js";
@@ -188,12 +186,6 @@ ipcMain.handle('sendNotification', async (e, message: string, title?: string, so
 		title: title || app.name,
 		sound
 	});
-});
-ipcMain.handle('chromeNative_uninstall', async (e) : ReturnType<typeof ChromeNativeInstallers.uninstall> => {
-	return await ChromeNativeInstallers.uninstall();
-});
-ipcMain.handle('chromeNative_installStates', async () : ReturnType<typeof ChromeNativeInstallers.getInstallStates> => {
-	return await ChromeNativeInstallers.getInstallStates();
 });
 
 nunjucks.configure(path.normalize(`${resourcePath}/browserViews/`));

@@ -26,7 +26,7 @@ export const fastifyApp: FastifyInstance = Fastify({}),
 	});
  */
 io.use((socket, next) => {
-	const token = socket.request.headers.token ?? socket.handshake.query.token;
+	const token = socket.handshake.query.token;
 	if (!token || token !== 'VGWm4VnMVm72oIIEsaOd97GXNU6_Vg3Rv67za8Fzal9aAWNVUb1AWfAKktIu922c') {
 		next(new Error("invalid"));
 	} else {

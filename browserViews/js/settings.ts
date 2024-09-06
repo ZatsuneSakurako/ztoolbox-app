@@ -72,14 +72,7 @@ async function settingsLoader() {
 
 		if (!conf) continue;
 		if (conf.type === 'button') {
-
-			if ($input.name === 'installChromeMessaging') {
-				loadInstallChromeMessaging()
-					.catch(console.error)
-				;
-			} else {
-				$input.disabled = false;
-			}
+			$input.disabled = false;
 			continue;
 		}
 
@@ -332,28 +325,6 @@ async function onPathSettingClick(prefId:string, conf:SettingConfig):Promise<voi
 	}
 }
 
-async function loadInstallChromeMessaging() {
-	const $input = document.querySelector<HTMLButtonElement>('button#pref-installChromeMessaging') ?? undefined;
-	if (!$input) {
-		throw new Error('BUTTON_NOT_FOUND');
-	}
-
-	const states = await window.znmApi.chromeNative_installStates();
-
-	let isUninstall = false;
-	for (let [, state] of Object.entries(states)) {
-		if (state !== false) {
-			// If non-false state found : action will be "uninstall"
-			isUninstall = true;
-			break;
-		}
-	}
-
-	$input.dataset.translateId = `preferences.installChromeMessaging_title${isUninstall ? '_off' : ''}`;
-	$input.dataset.isUninstall = isUninstall ? '1' : '';
-	$input.disabled = !isUninstall;
-}
-
 document.addEventListener('click', function onPrefButtonClick(e: MouseEvent) {
 	if (!e.target) return;
 	const button = (<Element> e.target).closest<HTMLButtonElement>('button[type="button"][id^="pref-"]');
@@ -361,24 +332,6 @@ document.addEventListener('click', function onPrefButtonClick(e: MouseEvent) {
 
 	button.disabled = true;
 	switch (button.name) {
-		case "installChromeMessaging":
-			button.disabled = true;
-			if (!!button.dataset.isUninstall) {
-				window.znmApi.chromeNative_uninstall()
-					.then(console.dir)
-					.catch(err => {
-						console.error(err);
-					})
-					.finally(() => {
-						loadInstallChromeMessaging()
-							.catch(console.error)
-						;
-					})
-				;
-			} else {
-				console.error('Installing Chrome Native Messaging is not possible anymore')
-			}
-			break;
 		case 'testNotification':
 			window.znmApi.sendNotification('Notification test')
 				.then(result => {

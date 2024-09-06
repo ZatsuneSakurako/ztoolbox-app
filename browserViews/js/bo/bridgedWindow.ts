@@ -3,7 +3,6 @@ import {RandomJsonData} from "../../../classes/bo/settings.js";
 import {NotificationResponse} from "../../../classes/bo/notify.js";
 import {Dict} from "./Dict.js";
 import {IJsonWebsiteData} from "./websiteData.js";
-import {getInstallStatesResult, installResult} from "../../../classes/bo/chromeNativeInstallers.js";
 import {IChromeExtensionData, IWsMoveSourceData} from "../../../classes/bo/chromeNative.js";
 import * as net from "node:net";
 
@@ -30,8 +29,6 @@ export interface IZnmApi {
 	getPreference(preferenceId: string, type?:PreferenceTypes): Promise<RandomJsonData|undefined>
 	getPreferences(...preferenceIds: string[]): Promise<Dict<RandomJsonData|undefined>>
 	savePreference(preferenceId: string, newValue: RandomJsonData): Promise<boolean>
-	chromeNative_uninstall(): Promise<installResult>
-	chromeNative_installStates(): Promise<getInstallStatesResult>
 
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse>
 

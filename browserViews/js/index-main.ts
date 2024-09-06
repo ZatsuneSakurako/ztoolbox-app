@@ -2,18 +2,10 @@ import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import {VersionState} from "../../classes/bo/versionState.js";
 import {Dict} from "./bo/Dict.js";
-import * as chromeNativeInstallers from "../../classes/bo/chromeNativeInstallers.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
 import {IEditorData} from "./bo/iframe.js";
 
 declare var window : BridgedWindow;
-
-function nonNullable<T>(element:T|null): NonNullable<T> {
-	if (!element) {
-		throw new Error('MISSING_INPUT');
-	}
-	return element;
-}
 
 
 
@@ -31,7 +23,6 @@ interface IVariousInfosData {
 	processArgv?: string[] // NodeJS.Process.argv
 	versionState?: VersionState | null
 	internetAddress?: string
-	chromeNativeInstallersStates?: chromeNativeInstallers.getInstallStatesResult
 }
 async function refreshData() {
 	const $variousInfos = document.querySelector('#variousInfos');
@@ -71,13 +62,6 @@ async function refreshData() {
 		window.znmApi.getNetConnectionAddress('duckduckgo.com')
 			.then(result => {
 				infosData.internetAddress = result.address;
-			})
-			.catch(console.error)
-	);
-	promises.push(
-		window.znmApi.chromeNative_installStates()
-			.then(result => {
-				infosData.chromeNativeInstallersStates = result;
 			})
 			.catch(console.error)
 	);
