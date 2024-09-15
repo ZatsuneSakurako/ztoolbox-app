@@ -215,6 +215,9 @@ section article.wsClientDatasItem
 	grid-template-rows: auto auto
 	grid-template-areas: "itemIcon title" "itemIcon wsClientDatas"
 
+	&[draggable="true"]
+		cursor: pointer
+
 	&.activated
 		grid-template-rows: auto auto auto
 		grid-template-areas: "itemIcon title" "itemIcon wsClientDatas" "openGraphData openGraphData"
