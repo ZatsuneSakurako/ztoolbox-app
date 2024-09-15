@@ -81,7 +81,12 @@ const settings:SettingsConfig = {
 		"type": "yaml",
 		"value": {},
 		"group": "web_extension"
-	}
+	},
+	"newTabStylesheet": {
+		"type": "string",
+		"value": '',
+		"group": "web_extension",
+	},
 };
 
 export default settings;

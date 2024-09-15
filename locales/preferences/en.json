@@ -30,5 +30,6 @@
 	"freshRss_baseUrl_title": "URL of your FreshRss instance (should end with /i/)",
 	"notify_checkedData_title": "Show a notification for deviantArt/freshRss",
 	"notify_all_viewed_title": "Show a notification when all view in website(s)",
-	"tabPageServerIp_alias_title": "IP aliases"
+	"tabPageServerIp_alias_title": "IP aliases",
+	"newTabStylesheet_title": "New tab stylesheet"
 }
