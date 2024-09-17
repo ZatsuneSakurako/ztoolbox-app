@@ -41,6 +41,17 @@ fastifyApp.register(fastifyStatic, {
 	prefix: '/lib/',
 	decorateReply: false,
 });
+fastifyApp.register(fastifyStatic, {
+	root: path.join(resourcePath, 'browserViews/local-assets'),
+	prefix: '/local-assets/',
+	allowedPath(pathName) {
+		const extension = path.extname(pathName);
+		return /^\.(?:png|jpe?g|svg|web[pm])$/i.test(extension) && !pathName.split(/[\/\\]/).some(part => part.startsWith('.'));
+	},
+	cacheControl: true,
+	decorateReply: false,
+	serveDotFiles: false,
+});
 fastifyApp.listen({
 	host: 'localhost',
 	port: 42080,
