@@ -11,7 +11,10 @@ export interface INotificationAction {
 export interface INotificationClick {
 	response: 'click'
 }
-export type NotificationResponse = INotificationClose | INotificationAction | INotificationClick;
+export interface INotificationTimeout {
+	response: 'timeout'
+}
+export type NotificationResponse = INotificationClose | INotificationAction | INotificationClick | INotificationTimeout;
 
 
 

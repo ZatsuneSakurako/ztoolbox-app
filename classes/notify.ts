@@ -82,7 +82,14 @@ function _notifyElectron(options:NotifyElectron_Options):Promise<NotificationRes
 			 * Only required on Windows (in case the notification goes in the notification center)
 			 */
 			timer = setTimeout(() => {
-				notification.close();
+				try {
+					notification.close();
+				} catch (e) {
+					console.error(e);
+				}
+				resolve({
+					response: 'timeout',
+				});
 			}, 15000);
 		}
 
