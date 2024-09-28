@@ -1,4 +1,4 @@
-import {NativeImage} from "electron";
+import {NativeImage, NotificationAction} from "electron";
 
 export interface INotificationClose {
 	response: 'close',
@@ -21,4 +21,7 @@ export interface NotifyElectron_Options {
 	icon?:string | NativeImage
 	sound?:boolean
 	timeoutType?: Electron.Notification['timeoutType']
+	actions?: (Omit<NotificationAction, 'type' | 'text'> & {
+		text: NonNullable<NotificationAction['text']>,
+	})[]
 }
