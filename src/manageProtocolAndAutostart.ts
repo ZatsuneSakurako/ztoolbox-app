@@ -2,7 +2,7 @@
  * Arguments taken from :
  * https://stackoverflow.com/questions/45570589/electron-protocol-handler-not-working-on-windows#53786254
  */
-import shell, {which} from "shelljs";
+import shell from "shelljs";
 import ProtocolRegistry from "protocol-registry";
 import {appRootPath, autoStartArgument, zToolbox_protocol} from "../classes/constants.js";
 import {app} from "electron";
@@ -15,8 +15,7 @@ import {settings} from "./init.js";
 
 
 if (app.requestSingleInstanceLock()) {
-	// noinspection JSUnusedLocalSymbols
-	app.on('second-instance', (event, commandLine, workingDirectory) => {
+	app.on('second-instance', (_event, commandLine, _workingDirectory) => {
 		// Quelqu'un a tenté d'exécuter une seconde instance.
 		onOpen(commandLine);
 	});
@@ -111,7 +110,7 @@ export function onOpen(commandLine:string[]) {
 	}
 
 	for (const value of requests) {
-		let url:URL;
+		let url:URL|null = null;
 		try {
 			url = new URL(value)
 		} catch (e) {
@@ -128,6 +127,7 @@ export function onOpen(commandLine:string[]) {
 				showSection('default');
 				break;
 			default:
+				console.error('unsupported link : ', value);
 				unsupported = true;
 				break;
 		}
