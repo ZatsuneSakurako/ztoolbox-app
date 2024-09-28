@@ -16,7 +16,13 @@ interface IConfigBase<T extends SettingValues> {
 }
 
 interface IStringConfig extends IConfigBase<string> {
-	type: 'string'
+	type: 'string',
+	options?: {
+		/**
+		 * Default as 'text'
+		 */
+		displayAs?: 'text'|'textarea'
+	}
 }
 
 interface IMenuListConfig extends IConfigBase<string> {

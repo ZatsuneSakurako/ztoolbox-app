@@ -17,7 +17,9 @@
 							data-translate-title="preferences.{{ id }}_description"></label>
 					{% endif %}
 
-					{% if conf.type in ['color', 'string'] %}
+					{% if conf.type == 'string' and conf.options.displayAs == 'textarea' %}
+						<textarea  id="pref-{{ id }}" name="{{ id }}" data-on-change="" disabled="disabled"></textarea>
+					{% elseif conf.type in ['color', 'string'] %}
 						<input
 							type="{% if conf.type == 'string' %}text{% else %}{{ conf.type }}{% endif %}" id="pref-{{ id }}" name="{{ id }}"
 							data-on-change="" disabled="disabled"/>

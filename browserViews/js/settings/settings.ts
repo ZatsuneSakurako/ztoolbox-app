@@ -86,6 +86,9 @@ const settings:SettingsConfig = {
 		"type": "string",
 		"value": '',
 		"group": "web_extension",
+		"options": {
+			displayAs: "textarea",
+		}
 	},
 };
 
