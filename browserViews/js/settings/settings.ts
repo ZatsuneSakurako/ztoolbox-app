@@ -90,6 +90,11 @@ const settings:SettingsConfig = {
 			displayAs: "textarea",
 		}
 	},
+	"panelAlwaysShowMoveInNewWindow": {
+		"type": "bool",
+		"value": false,
+		"group": "web_extension"
+	},
 };
 
 export default settings;

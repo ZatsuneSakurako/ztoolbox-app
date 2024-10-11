@@ -31,5 +31,6 @@
 	"notify_checkedData_title": "Show a notification for deviantArt/freshRss",
 	"notify_all_viewed_title": "Show a notification when all view in website(s)",
 	"tabPageServerIp_alias_title": "IP aliases",
-	"newTabStylesheet_title": "New tab stylesheet"
+	"newTabStylesheet_title": "New tab stylesheet",
+	"panelAlwaysShowMoveInNewWindow_title": "Always show \"new window\" in the tab mover"
 }
