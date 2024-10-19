@@ -52,11 +52,11 @@ interface IBooleanConfig extends IConfigBase<boolean> {
 	type: 'bool'
 }
 
-interface IJsonConfig extends IConfigBase<SettingJsonValue> {
+interface IJsonConfig extends IConfigBase<SettingValues> {
 	type: 'json'
 }
 
-interface IYamlConfig extends IConfigBase<SettingJsonValue> {
+interface IYamlConfig extends IConfigBase<SettingValues> {
 	type: 'yaml'
 }
 

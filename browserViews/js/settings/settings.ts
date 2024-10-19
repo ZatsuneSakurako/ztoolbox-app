@@ -95,6 +95,11 @@ const settings:SettingsConfig = {
 		"value": false,
 		"group": "web_extension"
 	},
+	"newTab_folders": {
+		"type": "json",
+		"value": [],
+		"group": "web_extension"
+	},
 };
 
 export default settings;
