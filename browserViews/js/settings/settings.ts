@@ -96,7 +96,7 @@ const settings:SettingsConfig = {
 		"group": "web_extension"
 	},
 	"newTab_folders": {
-		"type": "json",
+		"type": "yaml",
 		"value": [],
 		"group": "web_extension"
 	},
