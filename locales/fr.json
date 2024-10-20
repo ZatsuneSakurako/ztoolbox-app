@@ -5,6 +5,7 @@
 	"group_default": "Général",
 	"group_theme": "Thème",
 	"group_web_extension": "Extension navigateur",
+    "group_website_data": "Données de sites",
 
 	"timeIsNow": "Il est maintenant {{currentTime}}",
 

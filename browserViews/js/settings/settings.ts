@@ -51,7 +51,7 @@ const settings:SettingsConfig = {
 	"check_enabled": {
 		"type": "bool",
 		"value": false,
-		"group": "web_extension"
+		"group": "website_data"
 	},
 	"check_delay": {
 		"type": "integer",
@@ -60,22 +60,22 @@ const settings:SettingsConfig = {
 		"maxValue": 60,
 		"stepValue": 5,
 		"rangeInput": true,
-		"group": "web_extension"
+		"group": "website_data"
 	},
 	"freshRss_baseUrl": {
 		"type": "string",
 		"value": '',
-		"group": "web_extension"
+		"group": "website_data"
 	},
 	"notify_checkedData": {
 		"type": "bool",
 		"value": true,
-		"group": "web_extension"
+		"group": "website_data"
 	},
 	"notify_all_viewed": {
 		"type": "bool",
 		"value": false,
-		"group": "web_extension"
+		"group": "website_data"
 	},
 	"tabPageServerIp_alias": {
 		"type": "yaml",
