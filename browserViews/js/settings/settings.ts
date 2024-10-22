@@ -97,7 +97,7 @@ const settings:SettingsConfig = {
 	},
 	"newTab_folders": {
 		"type": "yaml",
-		"value": [],
+		"value": '',
 		"group": "web_extension"
 	},
 };
