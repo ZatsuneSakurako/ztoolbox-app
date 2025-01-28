@@ -198,41 +198,41 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 		console.debug('Opening ', data, 'into', target.id);
 		for (let url of data) {
 			if (!url) continue;
-
-			if (url instanceof File) {
-				if (url.path.toLowerCase().endsWith('.url')) {
-					url.text()
-						.then(async (fileRaw) => {
-							let iniData : Dict<any>|null = null;
-							try {
-								iniData = await window.znmApi.parseIni(fileRaw);
-								if (!!iniData?.InternetShortcut && !iniData?.InternetShortcut?.url) {
-									iniData.InternetShortcut.url = iniData?.InternetShortcut?.URL;
-								}
-							} catch (e) {
-								console.error(e);
-							}
-
-							if (iniData && typeof iniData === 'object' && iniData.InternetShortcut && typeof iniData.InternetShortcut === 'object' && typeof iniData.InternetShortcut.url === 'string') {
-								const url: string = iniData.InternetShortcut.url;
-								window.znmApi.moveWsClientUrl({
-									tabDataUrl: url
-								}, target.id)
-									.catch(console.error)
-								;
-							} else {
-								console.error('Wrong file format', iniData ?? fileRaw);
-							}
-						})
-						.catch(console.error)
-					;
-				} else {
-					console.error('Wrong file format', url);
-				}
-			} else {
+			if (!(url instanceof File)) {
 				window.znmApi.moveWsClientUrl(url, target.id)
 					.catch(console.error)
 				;
+				continue;
+			}
+
+			if (url.path.toLowerCase().endsWith('.url')) {
+				url.text()
+					.then(async (fileRaw) => {
+						let iniData: Dict<any> | null = null;
+						try {
+							iniData = await window.znmApi.parseIni(fileRaw);
+							if (!!iniData?.InternetShortcut && !iniData?.InternetShortcut?.url) {
+								iniData.InternetShortcut.url = iniData?.InternetShortcut?.URL;
+							}
+						} catch (e) {
+							console.error(e);
+						}
+
+						if (iniData && typeof iniData === 'object' && iniData.InternetShortcut && typeof iniData.InternetShortcut === 'object' && typeof iniData.InternetShortcut.url === 'string') {
+							const url: string = iniData.InternetShortcut.url;
+							window.znmApi.moveWsClientUrl({
+								tabDataUrl: url
+							}, target.id)
+								.catch(console.error)
+							;
+						} else {
+							console.error('Wrong file format', iniData ?? fileRaw);
+						}
+					})
+					.catch(console.error)
+				;
+			} else {
+				console.error('Wrong file format', url);
 			}
 		}
 		return;
@@ -246,7 +246,7 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 		return;
 	}
 
-	console.debug('Moving ', data, 'to', 'to', target.id);
+	console.debug('Moving ', data, 'to', target.id);
 	window.znmApi.moveWsClientUrl(data, target.id)
 		.catch(console.error)
 	;
