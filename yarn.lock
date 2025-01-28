@@ -2845,16 +2845,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^33.2.0":
-  version: 33.2.0
-  resolution: "electron@npm:33.2.0"
+"electron@npm:^34.0.1":
+  version: 34.0.1
+  resolution: "electron@npm:34.0.1"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^20.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10/f7d38228324b9a145513dfd4dc8a22d5d4cb840a557571fa9020a0222aad8493c4281f845681cfcd9bf2e5364680aaba8a46783f20b730c6d07b55e72cec6413
+  checksum: 10/cc31851a6cafbb2f88d2ebedebfbe6e3b2ae5433eb3aa832fa472e927322f804912b13af2811dc70940661c30adde3c476f8b1f6c3b7f804324f720fc92d8817
   languageName: node
   linkType: hard
 
@@ -8364,9 +8364,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.17.0":
-  version: 8.17.0
-  resolution: "ws@npm:8.17.0"
+"ws@npm:^8.18.0":
+  version: 8.18.0
+  resolution: "ws@npm:8.18.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -8375,7 +8375,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 10/5e1dcb0ae70c6e2f158f5b446e0a72a2cd335b07aba73ee1872e9bae1285382286a10e53ed479db21bdd690a5dfd05641a768611ebb236253c62fefa43ef58b4
+  checksum: 10/70dfe53f23ff4368d46e4c0b1d4ca734db2c4149c6f68bc62cb16fc21f753c47b35fcc6e582f3bdfba0eaeb1c488cddab3c2255755a5c3eecb251431e42b3ff6
   languageName: node
   linkType: hard
 
@@ -8533,7 +8533,7 @@ __metadata:
     browserify: "npm:^17.0.0"
     cron-parser: "npm:^4.9.0"
     del: "npm:^7.1.0"
-    electron: "npm:^33.2.0"
+    electron: "npm:^34.0.1"
     electron-builder: "npm:^25.1.8"
     esm: "npm:esm-wallaby@^3.2.31"
     fastify: "npm:^4.27.0"
@@ -8557,7 +8557,7 @@ __metadata:
     string-strip-html: "npm:^13.4.8"
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.4.5"
-    ws: "npm:^8.17.0"
+    ws: "npm:^8.18.0"
     yaml: "npm:^2.4.2"
     yargs: "npm:^17.7.2"
   languageName: unknown

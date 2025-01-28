@@ -48,7 +48,7 @@
     "@types/ws": "^8.5.10",
     "@types/yargs": "^17.0.32",
     "del": "^7.1.0",
-    "electron": "^33.2.0",
+    "electron": "^34.0.1",
     "electron-builder": "^25.1.8",
     "gulp": "^5.0.0",
     "gulp-cli": "^3.0.0",
@@ -80,7 +80,7 @@
     "simple-git": "^3.24.0",
     "socket.io": "^4.7.5",
     "string-strip-html": "^13.4.8",
-    "ws": "^8.17.0",
+    "ws": "^8.18.0",
     "yaml": "^2.4.2"
   }
 }
