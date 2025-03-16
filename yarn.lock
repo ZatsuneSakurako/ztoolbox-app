@@ -776,21 +776,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.12.12":
-  version: 20.12.12
-  resolution: "@types/node@npm:20.12.12"
+"@types/node@npm:^22.13.10, @types/node@npm:^22.7.7":
+  version: 22.13.10
+  resolution: "@types/node@npm:22.13.10"
   dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10/e3945da0a3017bdc1f88f15bdfb823f526b2a717bd58d4640082d6eb0bd2794b5c99bfb914b9e9324ec116dce36066990353ed1c777e8a7b0641f772575793c4
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.9.0":
-  version: 20.11.24
-  resolution: "@types/node@npm:20.11.24"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10/7f34bfae5f9b98b9910230af4b4c52dc7fb2d1e96fdebfbc3d7576f8ab3d100076f193f9469add9e7418b455294155e7e6a028498cc5e98f9d49349875a459cf
+    undici-types: "npm:~6.20.0"
+  checksum: 10/57dc6a5e0110ca9edea8d7047082e649fa7fa813f79e4a901653b9174141c622f4336435648baced5b38d9f39843f404fa2d8d7a10981610da26066bc8caab48
   languageName: node
   linkType: hard
 
@@ -2845,16 +2836,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^34.0.1":
-  version: 34.0.1
-  resolution: "electron@npm:34.0.1"
+"electron@npm:^35.0.2":
+  version: 35.0.2
+  resolution: "electron@npm:35.0.2"
   dependencies:
     "@electron/get": "npm:^2.0.0"
-    "@types/node": "npm:^20.9.0"
+    "@types/node": "npm:^22.7.7"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10/cc31851a6cafbb2f88d2ebedebfbe6e3b2ae5433eb3aa832fa472e927322f804912b13af2811dc70940661c30adde3c476f8b1f6c3b7f804324f720fc92d8817
+  checksum: 10/8801fac5e1d1080eff3f5ee24391794b2e3b42984a6b704dd9db0a3b1df89e50ed25b7c70de22902812e3ac4c749ba84885c427a274d850dbae89432a5dac9c4
   languageName: node
   linkType: hard
 
@@ -7994,10 +7985,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~5.26.4":
-  version: 5.26.5
-  resolution: "undici-types@npm:5.26.5"
-  checksum: 10/0097779d94bc0fd26f0418b3a05472410408877279141ded2bd449167be1aed7ea5b76f756562cb3586a07f251b90799bab22d9019ceba49c037c76445f7cddd
+"undici-types@npm:~6.20.0":
+  version: 6.20.0
+  resolution: "undici-types@npm:6.20.0"
+  checksum: 10/583ac7bbf4ff69931d3985f4762cde2690bb607844c16a5e2fbb92ed312fe4fa1b365e953032d469fa28ba8b224e88a595f0b10a449332f83fa77c695e567dbe
   languageName: node
   linkType: hard
 
@@ -8521,7 +8512,7 @@ __metadata:
     "@types/ini": "npm:^4.1.0"
     "@types/lodash.debounce": "npm:^4.0.9"
     "@types/mustache": "npm:^4.2.5"
-    "@types/node": "npm:^20.12.12"
+    "@types/node": "npm:^22.13.10"
     "@types/nunjucks": "npm:^3.2.6"
     "@types/pug": "npm:^2.0.10"
     "@types/sass": "npm:^1.45.0"
@@ -8533,7 +8524,7 @@ __metadata:
     browserify: "npm:^17.0.0"
     cron-parser: "npm:^4.9.0"
     del: "npm:^7.1.0"
-    electron: "npm:^34.0.1"
+    electron: "npm:^35.0.2"
     electron-builder: "npm:^25.1.8"
     esm: "npm:esm-wallaby@^3.2.31"
     fastify: "npm:^4.27.0"
