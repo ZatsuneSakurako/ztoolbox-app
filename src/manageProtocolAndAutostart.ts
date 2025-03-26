@@ -40,16 +40,13 @@ if (!process.platform.startsWith('win')) {
 		nodeVersion = !!nodePath ? shell.exec(JSON.stringify(nodePath) + ' --version').toString().trim() : ''
 	;
 	if (/^v\d{2}\./.test(nodeVersion)) {
-		ProtocolRegistry.register({
-			protocol: zToolbox_protocol,
-			command: app.isPackaged ?
+		ProtocolRegistry.register(zToolbox_protocol,
+			app.isPackaged ?
 				`${JSON.stringify(process.execPath)} $_URL_`
 				:
 				`"${process.execPath}" "${appRootPath}" $_URL_`,
-			override: true,
-			terminal: false,
-			script: false,
-		})
+			{ override: true, terminal: false }
+		)
 			.then(async () => {
 				console.log("Successfully registered protocol");
 			})
