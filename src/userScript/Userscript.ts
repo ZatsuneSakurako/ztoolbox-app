@@ -1,5 +1,5 @@
-import * as fs from "fs-extra";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import {UserscriptMeta} from "./UserscriptMeta.js";
 import * as sass from "sass-embedded";
 import {Dict} from "../../browserViews/js/bo/Dict.js";
@@ -22,7 +22,7 @@ export class Userscript {
 	constructor(fileName: string, sourcePath: string) {
 		this.#sourcePath = sourcePath;
 		this.#fileName = fileName;
-		this.#fileExtension = path.extname(fileName);
+		this.#fileExtension = path.extname(fileName).replace(/^\./, '');
 		const fileContent = fs.readFileSync(this.filePath, { encoding: 'utf8' });
 		this.#userscriptMeta = new UserscriptMeta(fileContent);
 	}
@@ -63,6 +63,7 @@ export class Userscript {
 				sourceMap: true,
 				sourceMapIncludeSources: true,
 				style: "expanded",
+				syntax: this.#fileExtension === 'sass' ? 'indented' : 'scss',
 				verbose: false,
 			});
 			this.#fileExtension = 'css';
