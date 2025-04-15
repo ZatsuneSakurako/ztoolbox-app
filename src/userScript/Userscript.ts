@@ -80,7 +80,11 @@ export class Userscript {
 		const result = this.#userscriptMeta.getAll('tag'),
 			output: string[] = Array.isArray(result) ? result : []
 		;
-		output.push(path.dirname(this.#fileName));
+
+		const relativeDirname = path.dirname(this.#fileName);
+		if (relativeDirname !== '.') {
+			output.push(path.dirname(this.#fileName));
+		}
 		return output;
 	}
 
