@@ -106,7 +106,8 @@ const settings:SettingsConfig = {
 		"opts": {
 			"asText": true,
 			"asFile": true
-		}
+		},
+		"group": "web_extension"
 	},
 };
 
