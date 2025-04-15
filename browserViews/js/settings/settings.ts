@@ -100,6 +100,14 @@ const settings:SettingsConfig = {
 		"value": '',
 		"group": "web_extension"
 	},
+	"userscripts": {
+		"type": "path",
+		"value": "",
+		"opts": {
+			"asText": true,
+			"asFile": true
+		}
+	},
 };
 
 export default settings;

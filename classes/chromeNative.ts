@@ -10,6 +10,7 @@ import "../src/websitesData/refreshWebsitesData.js";
 import {BrowserWindow} from "electron";
 import {settings} from "../src/init.js";
 import Fastify, {FastifyInstance} from "fastify";
+import {IUserscriptJson, Userscript} from "../src/userScript/Userscript.js";
 
 
 
@@ -173,6 +174,37 @@ io.on("connection", (socket: socket) => {
 			}
 		});
 	});
+
+	socket.on('getUserscripts', async function (cb) {
+		const userscriptsPath = settings.getString('userscripts');
+		if (!userscriptsPath) {
+			cb({
+				error: false,
+				result: [],
+			})
+			return;
+		}
+
+		try {
+			const userscripts = Userscript.search(userscriptsPath),
+				result: IUserscriptJson[] = [];
+
+			for (let userscript of userscripts) {
+				await userscript.processContent();
+				result.push(userscript.toJSON());
+			}
+
+			cb({
+				error: false,
+				result,
+			})
+		} catch (e) {
+			console.error(e);
+			cb({
+				error: true
+			});
+		}
+	})
 });
 
 export function ping(socket: socket): Promise<'pong'> {

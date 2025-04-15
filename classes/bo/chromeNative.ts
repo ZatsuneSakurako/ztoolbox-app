@@ -1,6 +1,7 @@
 import {Notification} from "electron";
 import {RandomJsonData, SettingsConfig} from "./settings.js";
 import {Dict} from "../../browserViews/js/bo/Dict.js";
+import {IUserscriptJson} from "../../src/userScript/Userscript.js";
 
 export type SocketMessage<T> = {error: false} & {result: T} | {error: true|string};
 export type ResponseCallback<T> = (response:SocketMessage<T>) => void;
@@ -30,6 +31,7 @@ export interface ClientToServerEvents {
 	openUrl(browserName:string, url: string, cb: ResponseCallback<boolean>): void
 	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
 	updateSocketData(data: Partial<IChromeExtensionData>): void
+	getUserscripts(cb: ResponseCallback<IUserscriptJson[]>): void
 }
 export interface InterServerEvents {}
 
