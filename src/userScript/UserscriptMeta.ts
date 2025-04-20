@@ -1,7 +1,7 @@
 import {Dict} from "../../browserViews/js/bo/Dict.js";
 
 type UserscriptRawMeta = (string | [string, string])[];
-const metaRegex = /\/\*\s*==(?:UserStyle|UserScript)==\s*\n\s*(?<meta>.*?)\n==\/(?:UserStyle|UserScript)==\s*\*\/\n\n?/gs;
+const metaRegex = /\/\*\s*==(?:UserStyle|UserScript)==\s*\n\s*(?<meta>.*?)\n==\/(?:UserStyle|UserScript)==\s*\*\/\n\n?/s;
 
 export class UserscriptMeta {
 	readonly #fileContent: string
