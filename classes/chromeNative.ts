@@ -11,6 +11,8 @@ import {BrowserWindow} from "electron";
 import {settings} from "../src/init.js";
 import Fastify, {FastifyInstance} from "fastify";
 import {IUserscriptJson, Userscript} from "../src/userScript/Userscript.js";
+import path from "path";
+import fs from "fs";
 
 
 
@@ -176,8 +178,8 @@ io.on("connection", (socket: socket) => {
 	});
 
 	socket.on('getUserscripts', async function (cb) {
-		const userscriptsPath = settings.getString('userscripts');
-		if (!userscriptsPath) {
+		const userscriptsPath = path.normalize(`${settings.storageDir}/userscripts`);
+		if (!fs.existsSync(userscriptsPath)) {
 			cb({
 				error: false,
 				result: [],
