@@ -6,6 +6,7 @@ import {Dict} from "../../browserViews/js/bo/Dict.js";
 
 export interface IUserscriptJson {
 	name: string
+	fileName: string
 	ext: string
 	content: string
 	tags: string[]
@@ -36,7 +37,7 @@ export class Userscript {
 
 		const output: Userscript[] = [];
 		for (let file of files) {
-			if (!file.isFile()) continue;
+			if (!file.isFile() || file.name.endsWith('.bak')) continue;
 
 			output.push(new this(file.name, sourcePath));
 		}
@@ -95,6 +96,7 @@ export class Userscript {
 	toJSON(): IUserscriptJson {
 		return {
 			name: this.name,
+			fileName: this.#fileName,
 			ext: this.#fileExtension,
 			content: this.fileContent,
 			tags: this.tags,
