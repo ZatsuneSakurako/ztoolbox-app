@@ -39,7 +39,7 @@ export class UserscriptMeta {
 		let asBoolean = false;
 
 		for (let line of this.#userscriptMeta) {
-			if (Array.isArray(line)) {
+			if (Array.isArray(line) && (line.at(1) ?? '').length > 0) {
 				const [name, value] = line;
 				if (metaName === name) {
 					output.push(value);
@@ -62,12 +62,13 @@ export class UserscriptMeta {
 		const json: Dict<string|boolean> = {};
 
 		for (let item of this.#userscriptMeta) {
-			if (Array.isArray(item)) {
+			if (Array.isArray(item) && (item.at(1) ?? '').length > 0) {
 				json[item[0]] = item[1];
 			} else {
 				json[item[0]] = true;
 			}
 		}
+		console.dir(json);
 
 		return json;
 	}
