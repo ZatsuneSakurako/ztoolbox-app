@@ -25,7 +25,7 @@ export class Userscript {
 		this.#fileName = fileName;
 		this.#fileExtension = path.extname(fileName).replace(/^\./, '');
 		const fileContent = fs.readFileSync(this.filePath, { encoding: 'utf8' });
-		this.#userscriptMeta = new UserscriptMeta(fileContent);
+		this.#userscriptMeta = new UserscriptMeta(fileContent.replace(/\r\n|\r/g, '\n'));
 	}
 
 	static search(sourcePath: string): Userscript[] {
