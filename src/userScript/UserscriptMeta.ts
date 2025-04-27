@@ -68,7 +68,6 @@ export class UserscriptMeta {
 				json[item[0]] = true;
 			}
 		}
-		console.dir(json);
 
 		return json;
 	}
