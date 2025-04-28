@@ -13,6 +13,7 @@ import Fastify, {FastifyInstance} from "fastify";
 import {IUserscriptJson, Userscript} from "../src/userScript/Userscript.js";
 import path from "path";
 import fs from "fs";
+import {errorToString} from "../src/errorToString.js";
 
 
 
@@ -201,7 +202,7 @@ io.on("connection", (socket: socket) => {
 				result,
 			})
 		} catch (e) {
-			console.error(e);
+			socket.emit('log', '[UserScripts]\n' + errorToString(e)) || console.error(e);
 			cb({
 				error: true
 			});

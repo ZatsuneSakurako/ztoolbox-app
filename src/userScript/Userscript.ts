@@ -39,7 +39,10 @@ export class Userscript {
 		for (let file of files) {
 			if (!file.isFile() || file.name.endsWith('.bak')) continue;
 
-			output.push(new this(file.name, sourcePath));
+			output.push(new this(
+				path.join(path.relative(sourcePath, file.parentPath), file.name),
+				sourcePath
+			));
 		}
 
 		return output;
