@@ -9,6 +9,7 @@ export interface IUserscriptJson {
 	fileName: string
 	ext: string
 	content: string
+	domains: string[]
 	tags: string[]
 	meta: Dict<string | boolean>
 }
@@ -80,6 +81,14 @@ export class Userscript {
 		return typeof name === 'string' ? name : this.#fileName;
 	}
 
+	get domains(): string[] {
+		const domains = this.userscriptMeta.getAll('domain');
+		if (typeof domains === 'boolean') {
+			throw new Error('UNEXPECTED_DOMAIN_VALUE');
+		}
+		return domains;
+	}
+
 	get tags(): string[] {
 		const result = this.#userscriptMeta.getAll('tag'),
 			output: string[] = Array.isArray(result) ? result : []
@@ -103,6 +112,7 @@ export class Userscript {
 			ext: this.#fileExtension,
 			content: this.fileContent,
 			tags: this.tags,
+			domains: this.domains,
 			meta: this.userscriptMeta.toJSON(),
 		}
 	}
