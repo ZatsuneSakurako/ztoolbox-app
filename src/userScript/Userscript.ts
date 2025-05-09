@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import {UserscriptMeta} from "./UserscriptMeta.js";
 import * as sass from "sass-embedded";
-import * as ts from "typescript";
+import ts from "typescript";
 import {appRootPath} from "../../classes/constants.js";
 import {IUserscriptJson} from "../../classes/bo/userscript.js";
 
@@ -31,7 +31,7 @@ export class Userscript {
 
 		const output: Userscript[] = [];
 		for (let file of files) {
-			if (!file.isFile() || file.name.endsWith('.bak')) continue;
+			if (!file.isFile() || /\.(d\.ts|map|bak)$/.test(file.name)) continue;
 
 			output.push(new this(
 				path.join(path.relative(sourcePath, file.parentPath), file.name),
@@ -66,7 +66,35 @@ export class Userscript {
 			});
 			this.#fileExtension = 'css';
 			this.#fileContent = result.css.toString();
+		} else if (this.#fileExtension === 'ts') {
+			const ts = (await import('typescript')),
+				result = ts.transpileModule(this.fileContent, this.#lazyLoadTypescriptOptions(ts));
+
+			this.#fileContent = result.outputText;
+			this.#fileExtension = 'js';
 		}
+	}
+
+	#typescriptOptions: ts.TranspileOptions|null = null;
+	#lazyLoadTypescriptOptions(tsModule:typeof ts): ts.TranspileOptions {
+		if (!this.#typescriptOptions) {
+			const ts = tsModule,
+				tsOptions: ts.TranspileOptions = this.#typescriptOptions = {};
+
+			const projectTsConfig:ts.TranspileOptions = JSON.parse(fs.readFileSync(path.normalize(`${appRootPath}/tsconfig.json`), 'utf8'));
+
+			tsOptions.compilerOptions = projectTsConfig.compilerOptions ?? {};
+			tsOptions.compilerOptions.types = [];
+			tsOptions.compilerOptions.rootDir = undefined;
+
+			tsOptions.compilerOptions.target = ts.ScriptTarget.ES2015;
+			tsOptions.compilerOptions.module = ts.ModuleKind.ES2015;
+			tsOptions.compilerOptions.moduleResolution = ts.ModuleResolutionKind.Node16;
+
+			tsOptions.compilerOptions.sourceMap = true;
+			tsOptions.compilerOptions.inlineSourceMap = true;
+		}
+		return this.#typescriptOptions;
 	}
 
 	get name(): string {
