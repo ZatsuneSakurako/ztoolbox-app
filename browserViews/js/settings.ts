@@ -3,7 +3,7 @@ import settings from './settings/settings.js';
 import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {SettingConfig, SettingsConfig} from "../../classes/bo/settings.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
-import {Dict} from "./bo/Dict";
+import {Dict} from "./bo/Dict.js";
 import {reloadClassesFor} from "./labelChecked.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
 

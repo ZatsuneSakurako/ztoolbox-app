@@ -1,9 +1,7 @@
-import path from "path";
+import * as path from "path";
 import * as electron from "electron";
-import {fileURLToPath} from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = import.meta.dirname;
 
 export const zToolbox_protocol = 'ztoolbox';
 export const appRootPath = path.normalize(__dirname + '/..');

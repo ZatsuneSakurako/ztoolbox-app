@@ -10,10 +10,11 @@ import "../src/websitesData/refreshWebsitesData.js";
 import {BrowserWindow} from "electron";
 import {settings} from "../src/init.js";
 import Fastify, {FastifyInstance} from "fastify";
-import {IUserscriptJson, Userscript} from "../src/userScript/Userscript.js";
 import path from "path";
 import fs from "fs";
 import {errorToString} from "../src/errorToString.js";
+import {IUserscriptJson} from "./bo/userscript.js";
+import {Userscript} from "../src/userScript/Userscript.js";
 
 
 

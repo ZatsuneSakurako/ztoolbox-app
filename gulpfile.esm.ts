@@ -1,5 +1,5 @@
 import child_process from "child_process";
-import * as gulp from "gulp";
+import gulp from "gulp";
 import {deleteAsync as del} from "del";
 import _gulpSass from "gulp-sass";
 import * as sass from "sass-embedded";

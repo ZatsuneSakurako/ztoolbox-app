@@ -2,17 +2,10 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import {UserscriptMeta} from "./UserscriptMeta.js";
 import * as sass from "sass-embedded";
-import {Dict} from "../../browserViews/js/bo/Dict.js";
+import * as ts from "typescript";
+import {appRootPath} from "../../classes/constants.js";
+import {IUserscriptJson} from "../../classes/bo/userscript.js";
 
-export interface IUserscriptJson {
-	name: string
-	fileName: string
-	ext: string
-	content: string
-	domains: string[]
-	tags: string[]
-	meta: Dict<string | boolean>
-}
 
 export class Userscript {
 	readonly #userscriptMeta: UserscriptMeta

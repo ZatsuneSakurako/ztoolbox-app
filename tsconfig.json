@@ -8,8 +8,8 @@
 		"experimentalDecorators": false,
 		"forceConsistentCasingInFileNames": true,
 		"newLine": "LF",
-		"module": "ESNext",
-		"moduleResolution": "node",
+		"module": "nodenext",
+		"moduleResolution": "node16",
 		"pretty": true,
 		"resolveJsonModule": true,
 		"types": [
@@ -37,7 +37,9 @@
 		"./locales/**/*.json"
 	],
 	"exclude": [
-		"./browserViews/js/**/_fix_exports.ts",
-		"./browserViews/js/**/_import-map-loader.ts"
+		"./node_modules/*.ts",
+		"./**/*.d.ts",
+		"./browserViews/js/_fix_exports.ts",
+		"./browserViews/js/_import-map-loader.ts"
 	]
 }

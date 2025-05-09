@@ -1,4 +1,4 @@
-import {WebsiteData} from "../../browserViews/js/websiteData";
+import {WebsiteData} from "../../browserViews/js/websiteData.js";
 
 export interface WebsiteApi {
 	dataURL: string

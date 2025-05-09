@@ -337,19 +337,19 @@ export class Settings extends EventEmitter implements ISettings {
 		const cache = this.#load();
 		return cache.size;
 	}
-	[Symbol.iterator](): IterableIterator<[string,RandomJsonData]> {
+	[Symbol.iterator](): MapIterator<[string,RandomJsonData]> {
 		const cache = this.#load();
 		return cache[Symbol.iterator]();
 	}
-	entries(): IterableIterator<[string,RandomJsonData]> {
+	entries(): MapIterator<[string,RandomJsonData]> {
 		const cache = this.#load();
 		return cache.entries();
 	}
-	keys(): IterableIterator<string> {
+	keys(): MapIterator<string> {
 		const cache = this.#load();
 		return cache.keys();
 	}
-	values(): IterableIterator<RandomJsonData> {
+	values(): MapIterator<RandomJsonData> {
 		const cache = this.#load();
 		return cache.values();
 	}

@@ -1,4 +1,4 @@
-import simpleGit from 'simple-git';
+import {simpleGit} from 'simple-git';
 import {VersionState} from "./bo/versionState.js";
 import path from "path";
 import fs from "fs-extra";
@@ -36,4 +36,4 @@ export async function versionState(gitDir=process.cwd()) {
 	}
 }
 
-export {VersionState} from "./bo/versionState";
+export {VersionState} from "./bo/versionState.js";
