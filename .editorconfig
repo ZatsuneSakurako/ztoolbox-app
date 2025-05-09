@@ -25,3 +25,6 @@ ij_typescript_use_semicolon_after_statement = true
 
 [*.{json,yml}]
 indent_style = space
+
+[tsconfig*.json]
+indent_style = tab
