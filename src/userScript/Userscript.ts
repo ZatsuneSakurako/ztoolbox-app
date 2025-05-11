@@ -104,7 +104,10 @@ export class Userscript {
 
 	get domains(): string[] {
 		const domains = this.userscriptMeta.getAll('domain');
-		if (typeof domains === 'boolean') {
+		if (domains === false) {
+			return [];
+		} else if (typeof domains === 'boolean') {
+			console.log(domains);
 			throw new Error('UNEXPECTED_DOMAIN_VALUE');
 		}
 		return domains;
