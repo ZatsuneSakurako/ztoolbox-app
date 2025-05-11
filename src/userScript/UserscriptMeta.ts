@@ -44,7 +44,7 @@ export class UserscriptMeta {
 				if (metaName === name) {
 					output.push(value);
 				}
-			} else {
+			} else if (metaName === line) {
 				asBoolean = true;
 			}
 		}
