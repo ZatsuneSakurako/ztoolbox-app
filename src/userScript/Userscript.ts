@@ -91,8 +91,8 @@ export class Userscript {
 			tsOptions.compilerOptions.module = ts.ModuleKind.ES2015;
 			tsOptions.compilerOptions.moduleResolution = ts.ModuleResolutionKind.Node16;
 
-			tsOptions.compilerOptions.sourceMap = true;
-			tsOptions.compilerOptions.inlineSourceMap = true;
+			tsOptions.compilerOptions.sourceMap = false;
+			tsOptions.compilerOptions.inlineSourceMap = false;
 		}
 		return this.#typescriptOptions;
 	}
@@ -127,6 +127,9 @@ export class Userscript {
 	}
 
 	toJSON(): IUserscriptJson {
+		const matches = this.#userscriptMeta.getAll('matches'),
+			excludeMatches = this.#userscriptMeta.getAll('excludeMatches');
+
 		return {
 			name: this.name,
 			fileName: this.#fileName,
@@ -134,6 +137,8 @@ export class Userscript {
 			content: this.fileContent,
 			tags: this.tags,
 			domains: this.domains,
+			matches: Array.isArray(matches) && matches.length ? matches : undefined,
+			excludeMatches: Array.isArray(excludeMatches) && excludeMatches.length ? excludeMatches : undefined,
 			meta: this.userscriptMeta.toJSON(),
 		}
 	}
