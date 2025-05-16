@@ -87,8 +87,8 @@ export class Userscript {
 			tsOptions.compilerOptions.types = [];
 			tsOptions.compilerOptions.rootDir = undefined;
 
-			tsOptions.compilerOptions.target = ts.ScriptTarget.ES2015;
-			tsOptions.compilerOptions.module = ts.ModuleKind.ES2015;
+			tsOptions.compilerOptions.target = ts.ScriptTarget.ESNext;
+			tsOptions.compilerOptions.module = ts.ModuleKind.ESNext;
 			tsOptions.compilerOptions.moduleResolution = ts.ModuleResolutionKind.Node16;
 
 			tsOptions.compilerOptions.sourceMap = false;
