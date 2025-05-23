@@ -5,6 +5,8 @@ import * as sass from "sass-embedded";
 import ts from "typescript";
 import {appRootPath} from "../../classes/constants.js";
 import {IUserscriptJson} from "../../classes/bo/userscript.js";
+import {settings} from "../init.js";
+import {Dict} from "../../browserViews/js/bo/Dict.js";
 
 
 export class Userscript {
@@ -22,6 +24,10 @@ export class Userscript {
 		this.#userscriptMeta = new UserscriptMeta(fileContent.replace(/\r\n|\r/g, '\n'));
 	}
 
+	static get userscriptsPath() {
+		return path.normalize(`${settings.storageDir}/userscripts`);
+	}
+
 	static search(sourcePath: string): Userscript[] {
 		const files = fs.readdirSync(sourcePath, {
 			encoding: 'utf8',
@@ -31,7 +37,7 @@ export class Userscript {
 
 		const output: Userscript[] = [];
 		for (let file of files) {
-			if (!file.isFile() || /\.(d\.ts|map|bak)$/.test(file.name)) continue;
+			if (!file.isFile() || /\.(d\.ts|map|bak|json)$/.test(file.name)) continue;
 
 			output.push(new this(
 				path.join(path.relative(sourcePath, file.parentPath), file.name),
@@ -127,6 +133,38 @@ export class Userscript {
 
 	get userscriptMeta(): UserscriptMeta {
 		return this.#userscriptMeta;
+	}
+
+	get #dataPath(): string {
+		return path.normalize(`${this.filePath}.json`);
+	}
+	getData(): Dict<any> {
+		if (!fs.existsSync(this.#dataPath)) return {};
+		return JSON.parse(fs.readFileSync(this.#dataPath, {
+			encoding: 'utf8',
+		}));
+	}
+	setData(newData:Dict<any>|null):boolean {
+		if (typeof newData !== 'object') {
+			throw new Error('OBJECT_EXPECTED');
+		}
+
+		try {
+			if (newData === null) {
+				// Avoid error if it does not exist (already deleted probably)
+				if (fs.existsSync(this.#dataPath)) {
+					fs.unlinkSync(this.#dataPath);
+				}
+			} else {
+				fs.writeFileSync(this.#dataPath, JSON.stringify(newData, null, '\t'), {
+					encoding: 'utf8',
+				});
+			}
+			return true;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
 	}
 
 	toJSON(): IUserscriptJson {

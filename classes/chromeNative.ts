@@ -180,7 +180,7 @@ io.on("connection", (socket: socket) => {
 	});
 
 	socket.on('getUserscripts', async function (cb) {
-		const userscriptsPath = path.normalize(`${settings.storageDir}/userscripts`);
+		const userscriptsPath = Userscript.userscriptsPath;
 		if (!fs.existsSync(userscriptsPath)) {
 			cb({
 				error: false,
@@ -208,7 +208,51 @@ io.on("connection", (socket: socket) => {
 				error: true
 			});
 		}
-	})
+	});
+
+	socket.on('setUserscriptData', function (fileName, newData, cb) {
+		if (!fs.existsSync(path.normalize(`${Userscript.userscriptsPath}/${fileName}`))) {
+			cb({
+				error: 'FILE_NOT_FOUND',
+			});
+			return;
+		}
+
+		const sockets = io.fetchSockets()
+			.catch(console.error)
+
+		try {
+			const userScript = new Userscript(fileName, Userscript.userscriptsPath);
+			cb({ error: false, result: userScript.setData(newData) });
+		} catch (e) {
+			cb({ error: e.toString() });
+			return;
+		}
+
+		sockets
+			.then(sockets => {
+				if (!sockets) return;
+				for (let _socket of sockets) {
+					if (_socket.id === socket.id) continue;
+					_socket.emit('userScriptDataUpdated', fileName, newData ?? {});
+				}
+			})
+			.catch(console.error);
+	});
+	socket.on('getUserscriptData', function (fileName, cb) {
+		if (!fs.existsSync(path.normalize(`${Userscript.userscriptsPath}/${fileName}`))) {
+			cb({ error: 'FILE_NOT_FOUND' });
+			return;
+		}
+
+		try {
+			const userScript = new Userscript(fileName, Userscript.userscriptsPath);
+			cb({ error: false, result: userScript.getData() });
+		} catch (e) {
+			cb({ error: e.toString() });
+			return;
+		}
+	});
 });
 
 export function ping(socket: socket): Promise<'pong'> {

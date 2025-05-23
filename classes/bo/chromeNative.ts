@@ -20,6 +20,7 @@ export interface ServerToClientEvents {
 	sendNotification<T>(opts: ISendNotificationOptions, cb: ResponseCallback<T>): void
 	clearNotifications(): void
 	openUrl(url:string, cb: ResponseCallback<boolean>): void
+	userScriptDataUpdated(fileName:string, newData:Dict<any>):void
 	closeActiveUrl(url:string): void
 }
 
@@ -32,6 +33,8 @@ export interface ClientToServerEvents {
 	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
 	updateSocketData(data: Partial<IChromeExtensionData>): void
 	getUserscripts(cb: ResponseCallback<IUserscriptJson[]>): void
+	getUserscriptData(fileName:string, cb: ResponseCallback<Dict<any>>): void
+	setUserscriptData(fileName:string, newData:Dict<any>|null, cb: ResponseCallback<boolean>): void
 }
 export interface InterServerEvents {}
 
