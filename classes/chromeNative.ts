@@ -189,11 +189,16 @@ io.on("connection", (socket: socket) => {
 			return;
 		}
 
+		const logs: string[] = [];
 		try {
 			const userscripts = Userscript.search(userscriptsPath),
 				result: IUserscriptJson[] = [];
 
-			for (let userscript of userscripts) {
+			if (userscripts.ignoredFiles.length > 0) {
+				logs.push('Ignored files : \n- ' + userscripts.ignoredFiles.join('\n- '));
+			}
+
+			for (let userscript of userscripts.userscripts) {
 				await userscript.processContent();
 				result.push(userscript.toJSON());
 			}
@@ -203,10 +208,14 @@ io.on("connection", (socket: socket) => {
 				result,
 			})
 		} catch (e) {
-			socket.emit('log', '[UserScripts]\n' + errorToString(e)) || console.error(e);
+			logs.push(errorToString(e));
+			console.error(e);
 			cb({
 				error: true
 			});
+		}
+		if (logs.length) {
+			socket.emit('log', '[UserScripts] ' + logs.join('\n'));
 		}
 	});
 

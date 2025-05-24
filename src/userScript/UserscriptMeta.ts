@@ -6,7 +6,9 @@ const metaRegex = /(?:\/\*|\/\/)\s*==(?<type>UserStyle|UserScript)==\s*\n\s*(?<m
 export class UserscriptMeta {
 	readonly #fileContent: string
 	readonly #userscriptMeta: UserscriptRawMeta
-	constructor(fileContent: string) {
+	readonly #fileName: string
+	constructor(fileContent: string, fileName: string) {
+		this.#fileName = fileName;
 		const {fileContent: _fileContent, userscriptMeta} = this.#parseFileCode(fileContent);
 		this.#fileContent = _fileContent;
 		this.#userscriptMeta = userscriptMeta;
@@ -18,7 +20,7 @@ export class UserscriptMeta {
 
 	#parseFileCode(fileContent: string) {
 		const result = metaRegex.exec(fileContent);
-		if (!result || !result.groups) throw new Error('Could not parse userscript meta');
+		if (!result || !result.groups) throw new Error(`Could not parse userscript meta with "${this.#fileName}"`);
 
 		const userscriptMeta: UserscriptRawMeta = [];
 		for (let line of result.groups.meta.split(/\s*\n\s*/)) {

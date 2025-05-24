@@ -21,31 +21,37 @@ export class Userscript {
 		this.#fileName = fileName;
 		this.#fileExtension = path.extname(fileName).replace(/^\./, '');
 		const fileContent = fs.readFileSync(this.filePath, { encoding: 'utf8' });
-		this.#userscriptMeta = new UserscriptMeta(fileContent.replace(/\r\n|\r/g, '\n'));
+		this.#userscriptMeta = new UserscriptMeta(fileContent.replace(/\r\n|\r/g, '\n'), fileName);
 	}
 
 	static get userscriptsPath() {
 		return path.normalize(`${settings.storageDir}/userscripts`);
 	}
 
-	static search(sourcePath: string): Userscript[] {
+	static search(sourcePath: string): { userscripts: Userscript[], ignoredFiles: string[] } {
 		const files = fs.readdirSync(sourcePath, {
 			encoding: 'utf8',
 			recursive: true,
 			withFileTypes: true
 		});
 
-		const output: Userscript[] = [];
+		const output: Userscript[] = [],
+			ignoredFiles: string[] = []
+		;
 		for (let file of files) {
-			if (!file.isFile() || /\.(d\.ts|map|bak|json)$/.test(file.name)) continue;
+			if (!file.isFile()) continue;
 
-			output.push(new this(
-				path.join(path.relative(sourcePath, file.parentPath), file.name),
-				sourcePath
-			));
+			if (/\.user\.(ts|js|sass|scss|css)$/.test(file.name)) {
+				output.push(new this(
+					path.join(path.relative(sourcePath, file.parentPath), file.name),
+					sourcePath
+				));
+			} else if (!/\.(d\.ts|map|json)$/.test(file.name)) {
+				ignoredFiles.push(file.name);
+			}
 		}
 
-		return output;
+		return { userscripts: output, ignoredFiles };
 	}
 
 	get filePath(): string {
