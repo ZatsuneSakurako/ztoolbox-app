@@ -174,7 +174,8 @@ export class Userscript {
 	}
 
 	toJSON(): IUserscriptJson {
-		const matches = this.#userscriptMeta.getAll('matches'),
+		const grant = this.#userscriptMeta.getAll('grant'),
+			match = this.#userscriptMeta.getAll('match'),
 			excludeMatches = this.#userscriptMeta.getAll('excludeMatches');
 
 		return {
@@ -184,7 +185,8 @@ export class Userscript {
 			content: this.fileContent,
 			tags: this.tags,
 			domains: this.domains,
-			matches: Array.isArray(matches) && matches.length ? matches : undefined,
+			match: Array.isArray(match) && match.length ? match : undefined,
+			grant: Array.isArray(grant) && grant.length ? grant : undefined,
 			excludeMatches: Array.isArray(excludeMatches) && excludeMatches.length ? excludeMatches : undefined,
 			meta: this.userscriptMeta.toJSON(),
 		}

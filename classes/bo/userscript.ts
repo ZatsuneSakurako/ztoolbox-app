@@ -7,7 +7,8 @@ export interface IUserscriptJson {
 	content: string
 	domains: string[]
 	tags: string[]
-	matches?: string[]
+	grant?: string[]
+	match?: string[]
 	excludeMatches?: string[]
 	meta: Dict<string | boolean>
 }
