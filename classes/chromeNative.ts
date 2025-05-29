@@ -7,7 +7,7 @@ import {
 import {showSection} from "./windowManager.js";
 import {Server, Socket, RemoteSocket} from "socket.io";
 import "../src/websitesData/refreshWebsitesData.js";
-import {BrowserWindow} from "electron";
+import electron, {BrowserWindow} from "electron";
 import {settings} from "../src/init.js";
 import Fastify, {FastifyInstance} from "fastify";
 import path from "path";
@@ -177,6 +177,22 @@ io.on("connection", (socket: socket) => {
 				});
 			}
 		});
+	});
+
+	socket.on('writeClipboard', async function (data, cb) {
+		try {
+			electron.clipboard.write(data);
+			cb({
+				error: false,
+				result: true
+			});
+		} catch (e) {
+			socket.emit('log', '[writeClipboard] ' + errorToString(e));
+			console.error(e);
+			cb({
+				error: true
+			});
+		}
 	});
 
 	socket.on('getUserscripts', async function (cb) {

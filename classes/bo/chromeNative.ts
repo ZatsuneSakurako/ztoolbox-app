@@ -35,6 +35,7 @@ export interface ClientToServerEvents {
 	getUserscripts(cb: ResponseCallback<IUserscriptJson[]>): void
 	getUserscriptData(fileName:string, cb: ResponseCallback<Dict<any>>): void
 	setUserscriptData(fileName:string, newData:Dict<any>|null, cb: ResponseCallback<boolean>): void
+	writeClipboard(data: Electron.Data, cb: ResponseCallback<boolean>): void
 }
 export interface InterServerEvents {}
 
