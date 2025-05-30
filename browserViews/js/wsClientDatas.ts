@@ -205,7 +205,7 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 				continue;
 			}
 
-			if (url.path.toLowerCase().endsWith('.url')) {
+			if (url.name.toLowerCase().endsWith('.url')) {
 				url.text()
 					.then(async (fileRaw) => {
 						let iniData: Dict<any> | null = null;
