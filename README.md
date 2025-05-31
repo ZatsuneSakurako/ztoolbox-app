@@ -1,4 +1,4 @@
-# streamlink-electron
+# ztoolbox-app
 
 Packaging : https://github.com/electron-userland/electron-packager
 
