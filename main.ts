@@ -20,6 +20,7 @@ import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 import {settings} from "./src/init.js";
 import Dict = NodeJS.Dict;
 import ini from "ini";
+import {checkUpdate, update} from './src/update.js';
 
 
 
