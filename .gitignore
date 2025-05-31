@@ -1,5 +1,6 @@
 /.idea
 /dist
+/ztoolbox
 /browserViews/lib
 /browserViews/*.html
 /browserViews/css/**/*.css

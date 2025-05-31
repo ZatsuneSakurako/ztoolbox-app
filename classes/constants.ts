@@ -11,3 +11,6 @@ export const appIconPath_x3 = path.resolve(resourcePath, './images/icon@3x.png')
 export const appIcon = electron.nativeImage.createFromPath(appIconPath);
 export const browserViewPath = path.resolve(resourcePath, './browserViews/index.html');
 export const autoStartArgument = '--z-auto-start';
+export const gitMainAddress = 'ZatsuneNoMokou/ztoolbox-app.git';
+export const gitExtensionAddress = 'ZatsuneNoMokou/ztoolbox.git';
+export const appExtensionPath = path.normalize(`${appRootPath}/ztoolbox`);

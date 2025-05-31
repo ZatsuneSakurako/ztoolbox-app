@@ -109,6 +109,8 @@ const znmApi:IZnmApi = {
 	_: (key:string) => ipcRendererInvoke('i18n', key),
 	getWsClientDatas: () => ipcRendererInvoke('getWsClientDatas'),
 	moveWsClientUrl: (data, targetId) => ipcRendererInvoke('moveWsClientUrl', data, targetId),
+	getUpdateStatus: () => ipcRendererInvoke('getUpdateStatus'),
+	doUpdate: () => ipcRendererInvoke('doUpdate'),
 
 	parseIni: (rawString:string)=> ipcRendererInvoke('parseIni', rawString),
 

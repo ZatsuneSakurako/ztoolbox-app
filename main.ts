@@ -20,7 +20,7 @@ import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 import {settings} from "./src/init.js";
 import Dict = NodeJS.Dict;
 import ini from "ini";
-import {checkUpdate, update} from './src/update.js';
+import * as update from './src/update.js';
 
 
 
@@ -139,6 +139,14 @@ ipcMain.handle('getWsClientDatas', async function (event, args) {
 
 ipcMain.handle('moveWsClientUrl', async function (event, srcData:IWsMoveSourceData, targetId:string) {
 	return await moveWsClientUrl(srcData, targetId);
+});
+
+ipcMain.handle('getUpdateStatus', async function (event) {
+	return await update.updateStatus();
+});
+
+ipcMain.handle('doUpdate', async function (event) {
+	return await update.doUpdate();
 });
 
 ipcMain.handle('parseIni', async function (event, rawContent:string) {

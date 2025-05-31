@@ -5,6 +5,7 @@ import {Dict} from "./Dict.js";
 import {IJsonWebsiteData} from "./websiteData.js";
 import {IChromeExtensionData, IWsMoveSourceData} from "../../../classes/bo/chromeNative.js";
 import * as net from "node:net";
+import {IUpdateStatus} from "./update.js";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -15,6 +16,8 @@ export interface IZnmApi {
 	_(key: string): Promise<string>
 	getWsClientDatas(): Promise<Dict<IChromeExtensionData>>
 	moveWsClientUrl(data: IWsMoveSourceData, targetId: string): Promise<void>
+	getUpdateStatus(): Promise<IUpdateStatus>
+	doUpdate(): Promise<string[]>
 
 	parseIni(rawContent: string): Promise<Dict<any>>
 

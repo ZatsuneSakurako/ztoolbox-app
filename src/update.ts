@@ -1,32 +1,10 @@
 import {spawnSync} from 'child_process';
-import {app} from "electron";
-import {simpleGit} from "simple-git";
-import {appRootPath} from "../classes/constants.js";
-import path from "node:path";
+import {simpleGit, StatusResult} from "simple-git";
+import {appExtensionPath, appRootPath, gitExtensionAddress, gitMainAddress} from "../classes/constants.js";
 import fs from "node:fs";
-
-function sshAddCount() {
-	const result = spawnSync('ssh-add', ['-l'], {
-		cwd: app.getPath('userData'),
-		stdio: 'pipe',
-		encoding: 'utf8',
-		timeout: 5000,
-		shell: true,
-		env: {
-			...process.env,
-			'LANG': 'C',
-		}
-	});
-
-	const output: string[] = [];
-	for (let item of result.output) {
-		if (item === null) continue;
-		item = item.trim();
-		if (!item.length || /the agent has no identities\./i.test(item)) continue;
-		output.push(item);
-	}
-	return output.length;
-}
+import {errorToString} from "./errorToString.js";
+import {app} from "electron";
+import {IUpdateStatus} from "../browserViews/js/bo/update.js";
 
 function yarnCommand(folderPath: string, command:string) {
 	const yarnInstall = spawnSync('yarn', [command], {
@@ -43,48 +21,165 @@ function yarnCommand(folderPath: string, command:string) {
 	}
 }
 
-async function checkUpdateExtension() {
-	const extensionPath = path.normalize(`${app.getPath('userData')}/ztoolbox`);
+function onlyIfUnpacked() {
+	if (app.isPackaged) throw new Error('Update system reserved for unpacked app');
+}
 
-	if (!fs.existsSync(extensionPath)) {
+async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
+	onlyIfUnpacked();
+
+	if (!fs.existsSync(appExtensionPath)) {
 		await simpleGit()
-			.clone('git@github.com:ZatsuneNoMokou/ztoolbox.git', extensionPath);
+			.clone(`https://github.com/${gitExtensionAddress}`, appExtensionPath);
 	}
 
 	const git = simpleGit({
-		baseDir: appRootPath,
+		baseDir: appExtensionPath,
 	});
-	await git.checkout('develop');
-	await git.fetch();
+	try {
+		await git
+			.remote([
+				'set-url', 'origin',
+				`https://github.com/${gitExtensionAddress}`,
+			])
+			.raw(['switch', 'develop'])
+			.fetch();
+		if (!checkOnly) {
+			await git.pull();
+		}
+	} catch (e) {
+		if (errors) {
+			errors.push(errorToString(e));
+		}
+		console.error(e);
+	}
+
+	try {
+		await git.remote([
+			'set-url', 'origin',
+			`git@github.com:${gitExtensionAddress}`,
+		])
+	} catch (e) {
+		if (errors) {
+			errors.push(errorToString(e));
+		}
+		console.error(e);
+	}
+
 	return git;
 }
 
-export async function checkUpdate() {
-	const git = simpleGit({
-		baseDir: appRootPath,
-	});
-	await git.fetch();
+export async function updateMain(checkOnly:boolean=false, errors?:string[]) {
+	onlyIfUnpacked();
 
-	const extension = await checkUpdateExtension();
+	const git = simpleGit({ baseDir: appRootPath });
+	try {
+		await git
+			.remote([
+				'set-url', 'origin',
+				`https://github.com/${gitMainAddress}`,
+			])
+			.fetch();
+		if (!checkOnly) {
+			await git.pull();
+		}
+	} catch (e) {
+		if (errors) {
+			errors.push(errorToString(e));
+		}
+		console.error(e);
+	}
 
-	return {
-		git,
-		extension,
-	};
+	try {
+		await git.remote([
+			'set-url', 'origin',
+			`git@github.com:${gitMainAddress}`,
+		]).catch(console.error);
+	} catch (e) {
+		if (errors) {
+			errors.push(errorToString(e));
+		}
+		console.error(e);
+	}
+
+
+	return git;
 }
 
-export async function update() {
-	const nbKeys = sshAddCount();
-	if (nbKeys === 0) throw new Error('NO_SSH_KEY');
+export async function updateStatus() {
+	onlyIfUnpacked();
 
+	const output: IUpdateStatus = {
+		errors: [],
+	};
 
-	const gits = await checkUpdate();
-	await gits.git.pull();
-	yarnCommand(appRootPath, 'install');
-	yarnCommand(appRootPath, 'build');
+	const git = await updateMain(true, output.errors).catch(console.error);
+	if (git) {
+		try {
+			const gitStatus = await git.status();
+			output.main = {
+				ahead: gitStatus.ahead,
+				behind: gitStatus.behind,
+			}
+		} catch (e) {
+			if (output.errors) {
+				output.errors.push(errorToString(e));
+			}
+			console.error(e);
+		}
+	}
 
+	const gitExtension = await updateExtension(true, output.errors)
+		.catch(console.error);
+	if (gitExtension) {
+		try {
+			const gitStatus = await gitExtension.status();
+			output.extension = {
+				ahead: gitStatus.ahead,
+				behind: gitStatus.behind,
+			}
+		} catch (e) {
+			if (output.errors) {
+				output.errors.push(errorToString(e));
+			}
+			console.error(e);
+		}
+	}
 
-	const extensionPath = path.normalize(`${app.getPath('userData')}/ztoolbox`);
-	await gits.extension.pull();
-	yarnCommand(extensionPath, 'install');
+	return output;
+}
+
+export async function doUpdate() {
+	onlyIfUnpacked();
+
+	const errors: string[] = [],
+		git = await updateMain(false, errors).catch(console.error);
+	if (git) {
+		try {
+			await git.pull();
+			yarnCommand(appRootPath, 'install');
+			yarnCommand(appRootPath, 'build');
+		} catch (e) {
+			if (errors) {
+				errors.push(errorToString(e));
+			}
+			console.error(e);
+		}
+	}
+
+	const gitExtension = await updateExtension(false, errors)
+		.catch(console.error);
+	if (gitExtension) {
+		try {
+			await gitExtension.pull();
+			yarnCommand(appExtensionPath, 'install');
+		} catch (e) {
+			if (errors) {
+				errors.push(errorToString(e));
+			}
+			console.error(e);
+		}
+	}
+
+	return errors;
 }
