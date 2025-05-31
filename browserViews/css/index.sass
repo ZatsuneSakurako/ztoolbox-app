@@ -104,7 +104,7 @@ label.button
 		input[type="radio"]:checked + &,
 		input[type="checkbox"]:checked + &
 			border-bottom-color: var(--InvColor)
-	&.material-icons
+	&[class*="material-symbols-"]
 		font-weight: normal
 		&.checkable
 			padding: 0 7px
@@ -116,7 +116,7 @@ label.button
 	&.checked
 		border-bottom-color: var(--InvColor)
 
-	.material-icons + span
+	[class*="material-symbols-"] + span
 		margin-left: 8px
 
 	&.setting-group
@@ -168,7 +168,7 @@ section .buttonItem.tabPageServerIp .title
 	-webkit-line-clamp: 1
 
 section .buttonItem picture,
-section .buttonItem .icon.material-icons
+section .buttonItem .icon[class*="material-symbols-"]
 	display: flex
 	align-items: center
 	justify-content: flex-start
@@ -191,7 +191,7 @@ section article.wsClientDatasItem
 
 	& > picture,
 	& > .icon,
-	.icon.material-icons
+	.icon[class*="material-symbols-"]
 		grid-area: itemIcon
 		max-width: 32px
 	.title

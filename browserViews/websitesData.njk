@@ -20,7 +20,7 @@
 				{{-website-}}
 			</div>
 			<button class="btn-login" data-login-website="{{ website }}">
-				<span class="material-icons">
+				<span class="material-symbols-outlined">
 					{%- if data.logged %}logout{% else %}login{% endif -%}
 				</span>
 			</button>
@@ -51,7 +51,7 @@
 	</div>{% endfor %}
 	<div>
 		<button class="buttonItem cursor only-icon" {% if disableRefreshButton %} disabled{% endif %} data-refresh-websites>
-			<i class="material-icons">refresh</i>
+			<i class="material-symbols-outlined">refresh</i>
 		</button>
 	</div>
 </section>

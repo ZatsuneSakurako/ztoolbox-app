@@ -73,6 +73,7 @@
     "ini": "^5.0.0",
     "json5": "^2.2.3",
     "lodash.debounce": "^4.0.8",
+    "material-symbols": "^0.31.4",
     "nunjucks": "^3.2.4",
     "protocol-registry": "^2.0.0",
     "shelljs": "^0.9.2",
