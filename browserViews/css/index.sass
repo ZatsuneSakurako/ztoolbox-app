@@ -183,7 +183,8 @@ section .buttonItem .title[data-count]::after
 	content: " (" attr(data-count) ")"
 
 section a.websiteItem,
-section article.wsClientDatasItem
+section article.wsClientDatasItem,
+section article.gitStatus
 	display: grid
 	grid-template-rows: 1fr 1fr
 	gap: 0 0
@@ -286,3 +287,24 @@ section .websiteItem .websiteData .folder
 
 section .websiteItem .websiteData .folder[data-folder-count]::after
 	content: ": "attr(data-folder-count)
+
+section article.gitStatus
+	grid-template-columns: 40px calc(100% - 40px)
+	grid-template-rows: auto auto
+	grid-template-areas: "itemIcon mainStatus" "itemIcon extensionStatus"
+
+	#gitMainStatus
+		grid-area: mainStatus
+	#gitExtensionStatus
+		grid-area: extensionStatus
+
+	.ahead
+		color: #4CAF50
+		&::after
+			counter-reset: variable var(--ahead)
+			content: counter(variable)
+	.behind
+		color: #F44336
+		&::after
+			counter-reset: variable var(--behind)
+			content: counter(variable)

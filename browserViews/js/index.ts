@@ -182,6 +182,26 @@ async function onLoad() {
 		})
 		.catch(console.error)
 	;
+	window.znmApi.getUpdateStatus()
+		.then(async status => {
+			for (let error of status.errors) {
+				console.error('[getUpdateStatus]', error);
+			}
+
+			const $gitMainStatus = document.querySelector<HTMLElement>('#gitMainStatus');
+			if ($gitMainStatus) {
+				$gitMainStatus.style.setProperty('--ahead', (status.main?.ahead ?? -1).toString());
+				$gitMainStatus.style.setProperty('--behind', (status.main?.behind ?? -1).toString());
+			}
+
+			const $gitExtensionStatus = document.querySelector<HTMLElement>('#gitExtensionStatus');
+			if ($gitExtensionStatus) {
+				$gitExtensionStatus.style.setProperty('--ahead', (status.extension?.ahead ?? -1).toString());
+				$gitExtensionStatus.style.setProperty('--behind', (status.extension?.behind ?? -1).toString());
+			}
+		})
+		.catch(console.error)
+	;
 	window.znmApi.getWsClientDatas()
 		.then(wsClientDatas => {
 			wsClientDatasUpdate(wsClientDatas)

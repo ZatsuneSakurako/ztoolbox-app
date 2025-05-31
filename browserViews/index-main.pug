@@ -11,6 +11,25 @@ main.grid
 	div.display-contents(data-menu-show='main')
 		section#wsClientDatas
 
+	div.display-contents(data-menu-show='main')
+		section#gitStatus.grid.no-r-gap.grid-12
+			div.grid-4
+				article.buttonItem.gitStatus
+					picture
+						span.icon.material-symbols-outlined="sync"
+					span#gitMainStatus
+						| Main
+						span.ahead
+							span.material-symbols-outlined='vertical_align_top'
+						span.behind
+							span.material-symbols-outlined='vertical_align_bottom'
+					span#gitExtensionStatus
+						| Extension
+						span.ahead
+							span.material-symbols-outlined='vertical_align_top'
+						span.behind
+							span.material-symbols-outlined='vertical_align_bottom'
+
 	div#variousInfos.grid-12(data-menu-show='infos')
 		div.loader-container
 			svg.loader(width="1em", height="1em")
