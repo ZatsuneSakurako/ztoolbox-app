@@ -298,6 +298,15 @@ section article.gitStatus
 	#gitExtensionStatus
 		grid-area: extensionStatus
 
+	span.material-symbols-outlined
+		vertical-align: bottom
+
+	&.buttonItem
+		cursor: pointer
+		&:has(.no-ahead,.no-behind)
+			cursor: default
+			pointer-events: none
+
 	.ahead
 		color: #4CAF50
 		&::after
@@ -308,3 +317,8 @@ section article.gitStatus
 		&::after
 			counter-reset: variable var(--behind)
 			content: counter(variable)
+
+	.no-ahead .ahead
+		color: inherit
+	.no-behind .behind
+		color: inherit

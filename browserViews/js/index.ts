@@ -153,6 +153,20 @@ document.addEventListener('click', function (e) {
 	e.stopPropagation();
 });
 
+document.addEventListener('click', function (e) {
+	const el = (e.target as HTMLButtonElement).closest<HTMLElement>('#gitStatus article.gitStatus:not(.disabled)');
+	if (!el) return;
+
+	el.classList.add('disabled');
+	window.znmApi.doUpdate()
+		.then(errors => {
+			for (let error of errors) {
+				console.error('[getUpdateStatus]', error);
+			}
+		})
+		.catch(console.error);
+});
+
 async function onLoad() {
 	console.info('index - onLoad');
 	document.documentElement.classList.add('loaded');
@@ -190,13 +204,19 @@ async function onLoad() {
 
 			const $gitMainStatus = document.querySelector<HTMLElement>('#gitMainStatus');
 			if ($gitMainStatus) {
+				$gitMainStatus.classList.toggle('no-ahead', (status.main?.ahead ?? -1) <= 0);
 				$gitMainStatus.style.setProperty('--ahead', (status.main?.ahead ?? -1).toString());
+
+				$gitMainStatus.classList.toggle('no-behind', (status.main?.behind ?? -1) <= 0);
 				$gitMainStatus.style.setProperty('--behind', (status.main?.behind ?? -1).toString());
 			}
 
 			const $gitExtensionStatus = document.querySelector<HTMLElement>('#gitExtensionStatus');
 			if ($gitExtensionStatus) {
+				$gitExtensionStatus.classList.toggle('no-ahead', (status.extension?.ahead ?? -1) <= 0);
 				$gitExtensionStatus.style.setProperty('--ahead', (status.extension?.ahead ?? -1).toString());
+
+				$gitExtensionStatus.classList.toggle('no-behind', (status.extension?.behind ?? -1) <= 0);
 				$gitExtensionStatus.style.setProperty('--behind', (status.extension?.behind ?? -1).toString());
 			}
 		})
