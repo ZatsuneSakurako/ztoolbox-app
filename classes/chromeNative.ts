@@ -303,6 +303,13 @@ export async function onSettingUpdate(id: string, oldValue: preferenceData['valu
 	}
 }
 
+export async function doRestartExtensions(): Promise<void> {
+	const sockets = await io.fetchSockets();
+	for (let socket of sockets) {
+		socket.emit('doRestart');
+	}
+}
+
 
 
 export async function getWsClientDatas(): Promise<Map<string, IChromeExtensionData>> {

@@ -5,6 +5,7 @@ import fs from "node:fs";
 import {errorToString} from "./errorToString.js";
 import {app} from "electron";
 import {IUpdateStatus} from "../browserViews/js/bo/update.js";
+import {doRestartExtensions} from "../classes/chromeNative.js";
 
 function sshAddCount() {
 	const result = spawnSync('ssh-add', ['-l'], {
@@ -77,6 +78,7 @@ async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
 		await git.raw(['switch', 'develop']).fetch();
 		if (!checkOnly) {
 			await git.pull();
+			await doRestartExtensions();
 		}
 	} catch (e) {
 		if (errors) {

@@ -10,6 +10,7 @@ export type preferenceData = { id: string, value: undefined|RandomJsonData };
 
 export interface ServerToClientEvents {
 	'ws open'(data: SocketMessage<{ connected: string }>): void
+	doRestart(): void
 	log(...data: any[]): void
 	ping(cb: ResponseCallback<'pong'>): void
 	onSettingUpdate(preference: {
