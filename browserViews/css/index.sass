@@ -303,7 +303,7 @@ section article.gitStatus
 
 	&.buttonItem
 		cursor: pointer
-		&:has(.no-ahead,.no-behind)
+		&:not(:has(.git-status.has-changes))
 			cursor: default
 			pointer-events: none
 

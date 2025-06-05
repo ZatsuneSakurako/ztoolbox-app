@@ -204,6 +204,12 @@ async function onLoad() {
 
 			const $gitMainStatus = document.querySelector<HTMLElement>('#gitMainStatus');
 			if ($gitMainStatus) {
+				$gitMainStatus.classList.toggle('has-changes',
+					(status.main?.ahead ?? -1) > 0
+					||
+					(status.main?.behind ?? -1) > 0
+				);
+
 				$gitMainStatus.classList.toggle('no-ahead', (status.main?.ahead ?? -1) <= 0);
 				$gitMainStatus.style.setProperty('--ahead', (status.main?.ahead ?? -1).toString());
 
@@ -213,6 +219,12 @@ async function onLoad() {
 
 			const $gitExtensionStatus = document.querySelector<HTMLElement>('#gitExtensionStatus');
 			if ($gitExtensionStatus) {
+				$gitExtensionStatus.classList.toggle('has-changes',
+					(status.extension?.ahead ?? -1) > 0
+					||
+					(status.extension?.behind ?? -1) > 0
+				);
+
 				$gitExtensionStatus.classList.toggle('no-ahead', (status.extension?.ahead ?? -1) <= 0);
 				$gitExtensionStatus.style.setProperty('--ahead', (status.extension?.ahead ?? -1).toString());
 
