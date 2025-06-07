@@ -58,7 +58,6 @@ export interface IChromeExtensionData {
 		domain?: string
 		ip?: string
 		ipMore: string|false
-		openGraph: Dict<string>
 		pageRating: string[]
 	} | null
 }

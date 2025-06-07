@@ -61,19 +61,6 @@ async function _wsClientDatasDisplay() {
 	container.replaceWith(section);
 }
 
-document.addEventListener('click', function (e) {
-	const target = (<Element> e.target).closest<HTMLElement>('.buttonItem.wsClientDatasItem [data-open-graph]');
-	if (!target) return;
-
-	const buttonItem = target.closest<HTMLElement>('.buttonItem.wsClientDatasItem');
-	if (!buttonItem) return;
-
-	const currentState = buttonItem.classList.contains('activated');
-	buttonItem.parentElement?.classList.toggle('grid-4', currentState);
-	buttonItem.parentElement?.classList.toggle('grid-5', !currentState);
-	buttonItem.classList.toggle('activated', !currentState);
-});
-
 
 
 let timer : ReturnType<typeof setTimeout>|null = null;
