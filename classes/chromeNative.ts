@@ -15,6 +15,8 @@ import fs from "fs";
 import {errorToString} from "../src/errorToString.js";
 import {IUserscriptJson} from "./bo/userscript.js";
 import {Userscript} from "../src/userScript/Userscript.js";
+import nunjucks from "nunjucks";
+import {appExtensionTemplatesPath} from "./constants.js";
 
 
 
@@ -72,25 +74,16 @@ io.on("connection", (socket: socket) => {
 	});
 
 	socket.on('getDefaultValues', function (cb) {
-		cb({
-			error: false,
-			result: settings.getDefaultValues()
-		});
+		cb({ error: false, result: settings.getDefaultValues() });
 	});
 
 	socket.on('ping', function (cb) {
-		cb({
-			error: false,
-			result: 'pong'
-		});
+		cb({ error: false, result: 'pong' });
 	});
 
 	socket.on('showSection', function (sectionName, cb) {
 		showSection(sectionName);
-		cb({
-			error: false,
-			result: 'success'
-		});
+		cb({ error: false, result: 'success' });
 	});
 
 	socket.on('updateSocketData', function (data) {
@@ -159,9 +152,7 @@ io.on("connection", (socket: socket) => {
 		}
 
 		if (!targetSocket) {
-			cb({
-				error: true
-			});
+			cb({ error: true });
 			return;
 		}
 
@@ -172,9 +163,7 @@ io.on("connection", (socket: socket) => {
 					result: response.result
 				});
 			} else {
-				cb({
-					error: true
-				});
+				cb({ error: true });
 			}
 		});
 	});
@@ -189,9 +178,7 @@ io.on("connection", (socket: socket) => {
 		} catch (e) {
 			socket.emit('log', '[writeClipboard] ' + errorToString(e));
 			console.error(e);
-			cb({
-				error: true
-			});
+			cb({ error: true });
 		}
 	});
 
@@ -226,9 +213,7 @@ io.on("connection", (socket: socket) => {
 		} catch (e) {
 			logs.push(errorToString(e));
 			console.error(e);
-			cb({
-				error: true
-			});
+			cb({ error: true });
 		}
 		if (logs.length) {
 			socket.emit('log', '[UserScripts] ' + logs.join('\n'));
@@ -250,7 +235,8 @@ io.on("connection", (socket: socket) => {
 			const userScript = new Userscript(fileName, Userscript.userscriptsPath);
 			cb({ error: false, result: userScript.setData(newData) });
 		} catch (e) {
-			cb({ error: e.toString() });
+			console.error(e);
+			cb({ error: errorToString(e) });
 			return;
 		}
 
@@ -274,10 +260,34 @@ io.on("connection", (socket: socket) => {
 			const userScript = new Userscript(fileName, Userscript.userscriptsPath);
 			cb({ error: false, result: userScript.getData() });
 		} catch (e) {
-			cb({ error: e.toString() });
+			console.error(e);
+			cb({ error: errorToString(e) });
 			return;
 		}
 	});
+
+	socket.on('nunjuckRender', async function (templateName, context, cb) {
+		const absolutePath = path.normalize(`${appExtensionTemplatesPath}/${templateName}${templateName.endsWith('.njk') ? '' : '.njk'}`);
+		console.dir(absolutePath)
+		if (!fs.existsSync(absolutePath)) {
+			cb({ error: 'FILE_NOT_FOUND' });
+			return;
+		}
+		console.dir(appExtensionTemplatesPath)
+		if (appExtensionTemplatesPath.startsWith(absolutePath)) {
+			cb({ error: 'FILE_NOT_WELL_PLACED' });
+			return;
+		}
+		try {
+			const fileContent = fs.readFileSync(absolutePath, { encoding: 'utf8' }),
+				result = nunjucks.renderString(fileContent, context);
+			cb({ error: false, result });
+		} catch (e) {
+			console.error(e);
+			cb({ error: errorToString(e) });
+			return;
+		}
+	})
 });
 
 export function ping(socket: socket): Promise<'pong'> {

@@ -14,3 +14,4 @@ export const autoStartArgument = '--z-auto-start';
 export const gitMainAddress = 'ZatsuneNoMokou/ztoolbox-app.git';
 export const gitExtensionAddress = 'ZatsuneNoMokou/ztoolbox.git';
 export const appExtensionPath = path.normalize(`${appRootPath}/ztoolbox`);
+export const appExtensionTemplatesPath = path.normalize(`${appExtensionPath}/webextension/templates`);
