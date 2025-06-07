@@ -268,14 +268,12 @@ io.on("connection", (socket: socket) => {
 
 	socket.on('nunjuckRender', async function (templateName, context, cb) {
 		const absolutePath = path.normalize(`${appExtensionTemplatesPath}/${templateName}${templateName.endsWith('.njk') ? '' : '.njk'}`);
-		console.dir(absolutePath)
 		if (!fs.existsSync(absolutePath)) {
-			cb({ error: 'FILE_NOT_FOUND' });
+			cb({ error: `FILE_NOT_FOUND ${JSON.stringify(absolutePath)}` });
 			return;
 		}
-		console.dir(appExtensionTemplatesPath)
 		if (appExtensionTemplatesPath.startsWith(absolutePath)) {
-			cb({ error: 'FILE_NOT_WELL_PLACED' });
+			cb({ error: `FILE_NOT_WELL_PLACED ${JSON.stringify(absolutePath)}` });
 			return;
 		}
 		try {
