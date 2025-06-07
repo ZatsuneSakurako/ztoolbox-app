@@ -295,14 +295,19 @@ section article.gitStatus
 
 	.ahead
 		color: #4CAF50
+		margin-right: 0.2em
 		&::after
-			counter-reset: variable var(--ahead)
+			counter-reset: variable var(--ahead, -1)
 			content: counter(variable)
+			display: inline-block
+			min-width: 1em
 	.behind
 		color: #F44336
 		&::after
-			counter-reset: variable var(--behind)
+			counter-reset: variable var(--behind, -1)
 			content: counter(variable)
+			display: inline-block
+			min-width: 1em
 
 	.no-ahead .ahead
 		color: inherit

@@ -27,6 +27,7 @@ function sshAddCount() {
 		if (!item.length || /the agent has no identities\./i.test(item)) continue;
 		output.push(item);
 	}
+	// console.info(`[SSH-ADD] ${output.length} key${output.length > 1 ? 's' : ''}`);
 	return output.length;
 }
 
@@ -70,10 +71,13 @@ async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
 	});
 	try {
 		if (sshCount <= 0) {
-			await git.remote([
+			const result = await git.remote([
 				'set-url', 'origin',
 				`https://github.com/${gitExtensionAddress}`,
 			]);
+			if (errors && result) {
+				errors.push(result);
+			}
 		}
 		await git.raw(['switch', 'develop']).fetch();
 		if (!checkOnly) {
@@ -88,10 +92,13 @@ async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
 	}
 
 	try {
-		await git.remote([
+		const result = await git.remote([
 			'set-url', 'origin',
 			`git@github.com:${gitExtensionAddress}`,
-		])
+		]);
+		if (errors && result) {
+			errors.push(result);
+		}
 	} catch (e) {
 		if (errors) {
 			errors.push(errorToString(e));
@@ -115,10 +122,13 @@ export async function updateMain(checkOnly:boolean=false, errors?:string[]) {
 	const git = simpleGit({ baseDir: appRootPath });
 	try {
 		if (sshCount <= 0) {
-			await git.remote([
+			const result = await git.remote([
 				'set-url', 'origin',
 				`https://github.com/${gitMainAddress}`,
 			]);
+			if (errors && result) {
+				errors.push(result);
+			}
 		}
 		await git.fetch();
 		if (!checkOnly) {
@@ -130,10 +140,13 @@ export async function updateMain(checkOnly:boolean=false, errors?:string[]) {
 	}
 
 	try {
-		await git.remote([
+		const result = await git.remote([
 			'set-url', 'origin',
 			`git@github.com:${gitMainAddress}`,
 		]).catch(console.error);
+		if (errors && result) {
+			errors.push(result);
+		}
 	} catch (e) {
 		if (errors) errors.push(errorToString(e));
 		console.error(e);
