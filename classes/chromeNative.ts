@@ -314,6 +314,7 @@ export async function onSettingUpdate(id: string, oldValue: preferenceData['valu
 export async function doRestartExtensions(): Promise<void> {
 	const sockets = await io.fetchSockets();
 	for (let socket of sockets) {
+		if (/Firefox/i.test(socket.data.browserName)) continue;
 		socket.emit('doRestart');
 	}
 }
