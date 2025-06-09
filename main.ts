@@ -21,7 +21,7 @@ import {settings} from "./src/init.js";
 import Dict = NodeJS.Dict;
 import ini from "ini";
 import * as update from './src/update.js';
-
+import fs from "node:fs";
 
 
 fastifyApp.register(fastifyStatic, {
@@ -50,8 +50,35 @@ fastifyApp.register(fastifyStatic, {
 		return /^\.(?:png|jpe?g|svg|web[pm])$/i.test(extension) && !pathName.split(/[\/\\]/).some(part => part.startsWith('.'));
 	},
 	cacheControl: true,
-	decorateReply: false,
+	decorateReply: true,
 	serveDotFiles: false,
+});
+const localAssetDefaultPath = path.join(resourcePath, 'browserViews/local-assets');
+fastifyApp.route<{ Params: { fileName: string } }>({
+	method: ['GET', 'POST'],
+	url: '/local-assets/:fileName',
+	handler: async function (req, reply) {
+		const fileName = req.params.fileName,
+			extension = path.extname(fileName);
+		if (!extension || !/^\.(?:png|jpe?g|svg|web[pm])$/i.test(extension) || /[\/\\]/.test(fileName) || fileName.startsWith('.')) {
+			return reply.status(404).send('Not found');
+		}
+
+		const localAssetPaths = new Set<string>([
+			localAssetDefaultPath,
+			path.normalize(`${settings.storageDir}/local-assets`),
+		]);
+		let matchedFilePath:string|null = null;
+		for (let localAssetPath of localAssetPaths) {
+			const filePath = path.normalize(`${localAssetPath}/${fileName}`);
+			if (!fs.existsSync(filePath)) continue;
+
+			matchedFilePath = filePath;
+			break;
+		}
+		if (!matchedFilePath) return reply.status(404).send('Not found');
+		return reply.sendFile(fileName, path.dirname(matchedFilePath));
+	}
 });
 fastifyApp.listen({
 	host: 'localhost',
