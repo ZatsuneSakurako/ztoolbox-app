@@ -52,7 +52,6 @@ export interface IChromeExtensionData {
 	tabData?: {
 		name: string
 		faviconUrl: string
-		error?: string
 		statusCode?: number
 
 		url?: string
