@@ -87,9 +87,6 @@ io.on("connection", (socket: socket) => {
 	});
 
 	socket.on('updateSocketData', function (data) {
-		if ('notificationSupport' in data) {
-			socket.data.notificationSupport = data.notificationSupport;
-		}
 		if ('browserName' in data && data.browserName !== undefined) {
 			socket.data.browserName = data.browserName;
 		}
@@ -331,7 +328,6 @@ export async function getWsClientDatas(): Promise<Map<string, IChromeExtensionDa
 			browserName: client.data.browserName ?? 'Unknown',
 			userAgent: client.data.userAgent,
 			extensionId: client.data.extensionId ?? '',
-			notificationSupport: client.data.notificationSupport ?? false,
 			tabData: client.data.tabData ?? undefined
 		});
 	}

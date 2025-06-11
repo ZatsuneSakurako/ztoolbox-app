@@ -18,8 +18,6 @@ export interface ServerToClientEvents {
 		oldValue: preferenceData['value'],
 		newValue: preferenceData['value']
 	}): void
-	sendNotification<T>(opts: ISendNotificationOptions, cb: ResponseCallback<T>): void
-	clearNotifications(): void
 	openUrl(url:string, cb: ResponseCallback<boolean>): void
 	userScriptDataUpdated(fileName:string, newData:Dict<any>):void
 	closeActiveUrl(url:string): void
@@ -48,7 +46,6 @@ export interface IChromeExtensionData {
 	browserName: string
 	userAgent: string
 	extensionId: string
-	notificationSupport?: boolean
 	tabData?: {
 		name: string
 		faviconUrl: string
