@@ -11,6 +11,7 @@ export type preferenceData = { id: string, value: undefined|RandomJsonData };
 export interface ServerToClientEvents {
 	'ws open'(data: SocketMessage<{ connected: string }>): void
 	doRestart(): void
+	updateAvailableUpdate(isUpdateAvailable:boolean): void
 	log(...data: any[]): void
 	ping(cb: ResponseCallback<'pong'>): void
 	onSettingUpdate(preference: {
@@ -24,6 +25,7 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
+	isUpdateAvailable(cb: ResponseCallback<boolean|null>): void
 	getPreference(id: string, cb: ResponseCallback<preferenceData>): void
 	getPreferences(ids: string[], cb: ResponseCallback<preferenceData[]>): void
 	getDefaultValues(cb: ResponseCallback<SettingsConfig>): void

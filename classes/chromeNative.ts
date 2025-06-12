@@ -51,6 +51,13 @@ io.on("connection", (socket: socket) => {
 		}
 	});
 
+	socket.on('isUpdateAvailable', function (cb) {
+		cb({
+			error: false,
+			result: lastStatus_isUpdateAvailable,
+		});
+	});
+
 	socket.on('getPreference', function (id:string, cb) {
 		cb({
 			error: false,
@@ -313,6 +320,15 @@ export async function doRestartExtensions(): Promise<void> {
 	for (let socket of sockets) {
 		if (/Firefox/i.test(socket.data.browserName)) continue;
 		socket.emit('doRestart');
+	}
+}
+
+let lastStatus_isUpdateAvailable: boolean|null = null;
+export async function sendToExtensionUpdateAvailable(isUpdateAvailable:boolean): Promise<void> {
+	lastStatus_isUpdateAvailable = isUpdateAvailable
+	const sockets = await io.fetchSockets();
+	for (let socket of sockets) {
+		socket.emit('updateAvailableUpdate', isUpdateAvailable);
 	}
 }
 

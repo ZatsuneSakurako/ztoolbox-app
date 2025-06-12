@@ -5,7 +5,7 @@ import fs from "node:fs";
 import {errorToString} from "./errorToString.js";
 import {app} from "electron";
 import {IUpdateStatus} from "../browserViews/js/bo/update.js";
-import {doRestartExtensions} from "../classes/chromeNative.js";
+import {doRestartExtensions, sendToExtensionUpdateAvailable} from "../classes/chromeNative.js";
 
 function sshAddCount() {
 	const result = spawnSync('ssh-add', ['-l'], {
@@ -195,6 +195,10 @@ export async function updateStatus() {
 			console.error(e);
 		}
 	}
+
+	sendToExtensionUpdateAvailable(
+		((output.main?.behind ?? 0) + (output.extension?.behind ?? 0)) > 0
+	).catch(console.error);
 
 	return output;
 }
