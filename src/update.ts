@@ -39,11 +39,9 @@ function yarnCommand(folderPath: string, command:string) {
 	});
 
 	if (yarnInstall.error) {
-		console.error(`spawnSync error: ${yarnInstall.error}`);
+		throw new Error(`spawnSync error: ${yarnInstall.error}`);
 	} else if (yarnInstall.status !== 0) {
-		console.error(`yarn install failed with code ${yarnInstall.status}`);
-	} else {
-		console.log('yarn install completed successfully');
+		throw new Error(`yarn install failed with code ${yarnInstall.status}`);
 	}
 	return yarnInstall.stdout;
 }
@@ -209,12 +207,14 @@ export async function doUpdate() {
 
 	const logs: string[] = [],
 		git = await updateMain(false, logs).catch(console.error);
+	let mainUpdateErrored = false;
 	if (git) {
 		try {
 			logs.push(JSON.stringify(await git.pull()));
 			logs.push(yarnCommand(appRootPath, 'install'));
 			logs.push(yarnCommand(appRootPath, 'build'));
 		} catch (e) {
+			mainUpdateErrored = true;
 			if (logs) {
 				logs.push(errorToString(e));
 			}
@@ -234,6 +234,13 @@ export async function doUpdate() {
 			}
 			console.error(e);
 		}
+	}
+
+	if (!mainUpdateErrored) {
+		setTimeout(() => {
+			app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
+			app.exit(0);
+		});
 	}
 
 	return logs;

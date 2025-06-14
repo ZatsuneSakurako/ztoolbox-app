@@ -115,11 +115,6 @@ document.addEventListener('click', function (e) {
 });
 
 themeOnLoad()
-	.then(styleTheme => {
-		if (styleTheme) {
-			document.head.append(styleTheme);
-		}
-	})
 	.catch(console.error)
 ;
 

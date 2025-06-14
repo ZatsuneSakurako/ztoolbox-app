@@ -1,6 +1,5 @@
 import {BridgedWindow} from "../bo/bridgedWindow.js";
 import {Color} from "./color.js";
-import {nunjuckRender} from "../nunjuckRenderHelper.js";
 
 declare var window : BridgedWindow;
 
@@ -65,12 +64,21 @@ export async function themeOnLoad() {
 	);
 }
 
-const STYLE_NODE_ID = 'generated-color-stylesheet';
+const STYLE_NODE_ID = 'theme-stylesheet';
 export async function themeCacheUpdate(theme: string, background_color: string) {
-	let colorStylesheetNode:HTMLElement|null = document.querySelector<HTMLElement>('#' + STYLE_NODE_ID) ?? null;
+	let colorStylesheetNode = document.querySelector<HTMLLinkElement>('#' + STYLE_NODE_ID) ?? null;
 	if (colorStylesheetNode !== null && theme === colorStylesheetNode.dataset.theme && background_color === colorStylesheetNode.dataset.background_color) {
 		console.info("Loaded theme is already good");
-		return null;
+		return;
+	} else if (colorStylesheetNode && theme !== colorStylesheetNode.dataset.theme) {
+		console.info("Changing stylesheet href");
+		colorStylesheetNode.href = colorStylesheetNode.href.replace(/-(dark|light)/i, `-${theme}`);
+		colorStylesheetNode.dataset.theme = theme;
+	}
+
+
+	if (colorStylesheetNode && background_color === colorStylesheetNode.dataset.background_color) {
+		console.info("Theme color is already good");
 	}
 
 
@@ -94,25 +102,22 @@ export async function themeCacheUpdate(theme: string, background_color: string) 
 	}
 	if (!values) throw new Error('SHOULD_NOT_HAPPEN');
 
+	const light0 = values[0],
+		light1 = values[1],
+		light2 = values[2],
+		light3 = values[3],
+		invBaseColor_hue = (baseColor_hsl.H - 360/2 * ((baseColor_hsl.H < 360/2)? 1 : -1)),
+		invBaseColor_light = (theme === "dark")? "77%" : "33%";
 
+	const root = document.documentElement;
+	root.style.setProperty('--bgLight0', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light0})`);
+	root.style.setProperty('--bgLight1', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light1})`);
+	root.style.setProperty('--bgLight2', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2})`);
+	root.style.setProperty('--bgLight2_Opacity', `hsla${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.95)`);
+	root.style.setProperty('--bgLight3', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light3})`);
+	root.style.setProperty('--InvColor', `hsl(${invBaseColor_hue}, ${baseColor_hsl.S}, ${invBaseColor_light})`);
 
-	const style = await nunjuckRender("backgroundTheme", {
-		"isDarkTheme": (theme === "dark"),
-		"isLightTheme": (theme === "light"),
-		"baseColor_hsl": baseColor_hsl,
-		"light0": values[0],
-		"light1": values[1],
-		"light2": values[2],
-		"light3": values[3],
-		"invBaseColor_hue": ''+(baseColor_hsl.H - 360/2 * ((baseColor_hsl.H < 360/2)? 1 : -1)),
-		"invBaseColor_light": (theme === "dark")? "77%" : "33%"
-	}, 'string');
-
-	const styleElement = colorStylesheetNode ?? document.createElement("style");
-	styleElement.id = STYLE_NODE_ID;
-	styleElement.textContent = style;
-	styleElement.dataset.theme = theme;
-	styleElement.dataset.background_color = background_color;
-	//console.log(baseColor.rgbCode());
-	return styleElement.cloneNode(true);
+	if (colorStylesheetNode && colorStylesheetNode.dataset.background_color) {
+		colorStylesheetNode.dataset.background_color = background_color;
+	}
 }
