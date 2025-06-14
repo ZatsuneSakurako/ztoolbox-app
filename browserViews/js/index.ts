@@ -203,34 +203,31 @@ async function onLoad() {
 			}
 
 			const $gitMainStatus = document.querySelector<HTMLElement>('#gitMainStatus');
+			let mainHasChanges = false;
 			if ($gitMainStatus) {
-				$gitMainStatus.classList.toggle('has-changes',
-					(status.main?.ahead ?? -1) > 0
-					||
-					(status.main?.behind ?? -1) > 0
-				);
-
-				$gitMainStatus.classList.toggle('no-ahead', (status.main?.ahead ?? -1) <= 0);
+				const noHead = $gitMainStatus.classList.toggle('no-ahead', (status.main?.ahead ?? -1) <= 0);
 				$gitMainStatus.style.setProperty('--ahead', (status.main?.ahead ?? -1).toString());
 
-				$gitMainStatus.classList.toggle('no-behind', (status.main?.behind ?? -1) <= 0);
+				const noBehind = $gitMainStatus.classList.toggle('no-behind', (status.main?.behind ?? -1) <= 0);
 				$gitMainStatus.style.setProperty('--behind', (status.main?.behind ?? -1).toString());
+
+				mainHasChanges = !noHead && !noBehind;
 			}
 
 			const $gitExtensionStatus = document.querySelector<HTMLElement>('#gitExtensionStatus');
+			let extensionHasChanges = false;
 			if ($gitExtensionStatus) {
-				$gitExtensionStatus.classList.toggle('has-changes',
-					(status.extension?.ahead ?? -1) > 0
-					||
-					(status.extension?.behind ?? -1) > 0
-				);
-
-				$gitExtensionStatus.classList.toggle('no-ahead', (status.extension?.ahead ?? -1) <= 0);
+				const noHead = $gitExtensionStatus.classList.toggle('no-ahead', (status.extension?.ahead ?? -1) <= 0);
 				$gitExtensionStatus.style.setProperty('--ahead', (status.extension?.ahead ?? -1).toString());
 
-				$gitExtensionStatus.classList.toggle('no-behind', (status.extension?.behind ?? -1) <= 0);
+				const noBehind = $gitExtensionStatus.classList.toggle('no-behind', (status.extension?.behind ?? -1) <= 0);
 				$gitExtensionStatus.style.setProperty('--behind', (status.extension?.behind ?? -1).toString());
+
+				extensionHasChanges = !noHead && !noBehind;
 			}
+
+			$gitMainStatus?.parentElement?.classList.toggle('has-updates', mainHasChanges || extensionHasChanges);
+			$gitMainStatus?.parentElement?.classList.toggle('no-updates', !mainHasChanges && !extensionHasChanges);
 		})
 		.catch(console.error)
 	;

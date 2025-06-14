@@ -34,7 +34,8 @@ function sshAddCount() {
 function yarnCommand(folderPath: string, command:string) {
 	const yarnInstall = spawnSync('yarn', [command], {
 		cwd: folderPath,
-		stdio: 'inherit'
+		stdio: 'inherit',
+		encoding: 'utf8',
 	});
 
 	if (yarnInstall.error) {
@@ -51,13 +52,13 @@ function onlyIfUnpacked() {
 	if (app.isPackaged) throw new Error('Update system reserved for unpacked app');
 }
 
-async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
+async function updateExtension(checkOnly:boolean=true, logs?:string[]) {
 	onlyIfUnpacked();
 	let sshCount: number = Infinity;
 	try {
 		sshCount = sshAddCount();
 	} catch (e) {
-		if (errors) errors.push(errorToString(e));
+		if (logs) logs.push(errorToString(e));
 		console.error(e);
 	}
 
@@ -75,8 +76,8 @@ async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
 				'set-url', 'origin',
 				`https://github.com/${gitExtensionAddress}`,
 			]);
-			if (errors && result) {
-				errors.push(result);
+			if (logs && result) {
+				logs.push(result);
 			}
 		}
 		await git.raw(['switch', 'develop']).fetch();
@@ -85,8 +86,8 @@ async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
 			await doRestartExtensions();
 		}
 	} catch (e) {
-		if (errors) {
-			errors.push(errorToString(e));
+		if (logs) {
+			logs.push(errorToString(e));
 		}
 		console.error(e);
 	}
@@ -96,12 +97,12 @@ async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
 			'set-url', 'origin',
 			`git@github.com:${gitExtensionAddress}`,
 		]);
-		if (errors && result) {
-			errors.push(result);
+		if (logs && result) {
+			logs.push(result);
 		}
 	} catch (e) {
-		if (errors) {
-			errors.push(errorToString(e));
+		if (logs) {
+			logs.push(errorToString(e));
 		}
 		console.error(e);
 	}
@@ -109,13 +110,13 @@ async function updateExtension(checkOnly:boolean=true, errors?:string[]) {
 	return git;
 }
 
-export async function updateMain(checkOnly:boolean=false, errors?:string[]) {
+export async function updateMain(checkOnly:boolean=false, logs?:string[]) {
 	onlyIfUnpacked();
 	let sshCount: number = Infinity;
 	try {
 		sshCount = sshAddCount();
 	} catch (e) {
-		if (errors) errors.push(errorToString(e));
+		if (logs) logs.push(errorToString(e));
 		console.error(e);
 	}
 
@@ -126,8 +127,8 @@ export async function updateMain(checkOnly:boolean=false, errors?:string[]) {
 				'set-url', 'origin',
 				`https://github.com/${gitMainAddress}`,
 			]);
-			if (errors && result) {
-				errors.push(result);
+			if (logs && result) {
+				logs.push(result);
 			}
 		}
 		await git.fetch();
@@ -135,7 +136,7 @@ export async function updateMain(checkOnly:boolean=false, errors?:string[]) {
 			await git.pull();
 		}
 	} catch (e) {
-		if (errors) errors.push(errorToString(e));
+		if (logs) logs.push(errorToString(e));
 		console.error(e);
 	}
 
@@ -144,11 +145,11 @@ export async function updateMain(checkOnly:boolean=false, errors?:string[]) {
 			'set-url', 'origin',
 			`git@github.com:${gitMainAddress}`,
 		]).catch(console.error);
-		if (errors && result) {
-			errors.push(result);
+		if (logs && result) {
+			logs.push(result);
 		}
 	} catch (e) {
-		if (errors) errors.push(errorToString(e));
+		if (logs) logs.push(errorToString(e));
 		console.error(e);
 	}
 
@@ -206,34 +207,34 @@ export async function updateStatus() {
 export async function doUpdate() {
 	onlyIfUnpacked();
 
-	const errors: string[] = [],
-		git = await updateMain(false, errors).catch(console.error);
+	const logs: string[] = [],
+		git = await updateMain(false, logs).catch(console.error);
 	if (git) {
 		try {
-			await git.pull();
-			yarnCommand(appRootPath, 'install');
-			yarnCommand(appRootPath, 'build');
+			logs.push(JSON.stringify(await git.pull()));
+			logs.push(yarnCommand(appRootPath, 'install'));
+			logs.push(yarnCommand(appRootPath, 'build'));
 		} catch (e) {
-			if (errors) {
-				errors.push(errorToString(e));
+			if (logs) {
+				logs.push(errorToString(e));
 			}
 			console.error(e);
 		}
 	}
 
-	const gitExtension = await updateExtension(false, errors)
+	const gitExtension = await updateExtension(false, logs)
 		.catch(console.error);
 	if (gitExtension) {
 		try {
-			await gitExtension.pull();
-			yarnCommand(appExtensionPath, 'install');
+			logs.push(JSON.stringify(await gitExtension.pull()));
+			logs.push(yarnCommand(appExtensionPath, 'install'));
 		} catch (e) {
-			if (errors) {
-				errors.push(errorToString(e));
+			if (logs) {
+				logs.push(errorToString(e));
 			}
 			console.error(e);
 		}
 	}
 
-	return errors;
+	return logs;
 }
