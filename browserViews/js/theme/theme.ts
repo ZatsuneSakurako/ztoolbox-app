@@ -113,7 +113,8 @@ export async function themeCacheUpdate(theme: string, background_color: string) 
 	root.style.setProperty('--bgLight0', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light0})`);
 	root.style.setProperty('--bgLight1', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light1})`);
 	root.style.setProperty('--bgLight2', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2})`);
-	root.style.setProperty('--bgLight2_Opacity', `hsla${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.95)`);
+	root.style.setProperty('--bgLight2_Opacity', `hsla(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.95)`);
+	root.style.setProperty('--bgLight2_Opacity50', `hsla(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.5)`);
 	root.style.setProperty('--bgLight3', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light3})`);
 	root.style.setProperty('--InvColor', `hsl(${invBaseColor_hue}, ${baseColor_hsl.S}, ${invBaseColor_light})`);
 
