@@ -73,7 +73,7 @@ io.on("connection", (socket: socket) => {
 			for (let [id, config] of Object.entries(settings.getSettingConfigs() ?? [])) {
 				if (!config) continue;
 
-				if (config.group && ['theme', 'web_extension'].includes(config.group)) {
+				if (config.group && webExtensionSettingsGroups.has(config.group)) {
 					ids.push(id);
 				}
 			}
@@ -313,7 +313,17 @@ export function ping(socket: socket): Promise<'pong'> {
 	});
 }
 
+export const webExtensionSettingsGroups = new Set<string>(['theme', 'web_extension']);
 export async function onSettingUpdate(id: string, oldValue: preferenceData['value'], newValue: preferenceData['value']): Promise<void> {
+	const settingConfig = settings.getSettingConfig(id);
+	if (settingConfig && (!settingConfig.group || webExtensionSettingsGroups.has(settingConfig.group))) {
+		/**
+		 * Not web extension settings,
+		 * not sending it to sockets
+ 		 */
+		return;
+	}
+
 	const sockets = await io.fetchSockets();
 	for (let socket of sockets) {
 		socket.emit('onSettingUpdate', {
