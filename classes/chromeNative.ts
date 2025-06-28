@@ -69,6 +69,15 @@ io.on("connection", (socket: socket) => {
 	});
 
 	socket.on('getPreferences', function (ids:string[], cb) {
+		if (ids.length === 0) {
+			for (let [id, config] of Object.entries(settings.getSettingConfigs() ?? [])) {
+				if (!config) continue;
+
+				if (config.group && ['theme', 'web_extension'].includes(config.group)) {
+					ids.push(id);
+				}
+			}
+		}
 		cb({
 			error: false,
 			result: ids.map(id => {

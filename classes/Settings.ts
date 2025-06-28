@@ -195,6 +195,10 @@ export class Settings extends EventEmitter implements ISettings {
 		return settings[key];
 	}
 
+	getSettingConfigs():SettingsConfig|undefined {
+		return settings;
+	}
+
 	getDefaultValue(key: string): RandomJsonData | undefined {
 		const settingConf = this.getSettingConfig(key);
 		if (!settingConf || settingConf?.type === 'button') return;
