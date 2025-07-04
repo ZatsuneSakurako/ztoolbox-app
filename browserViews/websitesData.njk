@@ -16,7 +16,7 @@
 
 			<img class="icon" src="{{ data.websiteIcon }}" alt="" />
 
-			<div class="title" data-count="{% if data.logged %}{{ data.count }}"{% endif %}>
+			<div class="title"{% if data.logged %} data-count="{{ data.count }}"{% endif %}>
 				{{-website-}}
 			</div>
 			<button class="btn-login" data-login-website="{{ website }}">
