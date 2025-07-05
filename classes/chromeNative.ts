@@ -15,7 +15,6 @@ import fs from "fs";
 import {errorToString} from "../src/errorToString.js";
 import {IUserscriptJson} from "./bo/userscript.js";
 import {Userscript} from "../src/userScript/Userscript.js";
-import nunjucks from "nunjucks";
 import {appExtensionTemplatesPath} from "./constants.js";
 import {nunjucksEnv} from "../src/nunjucksEnv.js";
 
@@ -23,9 +22,10 @@ import {nunjucksEnv} from "../src/nunjucksEnv.js";
 
 export type socket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
 export type remoteSocket = RemoteSocket<ServerToClientEvents, SocketData>;
-export const fastifyApp: FastifyInstance = Fastify({}),
-	io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(fastifyApp.server)
-;
+export const fastifyApp: FastifyInstance = Fastify({ logger: true }),
+	io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(fastifyApp.server, {
+		maxHttpBufferSize: 32 * 1024 * 1024, // ~32M
+	});
 
 
 /*
@@ -141,8 +141,8 @@ io.on("connection", (socket: socket) => {
 		;
 	});
 
-	socket.on('disconnect', reason => {
-		console.log(`Socket disconnected : ${reason}`);
+	socket.on('disconnect', (reason, description) => {
+		console.log('Socket disconnected', reason, description);
 
 		getWsClientDatas()
 			.then(getWsClientDatas => {
