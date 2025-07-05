@@ -17,6 +17,7 @@ import {IUserscriptJson} from "./bo/userscript.js";
 import {Userscript} from "../src/userScript/Userscript.js";
 import nunjucks from "nunjucks";
 import {appExtensionTemplatesPath} from "./constants.js";
+import {nunjucksEnv} from "../src/nunjucksEnv.js";
 
 
 
@@ -279,7 +280,7 @@ io.on("connection", (socket: socket) => {
 		}
 	});
 
-	socket.on('nunjuckRender', async function (templateName, context, cb) {
+	socket.on('nunjuckRender', async function (templateName, context, async, cb) {
 		const absolutePath = path.normalize(`${appExtensionTemplatesPath}/${templateName}${templateName.endsWith('.njk') ? '' : '.njk'}`);
 		if (!fs.existsSync(absolutePath)) {
 			cb({ error: `FILE_NOT_FOUND ${JSON.stringify(absolutePath)}` });
@@ -290,9 +291,21 @@ io.on("connection", (socket: socket) => {
 			return;
 		}
 		try {
-			const fileContent = fs.readFileSync(absolutePath, { encoding: 'utf8' }),
-				result = nunjucks.renderString(fileContent, context);
-			cb({ error: false, result });
+			const fileContent = fs.readFileSync(absolutePath, { encoding: 'utf8' });
+
+			if (!async) {
+				let	result = nunjucksEnv.renderString(fileContent, context);
+				cb({ error: false, result });
+				return;
+			}
+
+			nunjucksEnv.renderString(fileContent, context, function (err, result) {
+				if (err || !result) {
+					cb({ error: errorToString(err) })
+					return;
+				}
+				cb({ error: false, result });
+			});
 		} catch (e) {
 			console.error(e);
 			cb({ error: errorToString(e) });

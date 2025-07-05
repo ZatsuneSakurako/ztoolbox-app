@@ -22,6 +22,7 @@ import Dict = NodeJS.Dict;
 import ini from "ini";
 import * as update from './src/update.js';
 import fs from "node:fs";
+import {nunjucksEnv} from "./src/nunjucksEnv.js";
 
 
 fastifyApp.register(fastifyStatic, {
@@ -235,9 +236,8 @@ ipcMain.handle('sendNotification', async (e, message: string, title?: string, so
 	});
 });
 
-nunjucks.configure(path.normalize(`${resourcePath}/browserViews/`));
 ipcMain.handle('nunjuckRender', async (e, templateName:string, context:any) => {
-	return nunjucks.render(`${templateName}.njk`, context);
+	return nunjucksEnv.render(`${templateName}.njk`, context);
 });
 
 ipcMain.handle('getNetConnectionAddress', async (e, host:string, timeout:number=5000) => {
