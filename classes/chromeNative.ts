@@ -291,15 +291,13 @@ io.on("connection", (socket: socket) => {
 			return;
 		}
 		try {
-			const fileContent = fs.readFileSync(absolutePath, { encoding: 'utf8' });
-
 			if (!async) {
-				let	result = nunjucksEnv.renderString(fileContent, context);
+				let	result = nunjucksEnv.render(templateName + '.njk', context);
 				cb({ error: false, result });
 				return;
 			}
 
-			nunjucksEnv.renderString(fileContent, context, function (err, result) {
+			nunjucksEnv.render(templateName + '.njk', context, function (err, result) {
 				if (err || !result) {
 					cb({ error: errorToString(err) })
 					return;

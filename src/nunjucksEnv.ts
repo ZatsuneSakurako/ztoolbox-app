@@ -1,10 +1,15 @@
 import nunjucks from "nunjucks";
 import path from "path";
-import {resourcePath} from "../classes/constants.js";
+import {appExtensionTemplatesPath, resourcePath} from "../classes/constants.js";
+import fs from "node:fs";
 
-export const nunjucksEnv = new nunjucks.Environment(
-	new nunjucks.FileSystemLoader(path.normalize(`${resourcePath}/browserViews/`)),
-);
+const searchPaths: string[] = [
+	path.normalize(`${resourcePath}/browserViews/`),
+];
+if (fs.existsSync(appExtensionTemplatesPath)) {
+	searchPaths.push(appExtensionTemplatesPath);
+}
+export const nunjucksEnv = new nunjucks.Environment(new nunjucks.FileSystemLoader(searchPaths));
 nunjucksEnv.addFilter('type', function(variable) {
 	return typeof variable;
 });
