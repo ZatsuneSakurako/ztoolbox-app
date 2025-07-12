@@ -18,17 +18,12 @@
 				{%- if client.tabData.name -%}{{ client.tabData.name }}{% else %}{{ client.browserName }}{% endif -%}
 			</div>
 			<div class="wsClientDatas">
-				{%- if client.tabData -%}
-					{% if client.tabData.ip -%}
-						{%- if client.tabData.ipMore -%}
-							{{ client.tabData.ipMore }} ({{ client.tabData.ip }})
-						{%- else -%}
-							{{ client.tabData.ip }}
-						{%- endif %}
-
-					<a class="button" href="https://dnslytics.com/ip/{{ client.tabData.ip }}" title="DNSlytics" target="_blank"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADU0lEQVR4Ab2WA3QcURSG9zA9iG3NTN0uatu2FdQ4TI+j2lGNYLc2Yq+N2mbscno3zqzzkrxzvvW+75/77sw8WnsHFpk0Gg9P5ODhSd+Ae1h4ig2tK4Z/NNsXhGkA2ZZEQcDeK7adKg+MSBwLslKANIAQPYTRkifVNYqMIfILP2/XoXIiOtGTCE8qMSSlgoUnSXz2sO07RH5SSjgNO3wg3aDQAER4shQ5RNyTHo77xYxMIjzxn6UBGpH1Dj/j0C754Ue9HeLVuHzznfkSA5N/BcR4eHI6lPwSLFESvL8GZ0MWPL8A/jT+Tt5jd6KjRfIjCj+7ODUuBsixcVHFMEk1CFKxiOQwLPzCJGgyN1NzTCv8PmXivTfFA0/mSXruuQxV5DiZJU9Q+9jHqQmpVg78GXAwYSoWE2NlaQWnPiCtZvOrqgFyNq/q35SMT2nzCqrdTTRcgG2cBhc1ysl4Df4cpYdAngqQrSiaza0YaZa8kQykALyqMK2YQu1cfuXoNj+MeYHZgExIkZOxKvw6SoBZ/KopjVIqJbPFNd7N8lg1LtAKdVARSUgBuNUeuvJGBFX3638Ur8Ye6JUD8SrsEkqAxmX4YSjEXGHFCBqIigwFgMqkowaYw6+SGQoAsGkg4RgKAIhRA4Aky0iAIm0FRhkJ8A09QPVVIwHuNVzz1USqwT545OeGWAG2/iasFEwVFjfsoo49CvABWanePlBikxED3KHKtX0xvbDMnnIJxkaDsFY3BBaGFEBQlUMJIFooLdG/a4pRESN1zwoiFbECb1rJ5Qv55cZvzycf93SPaeiJf40hquFiZfHNaE3umG5r8mdMA+nfRrmUWnaDIzSX5bSD3y97j7yHNAYqckxBTDP1n3VchkdQIXNKMJexE0gFqlfzgosa5Yq5ogrL9gSrRIMcg7lMeQiXQYZy6X9hwtchXGZOEJdxO6iQcTG4kHEVyArmMWTwXRFAUlnEvymllt2iEcTv7dAoIC2H+W8u72N2/ZGjjI2Ffe1hQqmlAdZyFz6YKa1wQpJTQkgsCPB9Te5AN1QvpavpdrDmIjPktUEF9OG0zhihUpZtEJcuNCIvhrUfiW4yEQJEAh05j353A7+/J60rxnLhYBs4Je+B+BsccQpKyf8D3R31CR/6m7AAAAAASUVORK5CYII=" alt="" height="24" width="24"></a>{% endif -%}
-					{%- if client.tabData.ipMore and client.tabData.domain %}&nbsp;{% endif -%}
-					{%- if client.tabData.domain %}<a class="button" href="https://dnschecker.org/#A/{{ client.tabData.domain }}" title="DNS Checker" target="_blank"><img src="https://dnschecker.org/themes/common/images/general/favicon-32.png" alt="" height="24" width="24"></a>{% endif -%}
+				{%- if client.tabData and client.tabData.ip -%}
+					{%- if client.tabData.ipMore -%}
+						{{ client.tabData.ipMore }} ({{ client.tabData.ip }})
+					{%- else -%}
+						{{ client.tabData.ip }}
+					{%- endif -%}
 				{%- endif -%}
 			</div>
 		</article>
