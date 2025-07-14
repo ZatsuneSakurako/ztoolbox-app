@@ -1,7 +1,6 @@
 import electron, {app, dialog, ipcMain} from 'electron';
 import fastifyStatic from '@fastify/static';
-import nunjucks from "nunjucks";
-import * as path from "path";
+import * as path from "node:path";
 import {sendNotification} from "./classes/notify.js";
 import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow.js";
 import {versionState} from "./classes/versionState.js";

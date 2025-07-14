@@ -1,6 +1,6 @@
-import {EventEmitter} from "events";
-import fs from "fs-extra";
-import path from "path";
+import {EventEmitter} from "node:events";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import debounce from "lodash.debounce";
 
 import {ISettings, PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings.js";
@@ -100,7 +100,7 @@ export class Settings extends EventEmitter implements ISettings {
 	static #loadFile(filePath:string):Map<string, RandomJsonData>|null {
 		let data:RandomJsonData = null;
 		try {
-			data = fs.readJsonSync(filePath, 'utf8');
+			data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 		} catch (e) {
 			console.error(e)
 		}
@@ -129,7 +129,7 @@ export class Settings extends EventEmitter implements ISettings {
 	 */
 	static #saveFile(storagePath:string, data:RandomJsonData):boolean {
 		try {
-			fs.writeJsonSync(storagePath, data, "utf8");
+			fs.writeFileSync(storagePath, JSON.stringify(data, null, "\t"), 'utf8');
 			return true;
 		} catch (e) {
 			console.error(e)

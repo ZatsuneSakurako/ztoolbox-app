@@ -1,34 +1,7 @@
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
-import path from "path";
+import * as path from "node:path";
 import {build, CliOptions} from "electron-builder";
-import {fileURLToPath} from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-
-
-const _yargs = yargs(hideBin(process.argv))
-	.usage('Usage: $0 [options]')
-
-	.option('d', {
-		"alias": ['dir'],
-		"description": 'electron builder --dir',
-		"type": "boolean"
-	})
-	.fail(function (msg, err, yargs) {
-		if(msg==="yargs error"){
-			console.error(yargs.help());
-		}
-
-		process.exit(1);
-	})
-
-	.help('h')
-	.alias('h', 'help')
-	.parseSync()
-;
+const __dirname = import.meta.dirname;
 
 
 
@@ -109,7 +82,7 @@ const _yargs = yargs(hideBin(process.argv))
 			}
 		};
 
-		if (_yargs.dir === true) {
+		if (process.env.DO_PACK) {
 			buildOptions.dir = false;
 		}
 

@@ -1,7 +1,7 @@
 import {simpleGit} from 'simple-git';
 import {VersionState} from "./bo/versionState.js";
-import path from "path";
-import fs from "fs-extra";
+import * as path from "node:path";
+import * as fs from "node:fs";
 import {app} from "electron";
 
 export async function versionState(gitDir=process.cwd()) {

@@ -1,4 +1,5 @@
-import cronParser from 'cron-parser';
+import {CronExpressionParser} from "cron-parser";
+
 
 export type Callback = (date:Date) => void;
 
@@ -31,7 +32,7 @@ export class ZAlarm {
 		}
 		if (!(newValue instanceof Date)) {
 			// Make sure to have a valid cron string
-			cronParser.parseExpression(newValue);
+			CronExpressionParser.parse(newValue)
 		}
 		this._cronOrDate = newValue;
 
@@ -67,7 +68,7 @@ export class ZAlarm {
 			return new Date(this.cronOrDate.getTime());
 		}
 
-		const cron = cronParser.parseExpression(this.cronOrDate);
+		const cron = CronExpressionParser.parse(this.cronOrDate);
 		return cron.next().toDate();
 	}
 

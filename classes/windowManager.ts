@@ -1,10 +1,8 @@
 import {app, BrowserWindow} from "electron";
 import {appIcon, browserViewPath} from "./constants.js";
-import path from "path";
-import {fileURLToPath} from "url";
+import path from "node:path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = import.meta.dirname;
 
 
 

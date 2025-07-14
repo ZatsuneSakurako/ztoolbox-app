@@ -1,4 +1,4 @@
-import * as path from "path";
+import * as path from "node:path";
 import * as electron from "electron";
 
 const __dirname = import.meta.dirname;

@@ -13,7 +13,6 @@
 		"resolveJsonModule": false,
 		"types": [
 			"node",
-			"browserify",
 			"del",
 			"gulp-pug",
 			"sass-embedded"

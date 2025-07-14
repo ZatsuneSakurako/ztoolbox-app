@@ -1,5 +1,5 @@
 import nunjucks from "nunjucks";
-import path from "path";
+import * as path from "node:path";
 import {appExtensionTemplatesPath, resourcePath} from "../classes/constants.js";
 import fs from "node:fs";
 

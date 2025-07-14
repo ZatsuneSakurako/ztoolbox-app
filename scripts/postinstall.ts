@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
-import fs from "fs-extra";
-import path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import * as sass from "sass";
 
 const currentPath = path.resolve(import.meta.dirname, '..'),
@@ -14,26 +14,28 @@ if (!fs.existsSync(libPath)){
 
 const vuePath = path.resolve(libPath, './vue');
 if (fs.existsSync(vuePath)) {
-	fs.removeSync(vuePath);
+	fs.rmSync(vuePath, { recursive: true, force: true });
 }
 
-await fs.copy(path.resolve(currentPath, './node_modules/@fontsource/ubuntu/'), path.resolve(libPath, './fontsource-ubuntu'))
-	.catch(console.error)
-;
+fs.cpSync(path.resolve(currentPath, './node_modules/@fontsource/ubuntu/'), path.resolve(libPath, './fontsource-ubuntu'), {
+	recursive: true,
+});
 
-await fs.copy(path.resolve(currentPath, './node_modules/yaml/browser/dist/'), path.resolve(libPath, './yaml'))
-	.catch(console.error)
-;
+fs.cpSync(path.resolve(currentPath, './node_modules/yaml/browser/dist/'), path.resolve(libPath, './yaml'), {
+	recursive: true,
+});
 
-await fs.copy(path.resolve(currentPath, './node_modules/flems/dist/'), path.resolve(libPath, './flems'))
-	.catch(console.error)
-;
+fs.cpSync(path.resolve(currentPath, './node_modules/flems/dist/'), path.resolve(libPath, './flems'), {
+	recursive: true,
+});
 
 
-await fs.mkdirp(path.resolve(libPath, './material-symbols'));
-await fs.copy("./node_modules/material-symbols/material-symbols-outlined.woff2", path.resolve(libPath, './material-symbols/material-symbols-outlined.woff2'));
-await fs.copy("./node_modules/material-symbols/material-symbols-rounded.woff2", path.resolve(libPath, './material-symbols/material-symbols-rounded.woff2'));
-await fs.copy("./node_modules/material-symbols/material-symbols-sharp.woff2", path.resolve(libPath, './material-symbols/material-symbols-sharp.woff2'));
+fs.mkdirSync(path.resolve(libPath, './material-symbols'), {
+	recursive: true,
+});
+fs.cpSync("./node_modules/material-symbols/material-symbols-outlined.woff2", path.resolve(libPath, './material-symbols/material-symbols-outlined.woff2'));
+fs.cpSync("./node_modules/material-symbols/material-symbols-rounded.woff2", path.resolve(libPath, './material-symbols/material-symbols-rounded.woff2'));
+fs.cpSync("./node_modules/material-symbols/material-symbols-sharp.woff2", path.resolve(libPath, './material-symbols/material-symbols-sharp.woff2'));
 fs.writeFileSync(path.resolve(libPath, './material-symbols/material-symbols.css'),
 	sass.compile("./node_modules/material-symbols/index.scss").css
 		.replace(/ {2}/g, '\t')

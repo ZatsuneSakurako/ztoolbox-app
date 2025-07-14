@@ -6,7 +6,7 @@ import shell from "shelljs";
 import ProtocolRegistry from "protocol-registry";
 import {appRootPath, autoStartArgument, zToolbox_protocol} from "../classes/constants.js";
 import {app} from "electron";
-import path from "path";
+import * as path from "node:path";
 import {showSection} from "../classes/windowManager.js";
 import {sendNotification} from "../classes/notify.js";
 import AutoLaunch from "auto-launch";
