@@ -8,9 +8,11 @@ const currentPath = path.resolve(import.meta.dirname, '..'),
 	libPath = path.resolve(currentPath, './browserViews/lib/')
 ;
 
-if (!fs.existsSync(libPath)){
-	fs.mkdirSync(libPath);
+if (fs.existsSync(libPath)) {
+	fs.rmSync(libPath, { recursive: true, force: true });
 }
+fs.mkdirSync(libPath);
+
 
 const vuePath = path.resolve(libPath, './vue');
 if (fs.existsSync(vuePath)) {
@@ -22,10 +24,6 @@ fs.cpSync(path.resolve(currentPath, './node_modules/@fontsource/ubuntu/'), path.
 });
 
 fs.cpSync(path.resolve(currentPath, './node_modules/yaml/browser/dist/'), path.resolve(libPath, './yaml'), {
-	recursive: true,
-});
-
-fs.cpSync(path.resolve(currentPath, './node_modules/flems/dist/'), path.resolve(libPath, './flems'), {
 	recursive: true,
 });
 

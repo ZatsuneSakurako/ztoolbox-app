@@ -22,20 +22,6 @@ app.whenReady()
 				return;
 			}
 
-
-			if (url && url.protocol === 'file:' && url.pathname.endsWith('/browserViews/iframe.html')) {
-				callback({
-					responseHeaders: {
-						...details.responseHeaders,
-						'Content-Security-Policy': [
-							`default-src 'none'; script-src 'self' https://unpkg.com 'unsafe-inline'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; media-src 'self'; frame-src 'self'; font-src 'self'; connect-src https://unpkg.com`
-						]
-					}
-				});
-				return;
-			}
-
-
 			callback({
 				responseHeaders: {
 					...details.responseHeaders,

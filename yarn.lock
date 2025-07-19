@@ -2817,13 +2817,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flems@npm:^1.5.10":
-  version: 1.5.10
-  resolution: "flems@npm:1.5.10"
-  checksum: 10/59d2faf9f3c48a60da226e0529262d34a6aeff00eb9a9b4e9e28e9c52e9d4c35148fdbdb138f68f2967cd26085f03550a1859604ddd5b79e85fc88c91bf6123f
-  languageName: node
-  linkType: hard
-
 "for-in@npm:^1.0.1":
   version: 1.0.2
   resolution: "for-in@npm:1.0.2"
@@ -7191,7 +7184,6 @@ __metadata:
     electron: "npm:^37.2.1"
     electron-builder: "npm:^26.0.12"
     fastify: "npm:^5.4.0"
-    flems: "npm:^1.5.10"
     gulp: "npm:^5.0.1"
     gulp-cli: "npm:^3.1.0"
     gulp-pug: "npm:^5.0.0"

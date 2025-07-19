@@ -1,7 +1,6 @@
 //-main.grid.no-c-gap.no-r-gap
 main.grid
 	input#main.hidden(type='radio', name="menu", value='main')
-	input#codeTester.hidden(type='radio', name="menu", value='code-tester')
 	input#settings.hidden(type='radio', name="menu", value='settings')
 	input#infos.hidden(type='radio', name="menu", value='infos')
 
@@ -40,5 +39,3 @@ main.grid
 		div.loader-container
 			svg.loader(width="1em", height="1em")
 				circle(cx="0.5em", cy="0.5em", r="0.45em")
-
-	iframe#iframe.grid-12(src='http://localhost:42080/iframe.html', data-menu-show='code-tester', loading="lazy")

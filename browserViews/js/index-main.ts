@@ -3,16 +3,8 @@ import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import {VersionState} from "../../classes/bo/versionState.js";
 import {Dict} from "./bo/Dict.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
-import {IEditorData} from "./bo/iframe.js";
 
 declare var window : BridgedWindow;
-
-
-
-let codeTesterLoaded = false;
-function codeTesterLoader() {
-	codeTesterLoaded = true;
-}
 
 
 
@@ -94,51 +86,11 @@ window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	;
 });
 
-window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
-	const val = e.detail.newSection;
-	if (val === 'code-tester' && !codeTesterLoaded) {
-		window.removeEventListener('showSection', fn, false);
-		codeTesterLoader();
-	}
-}, false);
-
 
 
 
 
 console.info('index-main init !');
-const editors: IEditorData = {
-	files: [
-		{
-			name: 'app.html',
-			content: '<h3>No need to write &lt;body&gt; &lt;/body&gt;</h3>'
-		},
-		{
-			name: 'app.css',
-			content: 'body {\n\tpadding: 0;\n}\nbody.red {\n\tbackground: rgba(200,0,0,0.2);\n}'
-		},
-		{
-			name: 'app.js',
-			content: `function test(){return true;}
-document.body.classList.add('red');
-console.info("test console");
-
-import * as uuid from 'https://jspm.dev/uuid';
-console.info('uuid v4 :', uuid.v4());
-
-const MY_NAMESPACE = window.localStorage.getItem('NAMESPACE') || uuid.v4(); // Or replace with a static uuid
-console.info(
-	'uuid v5 (sha1) :',
-	uuid.v5('Lorem Ipsum', MY_NAMESPACE)
-);
-`,
-		},
-	],
-	libs: [
-		'lodash',
-		'dayjs',
-	]
-};
 window.addEventListener('message', function (e) {
 	if (!['http://localhost:42080', 'file://'].includes(e.origin)) {
 		throw new Error(`WRONG_ORIGIN "${e.origin}"`);
@@ -148,23 +100,7 @@ window.addEventListener('message', function (e) {
 		return;
 	}
 
-	switch (e.data.type) {
-		case 'export-data':
-			editors.libs = e.data.links;
-			editors.files = e.data.files;
-			console.debug(editors);
-			break;
-		case 'iframe-init':
-			const $iframe = document.querySelector<HTMLIFrameElement>('iframe#iframe');
-			if (!$iframe?.contentWindow) {
-				throw new Error('IFRAME_NOT_FOUND');
-			}
-			$iframe.contentWindow.postMessage({
-				type: 'loadData',
-				editors
-			}, '*');
-			break;
-	}
+	console.dir(e.data);
 }, {
 	passive: true
 });
