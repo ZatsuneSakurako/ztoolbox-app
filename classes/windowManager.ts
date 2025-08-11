@@ -1,6 +1,7 @@
-import {app, BrowserWindow} from "electron";
-import {appIcon, browserViewPath} from "./constants.js";
+import {app, BrowserWindow, nativeImage} from "electron";
+import {appIcon, appIconPath, browserViewPath} from "./constants.js";
 import path from "node:path";
+import {addBadgeToImage} from "../src/addBadgeToImage.js";
 
 const __dirname = import.meta.dirname;
 
@@ -11,6 +12,22 @@ const __dirname = import.meta.dirname;
  * @param count
  */
 export function setBadge(count: number) {
+	if (process.platform === 'linux') {
+		const mainWindow = getMainWindow();
+		if (mainWindow) {
+			if (count === 0) {
+				mainWindow.setIcon(appIconPath);
+				return;
+			}
+			addBadgeToImage(appIconPath, count)
+				.then(buffer => {
+					mainWindow.setIcon(nativeImage.createFromBuffer(buffer))
+				})
+				.catch(console.error);
+		}
+		return;
+	}
+
 	if (count < 100) {
 		app.setBadgeCount(count);
 	} else {

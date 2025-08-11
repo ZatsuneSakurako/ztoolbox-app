@@ -59,6 +59,7 @@
     "fastify": "^5.4.0",
     "i18next": "^25.1.2",
     "ini": "^5.0.0",
+    "jimp": "^1.6.0",
     "json5": "^2.2.3",
     "lodash.debounce": "^4.0.8",
     "material-symbols": "^0.32.0",
