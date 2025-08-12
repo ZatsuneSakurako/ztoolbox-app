@@ -9,7 +9,7 @@ import {app} from "electron";
 import * as path from "node:path";
 import {showSection} from "../classes/windowManager.js";
 import {sendNotification} from "../classes/notify.js";
-import AutoLaunch from "auto-launch";
+import _AutoLaunch from "auto-launch";
 import {settings} from "./init.js";
 
 
@@ -156,59 +156,28 @@ export async function updateAutoStart() {
 	if (process.platform === 'linux') {
 		args.push('--no-sandbox');
 
+		const AutoLaunch = await import('auto-launch');
+		let autoLaunch: _AutoLaunch;
 		if (!app.isPackaged) {
-			// auto-launch trick to be able to use argument
-			// @ts-ignore
-			const fileBasedUtilities = (await import('auto-launch/dist/fileBasedUtilities.js')).default;
-			// @ts-ignore
-			const AutoLaunchLinux = (await import('auto-launch/dist/AutoLaunchLinux.js')).default;
-			const targetFilePath = AutoLaunchLinux.getFilePath(autoLaunchName),
-				isEnabled = await fileBasedUtilities.isEnabled(targetFilePath)
-			;
-
-			if (isEnabled !== autoStartPref) {
-				if (autoStartPref) {
-					await AutoLaunchLinux.enable({
-						appName: autoLaunchName,
-						appPath: `${JSON.stringify(process.execPath)} ${args.join(' ')}`,
-						isHiddenOnLaunch: false
-					})
-						.then(() => {
-							console.info('autostart enabled');
-						})
-						.catch(console.error)
-					;
-				} else {
-					await fileBasedUtilities.removeFile(targetFilePath)
-						.then(() => {
-							console.info('autostart disabled');
-						})
-						.catch(console.error)
-					;
-				}
-			}
-			return;
+			autoLaunch = new AutoLaunch.default({
+				name: autoLaunchName,
+				path: `${JSON.stringify(process.execPath)} ${args.join(' ')}`,
+				isHidden: false,
+			});
+		} else {
+			autoLaunch = new AutoLaunch.default({
+				name: autoLaunchName,
+			});
 		}
 
-		const autoLaunch = new AutoLaunch({
-				name: autoLaunchName
-			}),
-			isEnabled = await autoLaunch.isEnabled()
-		;
-
-		if (isEnabled !== autoStartPref) {
+		if (await autoLaunch.isEnabled() !== autoStartPref) {
 			if (autoStartPref) {
 				await autoLaunch.enable()
-					.then(() => {
-						console.info('autostart enabled');
-					})
+					.then(() => console.info('autostart enabled'))
 					.catch(console.error);
-			}
-			else {
+			} else {
 				await autoLaunch.disable()
-					.then(() => {
-						console.info('autostart disabled');
-					})
+					.then(() => console.info('autostart disabled'))
 					.catch(console.error);
 			}
 		}
