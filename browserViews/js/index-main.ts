@@ -3,6 +3,7 @@ import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import {VersionState} from "../../classes/bo/versionState.js";
 import {Dict} from "./bo/Dict.js";
 import {nunjuckRender} from "./nunjuckRenderHelper.js";
+import {getNetworkIps} from "../../src/getNetConnectionAddress.js";
 
 declare var window : BridgedWindow;
 
@@ -14,7 +15,7 @@ interface IVariousInfosData {
 	versions?: Dict<string>; // NodeJS.ProcessVersions;
 	processArgv?: string[] // NodeJS.Process.argv
 	versionState?: VersionState | null
-	internetAddress?: string
+	networkIps?: ReturnType<typeof getNetworkIps>
 }
 async function refreshData() {
 	const $variousInfos = document.querySelector('#variousInfos');
@@ -51,9 +52,13 @@ async function refreshData() {
 			.catch(console.error)
 	);
 	promises.push(
-		window.znmApi.getNetConnectionAddress('duckduckgo.com')
+		window.znmApi.getNetworkIps()
 			.then(result => {
-				infosData.internetAddress = result.address;
+				infosData.networkIps = new Map();
+				for (let [name, value] of Object.entries(result)) {
+					if (value === undefined) continue;
+					infosData.networkIps.set(name, value);
+				}
 			})
 			.catch(console.error)
 	);

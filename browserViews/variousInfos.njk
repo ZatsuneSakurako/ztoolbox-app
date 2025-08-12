@@ -1,15 +1,20 @@
-{% if versions -%}
+{%- if versions -%}
 	<p>Node.js {{versions.node}}, Chromium {{versions.chrome}}, Electron {{versions.electron}} (current i18next language :&nbsp;<span data-translate-id='language'></span>)</p>
-{%- endif %}
+{%- endif -%}
 
-{% if versionState -%}
+{%- if versionState -%}
 	<p>Version actuelle basée sur la branche {{versionState.branch}}, commit du {{versionState.commitDate.toLocaleString()}}.</p>
-{%- endif %}
+{%- endif -%}
 
-{% if processArgv|length > 0 -%}
+{%- if processArgv|length > 0 -%}
 	<p>Arguments : {{processArgv|join(', ')}}</p>
-{%- endif %}
+{%- endif -%}
 
-{% if internetAddress -%}
-	<p>Adresse ip : {{internetAddress}}</p>
-{%- endif %}
+{%- if networkIps -%}
+	<p>Adresses IPs&nbsp;:</p><ul>
+	{%- for name, value in networkIps -%}
+		{%- if value.ipV4 | first !== "127.0.0.1" -%}
+			<li>{{ name }} : <p>{{ value.ipV4 | join(', ') }} / {{ value.ipV6 | join(', ') }}</p></li>
+		{%- endif -%}
+	{%- endfor -%}</ul>
+{%- endif -%}

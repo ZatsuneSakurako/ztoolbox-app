@@ -135,8 +135,8 @@ const znmApi:IZnmApi = {
 		return ipcRendererInvoke('nunjuckRender', templateName, context)
 	},
 
-	getNetConnectionAddress(host:string, timeout?:number) {
-		return ipcRendererInvoke('getNetConnectionAddress', host, timeout);
+	getNetworkIps() {
+		return ipcRendererInvoke('getNetworkIps');
 	},
 
 	onFocus(cb: () => void) {

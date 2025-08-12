@@ -14,7 +14,7 @@ import './src/hourlyAlarm.js';
 import {i18n} from "./src/i18next.js";
 import './src/manageProtocolAndAutostart.js';
 import {appRootPath, resourcePath} from "./classes/constants.js";
-import {getNetConnectionAddress} from "./src/getNetConnectionAddress.js";
+import {getNetworkIps} from "./src/getNetConnectionAddress.js";
 import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 import {settings} from "./src/init.js";
 import Dict = NodeJS.Dict;
@@ -239,9 +239,11 @@ ipcMain.handle('nunjuckRender', async (e, templateName:string, context:any) => {
 	return nunjucksEnv.render(`${templateName}.njk`, context);
 });
 
-ipcMain.handle('getNetConnectionAddress', async (e, host:string, timeout:number=5000) => {
+ipcMain.handle('getNetworkIps', async (e) => {
 	try {
-		return await getNetConnectionAddress(host, timeout);
+		return Object.fromEntries(
+			getNetworkIps().entries()
+		);
 	} catch (e) {
 		console.error(e);
 		return null;

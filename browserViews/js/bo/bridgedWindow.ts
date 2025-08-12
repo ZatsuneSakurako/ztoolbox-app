@@ -4,8 +4,9 @@ import {NotificationResponse} from "../../../classes/bo/notify.js";
 import {Dict} from "./Dict.js";
 import {IJsonWebsiteData} from "./websiteData.js";
 import {IChromeExtensionData, IWsMoveSourceData} from "../../../classes/bo/chromeNative.js";
-import * as net from "node:net";
 import {IUpdateStatus} from "./update.js";
+import {getNetworkIps} from "../../../src/getNetConnectionAddress.js";
+import {MapValueType} from "./MapValueType.js";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -37,7 +38,7 @@ export interface IZnmApi {
 
 	nunjuckRender(templateName: string, context: any): Promise<string>
 
-	getNetConnectionAddress(host: string, timeout?: number): Promise<net.AddressInfo>
+	getNetworkIps(): Promise<Dict<MapValueType<ReturnType<typeof getNetworkIps>>>>
 
 	onFocus(cb: () => void): void
 

@@ -1,29 +1,20 @@
-import net from "node:net";
+import * as os from "node:os";
 
-export function getNetConnectionAddress(host:string, timeout: number=5000, port:number=80) {
-	return new Promise<net.AddressInfo>((resolve, reject) => {
-		const client = net.connect({
-			host,
-			port,
-			timeout: 1000
-		}, () => {
-			clearTimeout(timer);
-			client.end();
+export function getNetworkIps() {
+	return new Map(Object.entries(os.networkInterfaces())
+		.map(([key, networkInterface]) => {
+			const networkInterfaces = networkInterface ?? []
 
-			const address = client.address();
-			if ('address' in address) {
-				resolve(address);
-			} else {
-				reject(new Error('NET_ADDRESS_OBJECT_EMPTY'));
-			}
-		});
-		client.on('error', function (err) {
-			clearTimeout(timer);
-			reject(err);
-		});
-		const timer = setTimeout(() => {
-			client.end();
-			reject();
-		}, timeout);
-	})
+			const ipV4 = networkInterfaces
+					.filter(networkInterface => networkInterface.family === 'IPv4')
+					.map(networkInterface => networkInterface.address),
+				ipV6 = networkInterfaces
+					.filter(networkInterface => networkInterface.family === 'IPv6')
+					.map(networkInterface => networkInterface.address)
+
+			return [
+				key,
+				{ ipV4, ipV6 },
+			];
+		}));
 }
