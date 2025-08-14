@@ -1,11 +1,24 @@
-import * as jimp from 'jimp';
-import {Jimp} from 'jimp';
-import {SANS_14_BLACK} from 'jimp/fonts';
+import * as Jimp from '@jimp/core';
+import png from "@jimp/js-png";
+import * as jimpPrint from '@jimp/plugin-print';
+import {SANS_14_BLACK} from '@jimp/plugin-print/fonts';
+import {loadFont} from '@jimp/plugin-print/load-font';
+import * as resize from "@jimp/plugin-resize";
+import * as jimpUtils from '@jimp/utils';
 
 export async function addBadgeToImage(imagePath: string, badgeNumber: number): Promise<Buffer> {
 	try {
-		// Read the image
-		const image = await Jimp.read(imagePath);
+		/**
+		 * Read the image
+		 * @see https://github.com/jimp-dev/jimp/blob/b6b0e418a5f1259211a133b20cddb4f4e5c25679/packages/jimp/src/index.ts#L34-L138
+		 */
+		const image = await Jimp.createJimp({
+			formats: [png],
+			plugins: [
+				jimpPrint.methods,
+				resize.methods,
+			]
+		}).read(imagePath);
 
 		// Resize image to 32x32 if not already that size
 		image.resize({ h: 32, w: 32 });
@@ -32,17 +45,17 @@ export async function addBadgeToImage(imagePath: string, badgeNumber: number): P
 					dy = y - posY,
 					distance = Math.sqrt(dx * dx + dy * dy);
 				if (distance <= circleRadius) {
-					image.setPixelColor(jimp.rgbaToInt(255, 0, 0, 255), x, y);
+					image.setPixelColor(jimpUtils.cssColorToHex('#FF0000'), x, y);
 				}
 			}
 		}
 
 
 		const text = badgeNumber > 99 ? '+' : badgeNumber.toString(),
-			font = await jimp.loadFont(SANS_14_BLACK)
+			font = await loadFont(SANS_14_BLACK)
 
 		// Measure the text to calculate its position
-		const textWidth = jimp.measureText(font, text);
+		const textWidth = jimpPrint.measureText(font, text);
 
 		// Add the text to the image, in the top right corner
 		image.print({

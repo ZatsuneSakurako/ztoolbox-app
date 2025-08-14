@@ -16,8 +16,7 @@
 			"node",
 			"del",
 			"gulp-pug",
-			"sass-embedded",
-			"jimp"
+			"sass-embedded"
 		],
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
