@@ -11,15 +11,34 @@ export async function addBadgeToImage(imagePath: string, badgeNumber: number): P
 		image.resize({ h: 32, w: 32 });
 
 		// Badge position (bottom right corner)
-		const badgeX = 22,
-			badgeY = 0;
+		let posX = image.width - 6,
+			posY = 6,
+			circleRadius = 7,
+			textOffsetY = 0
+		;
 
-		// Draw a red circle for the badge background
-		image.scan(badgeX, badgeY, 12, 12, function(x, y) {
-			this.setPixelColor(jimp.rgbaToInt(255, 0, 0, 255), x, y);
-		});
+		if (badgeNumber > 9) {
+			posX = image.width - 9;
+			posY = 9;
+			circleRadius = 9;
+			textOffsetY = 2;
+		}
 
-		const text = badgeNumber > 9 ? '+' : badgeNumber.toString(),
+		// Draw a filled red circle
+		for (let x = 0; x < image.height; x++) {
+			for (let y = 0; y < image.width; y++) {
+				// Calculate distance from center
+				const dx = x - posX,
+					dy = y - posY,
+					distance = Math.sqrt(dx * dx + dy * dy);
+				if (distance <= circleRadius) {
+					image.setPixelColor(jimp.rgbaToInt(255, 0, 0, 255), x, y);
+				}
+			}
+		}
+
+
+		const text = badgeNumber > 99 ? '+' : badgeNumber.toString(),
 			font = await jimp.loadFont(SANS_14_BLACK)
 
 		// Measure the text to calculate its position
@@ -29,7 +48,7 @@ export async function addBadgeToImage(imagePath: string, badgeNumber: number): P
 		image.print({
 			font,
 			x: image.bitmap.width - textWidth - 1,
-			y: -4,
+			y: -4 + textOffsetY,
 			text,
 		});
 
