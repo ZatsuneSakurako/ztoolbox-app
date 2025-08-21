@@ -2,6 +2,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import * as child_process from "node:child_process";
 import * as sass from "sass";
 
 const currentPath = path.resolve(import.meta.dirname, '..'),
@@ -40,3 +41,7 @@ fs.writeFileSync(path.resolve(libPath, './material-symbols/material-symbols.css'
 		.replace(/(font-family: "Material Symbols \w+?";)/g, '/*noinspection CssNoGenericFontName*/\n\t$1 /* stylelint-disable-line font-family-no-missing-generic-family-keyword */'),
 	{ encoding: 'utf-8' }
 );
+
+if (process.platform === 'linux') {
+	console.error('Launch ./scripts/addAppArmor.sh !')
+}

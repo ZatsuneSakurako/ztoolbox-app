@@ -4,13 +4,19 @@
  */
 import shell from "shelljs";
 import ProtocolRegistry from "protocol-registry";
-import {appRootPath, autoStartArgument, zToolbox_protocol} from "../classes/constants.js";
+import {
+	appRootPath,
+	autoStartArgument,
+	zToolbox_protocol,
+	linuxAutoStartAppPath,
+	appName
+} from "../classes/constants.js";
 import {app} from "electron";
 import * as path from "node:path";
 import {showSection} from "../classes/windowManager.js";
 import {sendNotification} from "../classes/notify.js";
-import _AutoLaunch from "auto-launch";
 import {settings} from "./init.js";
+import fs from "node:fs";
 
 
 
@@ -154,31 +160,29 @@ export async function updateAutoStart() {
 	args.push(autoStartArgument);
 
 	if (process.platform === 'linux') {
-		args.push('--no-sandbox');
-
-		const AutoLaunch = await import('auto-launch');
-		let autoLaunch: _AutoLaunch;
-		if (!app.isPackaged) {
-			autoLaunch = new AutoLaunch.default({
-				name: autoLaunchName,
-				path: `${JSON.stringify(process.execPath)} ${args.join(' ')}`,
-				isHidden: false,
-			});
-		} else {
-			autoLaunch = new AutoLaunch.default({
-				name: autoLaunchName,
-			});
+		if (!linuxAutoStartAppPath) {
+			throw new Error(`Unsupported platform: ${process.platform}`);
+		}
+		if (!fs.existsSync('/etc/apparmor.d/ztoolbox-app')) {
+			args.push('--no-sandbox');
 		}
 
-		if (await autoLaunch.isEnabled() !== autoStartPref) {
+		if (fs.existsSync(linuxAutoStartAppPath) !== autoStartPref) {
 			if (autoStartPref) {
-				await autoLaunch.enable()
-					.then(() => console.info('autostart enabled'))
-					.catch(console.error);
+				fs.writeFileSync(linuxAutoStartAppPath, `[Desktop Entry]
+Type=Application
+Version=1.0
+Name=${appName}
+Comment=${appName} startup script
+Exec=${`${JSON.stringify(process.execPath)} ${args.join(' ')}`.trim()}
+StartupNotify=false
+Terminal=false
+Icon=${appRootPath}/images/icon@8x.png
+Path=`, "utf8")
+				console.info('autostart enabled');
 			} else {
-				await autoLaunch.disable()
-					.then(() => console.info('autostart disabled'))
-					.catch(console.error);
+				fs.unlinkSync(linuxAutoStartAppPath);
+				console.info('autostart disabled')
 			}
 		}
 	} else {

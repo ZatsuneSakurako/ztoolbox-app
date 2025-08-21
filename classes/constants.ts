@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import * as electron from "electron";
+import * as os from "node:os";
 
 const __dirname = import.meta.dirname;
 
@@ -15,3 +16,5 @@ export const gitMainAddress = 'ZatsuneNoMokou/ztoolbox-app.git';
 export const gitExtensionAddress = 'ZatsuneNoMokou/ztoolbox.git';
 export const appExtensionPath = path.normalize(`${appRootPath}/ztoolbox`);
 export const appExtensionTemplatesPath = path.normalize(`${appExtensionPath}/webextension/templates`);
+export const appName = "Z-Toolbox"
+export const linuxAutoStartAppPath = process.platform === 'linux' ? path.normalize(`${os.homedir()}/.config/autostart/${appName}.desktop`) : null;
