@@ -644,13 +644,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/auto-launch@npm:^5.0.5":
-  version: 5.0.5
-  resolution: "@types/auto-launch@npm:5.0.5"
-  checksum: 10/9dc97882f6b671da6823398ed383422454c6d70e8776a2719e8ce826ae24604e220a0ce0c7d145bc8475d49a2afc7a85fed9dad61d048261b1bf1930d3657d5c
-  languageName: node
-  linkType: hard
-
 "@types/cacheable-request@npm:^6.0.1":
   version: 6.0.3
   resolution: "@types/cacheable-request@npm:6.0.3"
@@ -1228,13 +1221,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"applescript@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "applescript@npm:1.0.0"
-  checksum: 10/77469e6a71425131329c1bd0844a6d3cc6224131c74651e771209926b3d35d7e4a4426a8d3b7bab0c1d4bb0c2fe4e9439adbdbf1fc3af691e0386d85341a89bf
-  languageName: node
-  linkType: hard
-
 "aproba@npm:^1.0.3 || ^2.0.0":
   version: 2.0.0
   resolution: "aproba@npm:2.0.0"
@@ -1386,19 +1372,6 @@ __metadata:
   version: 1.0.0
   resolution: "atomic-sleep@npm:1.0.0"
   checksum: 10/3ab6d2cf46b31394b4607e935ec5c1c3c4f60f3e30f0913d35ea74b51b3585e84f590d09e58067f11762eec71c87d25314ce859030983dc0e4397eed21daa12e
-  languageName: node
-  linkType: hard
-
-"auto-launch@npm:^5.0.6":
-  version: 5.0.6
-  resolution: "auto-launch@npm:5.0.6"
-  dependencies:
-    applescript: "npm:^1.0.0"
-    mkdirp: "npm:^0.5.1"
-    path-is-absolute: "npm:^1.0.0"
-    untildify: "npm:^3.0.2"
-    winreg: "npm:1.2.4"
-  checksum: 10/acf5173236a3bbd5696da07a6085c08fb563034ff3806610b219ad154e1d4ae0007e54fa51ad66e4f35deb50875e5b25316590ddc8c2651c01818d817ea1604c
   languageName: node
   linkType: hard
 
@@ -4398,13 +4371,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:0.0.8":
-  version: 0.0.8
-  resolution: "minimist@npm:0.0.8"
-  checksum: 10/1e6279f747b3330fb918e47bd88093b26dadca91ea31bd50f40a805d9ff55fd9af16162248ffa303876b1cbb75fd5b701e773d46319c22025ec124e53bca0714
-  languageName: node
-  linkType: hard
-
 "minimist@npm:^1.2.5":
   version: 1.2.8
   resolution: "minimist@npm:1.2.8"
@@ -4500,17 +4466,6 @@ __metadata:
     minipass: "npm:^3.0.0"
     yallist: "npm:^4.0.0"
   checksum: 10/ae0f45436fb51344dcb87938446a32fbebb540d0e191d63b35e1c773d47512e17307bf54aa88326cc6d176594d00e4423563a091f7266c2f9a6872cdc1e234d1
-  languageName: node
-  linkType: hard
-
-"mkdirp@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "mkdirp@npm:0.5.1"
-  dependencies:
-    minimist: "npm:0.0.8"
-  bin:
-    mkdirp: bin/cmd.js
-  checksum: 10/8651af2facdfa53f39e68fd93cf1653c11f7c1d49c6d1b4e53bcedc52e669cc64f1b5e95c49cfde7e99dbbcad26d3e61f4f2b4812f18c871c6455d9592f02806
   languageName: node
   linkType: hard
 
@@ -6776,13 +6731,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"untildify@npm:^3.0.2":
-  version: 3.0.3
-  resolution: "untildify@npm:3.0.3"
-  checksum: 10/1c42352a37d9663090f126f343f1ee0a0b90c0a4bd7991229a6f474fa0ab856880f0e8798c15fa12c13e64c5345f63dd428e4b6ac2073d594839548025a4bed9
-  languageName: node
-  linkType: hard
-
 "uri-js@npm:^4.2.2":
   version: 4.2.2
   resolution: "uri-js@npm:4.2.2"
@@ -7005,13 +6953,6 @@ __metadata:
   dependencies:
     string-width: "npm:^1.0.2 || 2 || 3 || 4"
   checksum: 10/d5f8027b9a8255a493a94e4ec1b74a27bff6679d5ffe29316a3215e4712945c84ef73ca4045c7e20ae7d0c72f5f57f296e04a4928e773d4276a2f1222e4c2e99
-  languageName: node
-  linkType: hard
-
-"winreg@npm:1.2.4":
-  version: 1.2.4
-  resolution: "winreg@npm:1.2.4"
-  checksum: 10/3e132c9cbbcf84f4712f17b61271ed0017d6808a427c3203e927265ee4535d2cecbe37011a1b1cc15135dae94b59db247ed1ccf8c329b3b071fdb679548f7379
   languageName: node
   linkType: hard
 
@@ -7240,7 +7181,6 @@ __metadata:
     "@jimp/js-png": "npm:^1.6.0"
     "@jimp/plugin-print": "npm:^1.6.0"
     "@jimp/plugin-resize": "npm:^1.6.0"
-    "@types/auto-launch": "npm:^5.0.5"
     "@types/gulp": "npm:^4.0.17"
     "@types/gulp-sass": "npm:^5.0.4"
     "@types/ini": "npm:^4.1.1"
@@ -7251,7 +7191,6 @@ __metadata:
     "@types/sass": "npm:^1.45.0"
     "@types/shelljs": "npm:^0.8.17"
     "@types/ws": "npm:^8.18.1"
-    auto-launch: "npm:^5.0.6"
     cron-parser: "npm:^5.3.0"
     del: "npm:^8.0.0"
     electron: "npm:^37.2.5"
