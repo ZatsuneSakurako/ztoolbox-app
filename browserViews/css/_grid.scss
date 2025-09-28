@@ -1,60 +1,74 @@
-=grid($grid-columns: 12, $grid-rows: 12, $queryPrefix:'', $max-width:0)
-	@if($queryPrefix == '' and $max-width == 0)
-		.grid
-			display: grid
-			grid-auto-flow: dense
-			grid-template-columns: repeat($grid-columns, 1fr)
+@mixin grid($grid-columns: 12, $grid-rows: 12, $queryPrefix: '', $max-width: 0) {
+	@if ($queryPrefix == '' and $max-width == 0) {
+		.grid {
+			display: grid;
+			grid-auto-flow: dense;
+			grid-template-columns: repeat($grid-columns, 1fr);
 
-			&:not(.no-r-gap)
-				grid-row-gap: 1vmax
+			&:not(.no-r-gap) {
+				grid-row-gap: 1vmax;
+			}
 
-			&:not(.no-c-gap)
-				grid-column-gap: 1vmax
+			&:not(.no-c-gap) {
+				grid-column-gap: 1vmax;
+			}
+		}
 
-		@for $i from 1 through $grid-columns
-			.grid-#{$i}
-				grid-column-end: span $i
+		@for $i from 1 through $grid-columns {
+			.grid-#{$i} {
+				grid-column-end: span $i;
+			}
 
-			.grid-start-#{$i}
-				grid-column-start: $i
+			.grid-start-#{$i} {
+				grid-column-start: $i;
+			}
+		}
 
-		@for $i from 1 through $grid-rows
-			.grid-row-#{$i}
-				grid-row-end: span $i
+		@for $i from 1 through $grid-rows {
+			.grid-row-#{$i} {
+				grid-row-end: span $i;
+			}
 
-			.grid-row-start-#{$i}
-				grid-row-start: $i
-	@else
-		@media screen and (max-width: $max-width)
-			@for $i from 1 through $grid-columns
-				.grid-#{$queryPrefix}\-#{$i}
-					grid-column-end: span 1
+			.grid-row-start-#{$i} {
+				grid-row-start: $i;
+			}
+		}
+	} @else {
+		@media screen and (max-width: $max-width) {
+			@for $i from 1 through $grid-columns {
+				.grid-#{$queryPrefix}-#{$i} {
+					grid-column-end: span 1;
+				}
 
-				.grid-#{$queryPrefix}-offset-#{$i}
-					grid-column-start: $i
+				.grid-#{$queryPrefix}-offset-#{$i} {
+					grid-column-start: $i;
+				}
+			}
 
-			@for $i from 1 through $grid-rows
-				.grid-#{$queryPrefix}\-row-#{$i}
-					grid-row-end: span 1
+			@for $i from 1 through $grid-rows {
+				.grid-#{$queryPrefix}-row-#{$i} {
+					grid-row-end: span 1;
+				}
 
-				.grid-#{$queryPrefix}-row-offset-#{$i}
-					grid-row-start: $i
+				.grid-#{$queryPrefix}-row-offset-#{$i} {
+					grid-row-start: $i;
+				}
+			}
+		}
+	}
+}
 
-
-
-$grid-columns: 12
-$grid-rows: 12
+$grid-columns: 12;
+$grid-rows: 12;
 
 // $name: >= min-width
-$small: 576px		// Small
-$medium: 768px		// Medium
-$large: 992px		// Large
-$extraLarge: 1200px	// Extra large
+$small: 576px; // Small
+$medium: 768px; // Medium
+$large: 992px; // Large
+$extraLarge: 1200px; // Extra large
 
-
-
-+grid($grid-columns, $grid-rows) // Default and no xl => using a "desktop first"
-+grid($grid-columns, $grid-rows, lg, $extraLarge - 1px)
-+grid($grid-columns, $grid-rows, md, $large - 1px)
-+grid($grid-columns, $grid-rows, sm, $medium - 1px)
-+grid($grid-columns, $grid-rows, xs, $small - 1px)
+@include grid($grid-columns, $grid-rows); // Default and no xl => using a "desktop first"
+@include grid($grid-columns, $grid-rows, 'lg', $extraLarge - 1px);
+@include grid($grid-columns, $grid-rows, 'md', $large - 1px);
+@include grid($grid-columns, $grid-rows, 'sm', $medium - 1px);
+@include grid($grid-columns, $grid-rows, 'xs', $small - 1px);

@@ -1,7 +1,7 @@
-@use "sass:color"
-
-$textColor: black
-$linkColor: rgb(50, 159, 255)
+:root {
+	--text-color: black;
+	--link-color: rgb(50, 159, 255);
+}
 
 /*			---- Primary text / Icons ----			*/
 body,
@@ -12,57 +12,61 @@ input[type='number'],
 input[type='checkbox'],
 input[type='radio'],
 select,
-#searchInput
-	color: color.adjust($textColor, $lightness: 80%)
+#searchInput {
+	color: hsl(0, 0%, 80%);
+	/*color: color.adjust($text-color, $lightness: 80%);*/
+}
 
-select:hover
-	color: unset !important
+select:hover {
+	color: unset !important;
+}
 
 /*		--- Secondary text / Base Color ----		*/
 .panel-item,
-
 input[type='text'],
 input[type='number'],
 input[type='url'],
 textarea,
-
 #tooltip,
 p,
 .list-style-inside.list-style-disc,
-details summary
-	color: rgba($textColor, 0.5)
+details summary {
+	color: rgba(var(--text-color), 0.5);
+}
 
-details summary ~ *
-	color: rgba($textColor, 0.5)
+details summary ~ * {
+	color: rgba(var(--text-color), 0.5);
+}
 
 /*			---- Disabled / Hint text ----			*/
-footer
-	color: rgba($textColor, 0.4)
+footer {
+	color: rgba(var(--text-color), 0.4);
+}
 
 /*			---- Stream Title / Links ----			*/
-a
-	color: rgba($linkColor, 0.8)
-
-
+a {
+	color: rgba(var(--link-color), 0.8);
+}
 
 input,
-textarea
-	color: rgba($textColor, 0.8)
+textarea {
+	color: rgba(var(--text-color), 0.8);
+}
 
 input[disabled],
 input[readonly],
 textarea[disabled],
 textarea[readonly],
-button[disabled]
-	color: rgba($textColor, 0.5)
+button[disabled] {
+	color: rgba(var(--text-color), 0.5);
+}
 
+footer [data-has-update="true"] {
+	color: lightpink;
+}
 
-footer [data-has-update="true"]
-	color: lightpink
-
-
-input:invalid
-	background-color: lightpink
-	color: red
-	font-weight: 700
-
+input:invalid {
+	background-color: lightpink;
+	color: red;
+	font-weight: 700;
+}

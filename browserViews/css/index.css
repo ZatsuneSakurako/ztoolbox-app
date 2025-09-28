@@ -1,318 +1,400 @@
-@use "_reset.css"
-@use "./grid.sass"
-@use "_common.css"
-@use "_materialLoader.css"
+@import "./_reset.css";
+@import "./_grid.css";
+@import "./_common.css";
+@import "./_materialLoader.css";
 
-//#codeInputs
-//	display: flex
-//
-//	& > div
-//		flex: 1
-
-*
+* {
 	box-sizing: border-box
+}
 
-body
-	display: grid
-	font-family: Ubuntu, Tahoma, sans-serif
-	grid-template-rows: 52px auto
-	margin: 0
-	padding: 0
+body {
+	display: grid;
+	font-family: Ubuntu, Tahoma, sans-serif;
+	grid-template-rows: 52px auto;
+	margin: 0;
+	padding: 0;
+}
 
-#iframe
-	background: rgba(255,255,255,0.2)
-	border-style: solid
-	border-color: rgba(0, 0, 0, 0.2)
-	height: calc(100vh - 60px - 2rem)
-	width: 100%
-html:not(.loaded)
-	#iframe
+#iframe {
+	background: rgba(255,255,255,0.2);
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0.2);
+	height: calc(100vh - 60px - 2rem);
+	width: 100%;
+}
+html:not(.loaded) {
+	#iframe {
 		display: none
+	}
+}
 
-header
-	display: flex
-	padding: 5px 2px
-	position: sticky
-	top: 0
+header {
+	display: flex;
+	padding: 5px 2px;
+	position: sticky;
+	top: 0;
+}
 
-section:empty
-	display: none
+section:empty {
+	display: none;
+}
 
-.list-style-inside
-	list-style-position: inside
+.list-style-inside {
+	list-style-position: inside;
+}
 
-.list-style-auto
-	list-style-type: auto
+.list-style-auto {
+	list-style-type: auto;
+}
 
-.list-style-disc
-	list-style-type: disc
+.list-style-disc {
+	list-style-type: disc;
+}
 
-.display-contents
-	display: contents
+.display-contents {
+	display: contents;
+}
 
 button,
 label,
-.cursor
-	cursor: pointer
+.cursor {
+	cursor: pointer;
+}
 
 header button,
-header [role="button"]
-	/* height: 36px */
-	/* min-width: 64px */
-	padding: 0 8px
-	border: 0 none
-	border-radius: 1px
-	margin-left: 5px
-	font-weight: 700
+header [role="button"] {
+	/* height: 36px; */
+	/* min-width: 64px; */
+	padding: 0 8px;
+	border: 0 none;
+	border-radius: 1px;
+	margin-left: 5px;
+	font-weight: 700;
+}
 
-header label[for]
-	display: flex
-	align-items: center
-	justify-content: center
+header label[for] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
 
 header button.icon,
-header [role="button"].icon
-	min-width: 42px
-	max-width: 64px
+header [role="button"].icon {
+	min-width: 42px;
+	max-width: 64px;
+}
 
 button,
 .button,
-[role="button"]
-	padding: 0 8px
-	border: 0 none
-	border-radius: 1px
-	margin-left: 5px
-	min-height: 42px
-	font-weight: 700
+[role="button"] {
+	padding: 0 8px;
+	border: 0 none;
+	border-radius: 1px;
+	margin-left: 5px;
+	min-height: 42px;
+	font-weight: 700;
 
-	&.small
-		line-height: 29px
-		min-height: 29px
+	&.small {
+		line-height: 29px;
+		min-height: 29px;
+	}
 
 	&:first-child,
-	.hidden:first-child + &
-		margin-left: 0
+	.hidden:first-child + & {
+		margin-left: 0;
+	}
+}
 
-label.button
-	display: inline-block
-	vertical-align: middle
-	line-height: 42px
-	&.checkable
-		border: 2px solid transparent
-		line-height: 38px
-		min-height: 38px
+label.button {
+	display: inline-block;
+	vertical-align: middle;
+	line-height: 42px;
+
+	&.checkable {
+		border: 2px solid transparent;
+		line-height: 38px;
+		min-height: 38px;
+
 		input[type="radio"]:checked + &,
-		input[type="checkbox"]:checked + &
-			border-bottom-color: var(--InvColor)
-	&[class*="material-symbols-"]
-		font-weight: normal
-		&.checkable
-			padding: 0 7px
-.tab
-	border: 2px solid transparent
-	margin: -5px 0
-	padding: 10px 15px
+		input[type="checkbox"]:checked + & {
+			border-bottom-color: var(--InvColor);
+		}
+	}
 
-	&.checked
-		border-bottom-color: var(--InvColor)
+	&[class*="material-symbols-"] {
+		font-weight: normal;
 
-	[class*="material-symbols-"] + span
-		margin-left: 8px
+		&.checkable {
+			padding: 0 7px;
+		}
+	}
+}
+.tab {
+	border: 2px solid transparent;
+	margin: -5px 0;
+	padding: 10px 15px;
 
-	&.setting-group
-		display: inline-flex
-		align-items: center
-		justify-content: center
-		margin-bottom: 15px
+	&.checked {
+		border-bottom-color: var(--InvColor);
+	}
+
+	[class*="material-symbols-"] + span {
+		margin-left: 8px;
+	}
+
+	&.setting-group {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 15px;
+	}
+}
 
 .pref-group,
-.pref-container
-	display: block
-	margin-top: 14px
-	margin-bottom: 14px
+.pref-container {
+	display: block;
+	margin-top: 14px;
+	margin-bottom: 14px;
+}
 
-.group-hidden
-	display: none
+.group-hidden {
+	display: none;
+}
 
-main
-	grid-auto-rows: minmax(min-content, max-content)
-	padding: 1rem
+main {
+	grid-auto-rows: minmax(min-content, max-content);
+	padding: 1rem;
+}
 
 
 
-section a.buttonItem
-	display: block
-	color: inherit
-	text-decoration: none
+section a.buttonItem {
+	display: block;
+	color: inherit;
+	text-decoration: none;
+}
 
-section .buttonItem
-	font-size: 14px
-	justify-content: space-between
-	flex-direction: column
-	margin: 7px 0
-	min-height: 42px
-	padding: 7px 14px 7px 5px
-	position: relative
-	text-align: left
+section .buttonItem {
+	font-size: 14px;
+	justify-content: space-between;
+	flex-direction: column;
+	margin: 7px 0;
+	min-height: 42px;
+	padding: 7px 14px 7px 5px;
+	position: relative;
+	text-align: left;
 
-	&.only-icon
-		padding-left: 14px
+	&.only-icon {
+		padding-left: 14px;
+	}
+}
 
-section .buttonItem .ellipse
-	-webkit-line-clamp: 3
-	overflow: hidden
-	display: -webkit-box
-	-webkit-box-orient: vertical
+section .buttonItem .ellipse {
+	-webkit-line-clamp: 3;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+}
 
-section .buttonItem.tabPageServerIp .title
-	-webkit-line-clamp: 1
+section .buttonItem.tabPageServerIp .title {
+	-webkit-line-clamp: 1;
+}
 
 section .buttonItem picture,
-section .buttonItem .icon[class*="material-symbols-"]
-	display: flex
-	align-items: center
-	justify-content: flex-start
-	height: 100%
+section .buttonItem .icon[class*="material-symbols-"] {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	height: 100%;
+}
 
 
-section .buttonItem .title
-	font-size: 1.1em
-	font-weight: 700
+section .buttonItem .title {
+	font-size: 1.1em;
+	font-weight: 700;
+}
 
-section .buttonItem .title[data-count]::after
-	content: " (" attr(data-count) ")"
+section .buttonItem .title[data-count]::after {
+	content: " (" attr(data-count) ")";
+}
 
 section a.websiteItem,
 section article.wsClientDatasItem,
-section article.gitStatus
-	display: grid
-	grid-template-rows: 1fr 1fr
-	gap: 0 0
-	grid-auto-flow: row
+section article.gitStatus {
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+	gap: 0 0;
+	grid-auto-flow: row;
 
 	& > picture,
 	& > .icon,
-	.icon[class*="material-symbols-"]
-		grid-area: itemIcon
-		max-width: 32px
-	.title
-		grid-area: title
-	.btn-login
-		grid-area: btn-login
-	.websiteData
-		grid-area: websiteData
-	.wsClientDatas
-		grid-area: wsClientDatas
+	.icon[class*="material-symbols-"] {
+		grid-area: itemIcon;
+		max-width: 32px;
+	}
 
-section a.websiteItem
-	grid-template-columns: 40px calc(100% - (40px * 2)) 40px
-	grid-template-areas: "itemIcon title btn-login" "itemIcon websiteData btn-login"
+	.title {
+		grid-area: title;
+	}
 
-section article.wsClientDatasItem
-	grid-template-columns: 40px calc(100% - 40px)
-	grid-template-rows: auto auto
-	grid-template-areas: "itemIcon title" "itemIcon wsClientDatas"
+	.btn-login {
+		grid-area: btn-login;
+	}
 
-	&[draggable="true"]
-		cursor: pointer
+	.websiteData {
+		grid-area: websiteData;
+	}
 
-	&.isMature
-		transition: filter .5s
-		&:not(:hover)
-			filter: blur(7px)
+	.wsClientDatas {
+		grid-area: wsClientDatas;
+	}
+}
+
+section a.websiteItem {
+	grid-template-columns: 40px calc(100% - (40px * 2)) 40px;
+	grid-template-areas: "itemIcon title btn-login" "itemIcon websiteData btn-login";
+}
+
+section article.wsClientDatasItem {
+	grid-template-columns: 40px calc(100% - 40px);
+	grid-template-rows: auto auto;
+	grid-template-areas: "itemIcon title" "itemIcon wsClientDatas";
+
+	&[draggable="true"] {
+		cursor: pointer;
+	}
+
+	&.isMature {
+		transition: filter .5s;
+
+		&:not(:hover) {
+			filter: blur(7px);
+		}
+	}
 
 	.title,
-	.wsClientDatas
-		margin-bottom: 0.5em
-		overflow: hidden
-		text-overflow: ellipsis
+	.wsClientDatas {
+		margin-bottom: 0.5em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 
 	.button,
-	button
-		margin-left: 0
-		margin-right: 0
+	button {
+		margin-left: 0;
+		margin-right: 0;
+	}
+}
 
-section div.wsClientDatas .button
-	font-size: 24px
-	margin-left: 0
-	margin-right: 0
-	padding: 8px
-	> img
-		display: inline-block
+section div.wsClientDatas .button {
+	font-size: 24px;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 8px;
 
-section .websiteItem .btn-login
-	font-size: inherit
-	height: auto
-	margin: 0
-	min-height: 0
-	width: auto
+	> img {
+		display: inline-block;
+	}
+}
 
-section .websiteItem .websiteData .folder[data-folder-url]
-	color: inherit
-	margin-left: -19px
-	min-height: 25px
-	text-decoration: none
+section .websiteItem .btn-login {
+	font-size: inherit;
+	height: auto;
+	margin: 0;
+	min-height: 0;
+	width: auto;
+}
 
-	&::before
-		content: "open_in_browser"
+section .websiteItem .websiteData .folder[data-folder-url] {
+	color: inherit;
+	margin-left: -19px;
+	min-height: 25px;
+	text-decoration: none;
+
+	&::before {
+		content: "open_in_browser";
 		/*noinspection CssNoGenericFontName*/
-		font-family: 'Material Icons' /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
-		font-size: 1.5em
+		font-family: 'Material Icons'; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
+		font-size: 1.5em;
+	}
+}
 
 section .websiteItem .websiteData,
-section .websiteItem .wsClientDatas
-	padding-left: 21px
-	font-size: 0.9em
-	display: flex
-	flex-direction: column
+section .websiteItem .wsClientDatas {
+	padding-left: 21px;
+	font-size: 0.9em;
+	display: flex;
+	flex-direction: column;
+}
 
-section .websiteItem .websiteData .folder
-	display: flex
-	flex-direction: row
-	align-items: center
+section .websiteItem .websiteData .folder {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
 
-section .websiteItem .websiteData .folder[data-folder-count]::after
-	content: ": "attr(data-folder-count)
+section .websiteItem .websiteData .folder[data-folder-count]::after {
+	content: ": " attr(data-folder-count);
+}
 
-section article.gitStatus
-	grid-template-columns: 40px calc(100% - 40px)
-	grid-template-rows: auto auto
-	grid-template-areas: "itemIcon mainStatus" "itemIcon extensionStatus"
+section article.gitStatus {
+	grid-template-columns: 40px calc(100% - 40px);
+	grid-template-rows: auto auto;
+	grid-template-areas: "itemIcon mainStatus" "itemIcon extensionStatus";
 
-	#gitMainStatus
-		grid-area: mainStatus
-	#gitExtensionStatus
-		grid-area: extensionStatus
+	#gitMainStatus {
+		grid-area: mainStatus;
+	}
 
-	span.material-symbols-outlined
-		vertical-align: bottom
+	#gitExtensionStatus {
+		grid-area: extensionStatus;
+	}
 
-	&.buttonItem
-		cursor: pointer
-		&.no-updates
-			cursor: default
-			pointer-events: none
+	span.material-symbols-outlined {
+		vertical-align: bottom;
+	}
 
-	.ahead
-		color: #efa35f
-		&::after
-			counter-reset: variable var(--ahead, -1)
-			content: counter(variable)
-			display: inline-block
-			min-width: 1em
-	.behind
-		color: #61f461
-		margin-right: 0.2em
-		&::after
-			counter-reset: variable var(--behind, -1)
-			content: counter(variable)
-			display: inline-block
-			min-width: 1em
+	&.buttonItem {
+		cursor: pointer;
 
-	.no-ahead .ahead
-		color: inherit
-	.no-behind .behind
-		color: inherit
+		&.no-updates {
+			cursor: default;
+			pointer-events: none;
+		}
+	}
 
-div#variousInfos ul
-	margin-left: 1.2em
+	.ahead {
+		color: #efa35f;
+
+		&::after {
+			counter-reset: variable var(--ahead, -1);
+			content: counter(variable);
+			display: inline-block;
+			min-width: 1em;
+		}
+	}
+
+	.behind {
+		color: #61f461;
+		margin-right: 0.2em;
+
+		&::after {
+			counter-reset: variable var(--behind, -1);
+			content: counter(variable);
+			display: inline-block;
+			min-width: 1em;
+		}
+	}
+
+	.no-ahead .ahead {
+		color: inherit;
+	}
+
+	.no-behind .behind {
+		color: inherit;
+	}
+}
+
+div#variousInfos ul {
+	margin-left: 1.2em;
+}

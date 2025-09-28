@@ -1,69 +1,72 @@
-@use "sass:color"
-
-$textColor: white
-$linkColor: rgb(50, 159, 255)
+:root {
+	--text-color: white;
+	--link-color: rgb(50, 159, 255);
+}
 
 /*			---- Primary text / Icons ----			*/
 body,
 header button,
 header [role="button"],
 button,
-input[type='number'],
-input[type='checkbox'],
-input[type='radio'],
+input[type="number"],
+input[type="checkbox"],
+input[type="radio"],
 select,
-#searchInput
-	color: $textColor
+#searchInput {
+	color: var(--text-color);
+}
 
-select:hover
-	color: unset !important
+select:hover {
+	color: unset !important;
+}
 
 /*		--- Secondary text / Base Color ----		*/
 .panel-item,
-
-input[type='text'],
-input[type='number'],
-input[type='url'],
+input[type="text"],
+input[type="number"],
+input[type="url"],
 textarea,
-
 #tooltip,
 p,
 .list-style-inside.list-style-disc,
-details summary
-	color: rgba($textColor, 0.8)
+details summary {
+	color: rgba(var(--text-color), 0.8);
+}
 
 details summary ~ *,
-time
-	color: rgba($textColor, 0.6)
+time {
+	color: rgba(var(--text-color), 0.6);
+}
 
 /*			---- Disabled / Hint text ----			*/
-footer
-	color: rgba($textColor, 0.3)
+footer {
+	color: rgba(var(--text-color), 0.3);
+}
 
 /*			---- Stream Title / Links ----			*/
-a
-	color: rgba($linkColor, 0.8)
-
-
+a {
+	color: rgba(var(--link-color), 0.8);
+}
 
 input,
-textarea
-	color: rgba($textColor, 0.8)
+textarea {
+	color: rgba(var(--text-color), 0.8);
+}
 
 input[disabled],
 input[readonly],
 textarea[disabled],
 textarea[readonly],
-button[disabled]
-	color: rgba($textColor, 0.5)
+button[disabled] {
+	color: rgba(var(--text-color), 0.5);
+}
 
+footer [data-has-update="true"] {
+	color: lightpink;
+}
 
-footer [data-has-update="true"]
-	color: lightpink
-
-
-input:invalid
-	background-color: lightpink
-	color: red
-	font-weight: 700
-
+input:invalid {
+	background-color: lightpink;
+	color: red;
+	font-weight: 700;
+}

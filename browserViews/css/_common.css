@@ -1,23 +1,30 @@
-body
-	margin: 0
-	padding: 1rem
+body {
+	margin: 0;
+	padding: 1rem;
+}
 
 
-.h1, .h2, .h3, h1, h2, h3
-	margin-top: 20px
-	margin-bottom: 10px
+.h1, .h2, .h3, h1, h2, h3 {
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
 
-p
-	margin: 0 0 10px
+p {
+	margin: 0 0 10px;
+}
 
-.block
-	display: block
+.block {
+	display: block;
+}
 
-.inline-block
-	display: inline-block
+.inline-block {
+	display: inline-block;
+}
 
-.hidden
-	display: none
+.hidden {
+	display: none;
+}
 
-.w100
-	width: 100%
+.w100 {
+	width: 100%;
+}

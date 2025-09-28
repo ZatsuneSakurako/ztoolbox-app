@@ -39,9 +39,7 @@ const paths = {
 
 
 export function css() {
-	return gulp.src([paths.styles.src], {
-		sourcemaps: true
-	})
+	return gulp.src([paths.styles.src])
 		.pipe(
 			gulpSass.sync({
 				indentedSyntax: true,
@@ -51,9 +49,7 @@ export function css() {
 				sourceComments: true
 			}).on('error', gulpSass.logError)
 		)
-		.pipe(gulp.dest(paths.styles.dest, {
-			sourcemaps: '.'
-		}))
+		.pipe(gulp.dest(paths.styles.dest))
 }
 
 

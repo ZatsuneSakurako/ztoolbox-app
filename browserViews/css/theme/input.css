@@ -1,118 +1,136 @@
 input[type='text'],
 input[type='number'],
 input[type='url'],
-textarea
-	border: 1px solid #444
-	border-radius: 3px
-	height: 25px
-	max-height: 25px
-	padding-left: 2px
+textarea {
+	border: 1px solid #444;
+	border-radius: 3px;
+	height: 25px;
+	max-height: 25px;
+	padding-left: 2px;
+}
 
-textarea
-	max-height: 3 * 25px
+textarea {
+	max-height: 3 * 25px;
+}
 
-input[type="number"]
-	-webkit-appearance: textfield
-	-moz-appearance: textfield
-	appearance: textfield
-	width: 3em
+input[type="number"] {
+	-webkit-appearance: textfield;
+	-moz-appearance: textfield;
+	appearance: textfield;
+	width: 3em;
+}
 
-select
-	border: 1px solid #444
-	border-radius: 3px
-	padding-left: 2px
-	background-image: unset !important
-	box-shadow: unset !important
-
+select {
+	border: 1px solid #444;
+	border-radius: 3px;
+	padding-left: 2px;
+	background-image: unset !important;
+	box-shadow: unset !important;
+}
 
 select option,
-select:hover option
-	text-shadow: unset
+select:hover option {
+	text-shadow: unset;
+}
 
+input[type='range'] {
+	appearance: none;
+	margin: 10px 0;
+	background-color: transparent;
 
-input[type='range']
-	appearance: none
-	margin: 10px 0
-	background-color: transparent
+	& ~ output::before {
+		content: '';
+		display: inline-block;
+		width: 0.4em;
+	}
 
-	& ~ output::before
-		content: ''
-		display: inline-block
-		width: 0.4em
+	&::-webkit-slider-runnable-track {
+		width: 300px;
+		height: 5px;
+		border: none;
+		border-radius: 1px;
+	}
 
-	&::-webkit-slider-runnable-track
-		width: 300px
-		height: 5px
-		border: none
-		border-radius: 1px
+	&::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		border: none;
+		height: 21px;
+		width: 10px;
+		border-radius: 1px;
+		margin-top: -8px;
+	}
 
-	&::-webkit-slider-thumb
-		-webkit-appearance: none
-		border: none
-		height: 21px
-		width: 10px
-		border-radius: 1px
-		margin-top: -8px
-
-	&:focus
-		outline: none
-
-
+	&:focus {
+		outline: none;
+	}
+}
 
 input[type='radio'],
-input[type='checkbox']
-	-webkit-appearance: none
-	-moz-appearance: none
-	appearance: none
-	cursor: pointer
-	outline: 0
+input[type='checkbox'] {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	cursor: pointer;
+	outline: 0;
+}
 
-input[type='checkbox']
-	margin: 3px 5px 3px 0
+input[type='checkbox'] {
+	margin: 3px 5px 3px 0;
+}
 
-input[type='radio']
-	margin: 3px 3px 3px 5px
+input[type='radio'] {
+	margin: 3px 3px 3px 5px;
+}
 
 input[type='checkbox']:disabled::before,
 input[type='checkbox']:disabled:checked::before,
 input[type='radio']:disabled::before,
-input[type='radio']:disabled:checked::before
-	opacity: .5
+input[type='radio']:disabled:checked::before {
+	opacity: 0.5;
+}
 
 input[type='radio']::before,
-input[type='checkbox']::before
+input[type='checkbox']::before {
 	//noinspection CssNoGenericFontName
-	font-family: "Material Symbols Outlined" /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
-	font-size: 1.2rem
-	font-weight: normal
-	vertical-align: middle
+	font-family: "Material Symbols Outlined"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
+	font-size: 1.2rem;
+	font-weight: normal;
+	vertical-align: middle;
+}
 
-input[type='checkbox']::before
-	content: "check_box_outline_blank"
+input[type='checkbox']::before {
+	content: "check_box_outline_blank";
+}
 
-input[type='checkbox']:checked::before
-	content: "check_box"
+input[type='checkbox']:checked::before {
+	content: "check_box";
+}
 
+input[type='radio']::before {
+	content: "radio_button_unchecked";
+}
 
-input[type='radio']::before
-	content: "radio_button_unchecked"
+input[type='radio']:checked::before {
+	content: "radio_button_checked";
+}
 
-input[type='radio']:checked::before
-	content: "radio_button_checked"
+input[type='radio'] + label:not(.preference)::after {
+	content: "\A";
+	white-space: pre;
+}
 
-input[type='radio'] + label:not(.preference)::after
-	content: "\A"
-	white-space: pre
-
-textarea.auto-height
-	max-height: none
+textarea.auto-height {
+	max-height: none;
+}
 
 input[disabled],
 input[readonly],
 textarea[disabled],
 textarea[readonly],
-button[disabled]
-		background: var(--bgLight2_Opacity50)
+button[disabled] {
+	background: var(--bgLight2_Opacity50);
+}
 
-button[disabled]
-	cursor: default
+button[disabled] {
+	cursor: default;
+}
