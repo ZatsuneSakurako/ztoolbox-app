@@ -17,7 +17,7 @@ const paths = {
 		dest: 'browserViews/'
 	},
 	styles: {
-		src: 'browserViews/css/**/*.sass',
+		src: 'browserViews/css/**/*.scss',
 		dest: 'browserViews/css/'
 	},
 	js: {
@@ -38,15 +38,8 @@ const paths = {
 
 
 
-function clearCss() {
-	return del([
-		'browserViews/css/**/*.css',
-		'browserViews/css/**/*.map',
-	]);
-}
-
-function _css() {
-	return gulp.src([paths.styles.src, '!**/_*.sass'], {
+export function css() {
+	return gulp.src([paths.styles.src], {
 		sourcemaps: true
 	})
 		.pipe(
@@ -56,14 +49,12 @@ function _css() {
 				indentWidth: 1,
 				linefeed: 'lf',
 				sourceComments: true
-			})
-				.on('error', gulpSass.logError)
+			}).on('error', gulpSass.logError)
 		)
 		.pipe(gulp.dest(paths.styles.dest, {
 			sourcemaps: '.'
 		}))
 }
-export const css = gulp.series(clearCss, _css);
 
 
 
@@ -81,17 +72,6 @@ function _html() {
 		.pipe(gulp.dest(paths.html.dest))
 }
 export const html = gulp.series(clearHtml, _html);
-
-
-/**
- * @deprecated
- */
-function clearVue() {
-	return del([
-		'browserViews/*.js',
-		'browserViews/*.js.map',
-	]);
-}
 
 
 
@@ -125,12 +105,12 @@ export const js = gulp.series(clearJs, _js);
 
 
 
-export const clear = gulp.series(clearCss, clearHtml, clearVue, clearJs);
+export const clear = gulp.series(clearHtml, clearJs);
 
-export const build = gulp.series(clear, gulp.parallel(_css, _html, _js));
+export const build = gulp.series(clear, gulp.parallel(css, _html, _js));
 
 function _watch() {
-	gulp.watch(paths.styles.src, _css);
+	gulp.watch(paths.styles.src, css);
 	gulp.watch(paths.html.src, _html);
 	gulp.watch([
 		paths.js.src,
@@ -140,7 +120,6 @@ function _watch() {
 }
 export const watch = gulp.series(clear, build, _watch);
 
-//Watch task
 // noinspection JSUnusedGlobalSymbols
 export default build;
 

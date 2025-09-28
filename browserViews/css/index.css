@@ -1,7 +1,7 @@
-@use "./reset.sass"
+@use "_reset.css"
 @use "./grid.sass"
-@use "./common.sass"
-@use "./materialLoader.sass"
+@use "_common.css"
+@use "_materialLoader.css"
 
 //#codeInputs
 //	display: flex
