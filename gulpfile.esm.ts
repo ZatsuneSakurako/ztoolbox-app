@@ -42,11 +42,12 @@ export function css() {
 	return gulp.src([paths.styles.src])
 		.pipe(
 			gulpSass.sync({
-				indentedSyntax: true,
-				indentType: 'tab',
-				indentWidth: 1,
-				linefeed: 'lf',
-				sourceComments: true
+				silenceDeprecations: [
+					'global-builtin',
+					'import',
+				],
+				sourceMapIncludeSources: true,
+				sourceMap: true,
 			}).on('error', gulpSass.logError)
 		)
 		.pipe(gulp.dest(paths.styles.dest))
