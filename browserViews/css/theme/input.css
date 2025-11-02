@@ -10,12 +10,10 @@ textarea {
 }
 
 textarea {
-	max-height: 3 * 25px;
+	max-height: calc(3 * 25px);
 }
 
 input[type="number"] {
-	-webkit-appearance: textfield;
-	-moz-appearance: textfield;
 	appearance: textfield;
 	width: 3em;
 }
@@ -67,8 +65,6 @@ input[type='range'] {
 
 input[type='radio'],
 input[type='checkbox'] {
-	-webkit-appearance: none;
-	-moz-appearance: none;
 	appearance: none;
 	cursor: pointer;
 	outline: 0;
@@ -91,7 +87,7 @@ input[type='radio']:disabled:checked::before {
 
 input[type='radio']::before,
 input[type='checkbox']::before {
-	//noinspection CssNoGenericFontName
+	/*noinspection CssNoGenericFontName*/
 	font-family: "Material Symbols Outlined"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
 	font-size: 1.2rem;
 	font-weight: normal;
@@ -128,6 +124,7 @@ input[readonly],
 textarea[disabled],
 textarea[readonly],
 button[disabled] {
+	/*noinspection CssUnresolvedCustomProperty*/
 	background: var(--bgLight2_Opacity50);
 }
 

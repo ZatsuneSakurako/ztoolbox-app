@@ -14,6 +14,7 @@
 
 .loader circle {
 	fill: transparent;
+	/*noinspection CssUnresolvedCustomProperty*/
 	stroke: var(--loader-color, #2A8FBD);
 	stroke-width: 0.1em;
 	stroke-linecap: round;

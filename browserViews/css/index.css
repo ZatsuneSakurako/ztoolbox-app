@@ -117,6 +117,7 @@ label.button {
 
 		input[type="radio"]:checked + &,
 		input[type="checkbox"]:checked + & {
+			/*noinspection CssUnresolvedCustomProperty*/
 			border-bottom-color: var(--InvColor);
 		}
 	}
@@ -135,6 +136,7 @@ label.button {
 	padding: 10px 15px;
 
 	&.checked {
+		/*noinspection CssUnresolvedCustomProperty*/
 		border-bottom-color: var(--InvColor);
 	}
 
@@ -367,6 +369,7 @@ section article.gitStatus {
 		color: #efa35f;
 
 		&::after {
+			/*noinspection CssUnresolvedCustomProperty*/
 			counter-reset: variable var(--ahead, -1);
 			content: counter(variable);
 			display: inline-block;
@@ -379,6 +382,7 @@ section article.gitStatus {
 		margin-right: 0.2em;
 
 		&::after {
+			/*noinspection CssUnresolvedCustomProperty*/
 			counter-reset: variable var(--behind, -1);
 			content: counter(variable);
 			display: inline-block;
