@@ -83,6 +83,11 @@ input[type="reset"] {
 	font-size: 1em;
 	margin: 1em 0;
 	padding: 1em 2em;
+
+	input[type='radio']::before,
+	input[type='checkbox']::before {
+		color: var(--primary-color-dark);
+	}
 }
 
 button:hover,
