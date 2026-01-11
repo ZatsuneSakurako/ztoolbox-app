@@ -10,6 +10,7 @@
 body {
 	display: grid;
 	font-family: Ubuntu, Tahoma, sans-serif;
+	font-size: 1.6rem;
 	grid-template-rows: 52px auto;
 	margin: 0;
 	padding: 0;
@@ -53,6 +54,14 @@ section:empty {
 
 .display-contents {
 	display: contents;
+}
+
+input[type="range"],
+input[type="text"] {
+	width: 300px;
+}
+textarea {
+	margin: 0;
 }
 
 button,

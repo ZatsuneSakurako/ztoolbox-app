@@ -86,36 +86,37 @@ export async function themeCacheUpdate(theme: string, background_color: string) 
 		baseColor_hsl = baseColor.getHSL(),
 		baseColor_L = parseInt(baseColor_hsl.L)/100
 	;
-	let values:[string,string,string,string]|undefined;
+	let values:[string,string,string]|undefined;
 	if (theme === "dark") {
-		if (baseColor_L > 0.5 || baseColor_L < 0.1) {
-			values = ["19%","13%","26%","13%"];
+		if (baseColor_L > 0.5 || baseColor_L < 0.25) {
+			values = ['35%', '25%', '45%'];
 		} else {
-			values = [(baseColor_L + 0.06) * 100 + "%", baseColor_L * 100 + "%", (baseColor_L + 0.13) * 100 + "%", baseColor_L * 100 + "%"];
+			values = [`${baseColor_L * 100}%`, `${(baseColor_L - 0.1) * 100}%`, `${(baseColor_L + 0.15) * 100}%`];
 		}
 	} else if (theme === "light") {
-		if (baseColor_L < 0.5 /*|| baseColor_L > 0.9*/) {
-			values = ["87%","74%","81%","87%"];
+		if (baseColor_L < 0.5 || baseColor_L > 0.75) {
+			values = ['65%', '40%', '80%'];
 		} else {
-			values = [baseColor_L * 100 + "%", (baseColor_L - 0.13) * 100 + "%", (baseColor_L - 0.06) * 100 + "%", baseColor_L * 100 + "%"];
+			values = [`${baseColor_L * 100}%`, `${(baseColor_L - 0.25) * 100}%`, `${(baseColor_L + 0.25) * 100}%`];
 		}
 	}
 	if (!values) throw new Error('SHOULD_NOT_HAPPEN');
 
-	const light0 = values[0],
-		light1 = values[1],
-		light2 = values[2],
-		light3 = values[3],
+	const primary = values[0],
+		primaryDark = values[1],
+		primaryLight = values[2],
 		invBaseColor_hue = (baseColor_hsl.H - 360/2 * ((baseColor_hsl.H < 360/2)? 1 : -1)),
 		invBaseColor_light = (theme === "dark")? "77%" : "33%";
 
 	const root = document.documentElement;
-	root.style.setProperty('--bgLight0', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light0})`);
-	root.style.setProperty('--bgLight1', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light1})`);
-	root.style.setProperty('--bgLight2', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2})`);
-	root.style.setProperty('--bgLight2_Opacity', `hsla(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.95)`);
-	root.style.setProperty('--bgLight2_Opacity50', `hsla(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.5)`);
-	root.style.setProperty('--bgLight3', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light3})`);
+	root.classList.toggle('light', theme === 'light');
+	root.style.setProperty('--primary-color', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${primary})`);
+	root.style.setProperty('--primary-color-dark', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${primaryDark})`);
+	root.style.setProperty('--primary-color-light', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${primaryLight})`);
+
+	// root.style.setProperty('--bgLight2_Opacity', `hsla(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.95)`);
+	// root.style.setProperty('--bgLight2_Opacity50', `hsla(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.5)`);
+
 	root.style.setProperty('--InvColor', `hsl(${invBaseColor_hue}, ${baseColor_hsl.S}, ${invBaseColor_light})`);
 
 	if (colorStylesheetNode && colorStylesheetNode.dataset.background_color) {

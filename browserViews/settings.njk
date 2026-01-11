@@ -57,6 +57,7 @@
 
 					{% if conf.type in ['path', 'paths'] and conf.opts.asFile %}
 						<label class="button small" for="pref-{{ id }}_file"
+						       role="button"
 							   data-translate-id="{% if conf.opts.asFile %}select_file{% else %}select_path{% endif %}"></label>
 					{% endif %}
 
