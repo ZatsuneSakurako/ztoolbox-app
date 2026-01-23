@@ -39,7 +39,7 @@
     "@types/shelljs": "^0.10.0",
     "@types/ws": "^8.18.1",
     "del": "^8.0.1",
-    "electron": "^39.2.7",
+    "electron": "^40.0.0",
     "electron-builder": "26.3.6",
     "gulp": "^5.0.1",
     "gulp-cli": "^3.1.0",

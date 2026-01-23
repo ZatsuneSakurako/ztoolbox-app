@@ -83,13 +83,13 @@ fastifyApp.route<{ Params: { fileName: string } }>({
 fastifyApp.listen({
 	host: 'localhost',
 	port: 42080,
-}, (err) => {
+}, (err, address) => {
 	if (err) {
 		console.error(err);
+	} else {
+		console.log(`Listening at ${address}`);
 	}
-	console.log('Listening at localhost:42080');
 });
-
 
 
 
