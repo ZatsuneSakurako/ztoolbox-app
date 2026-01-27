@@ -1,7 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import {UserscriptMeta} from "./UserscriptMeta.js";
-import * as sass from "sass-embedded";
 import ts from "typescript";
 import {appRootPath} from "../../classes/constants.js";
 import {IUserscriptJson} from "../../classes/bo/userscript.js";
@@ -41,7 +40,7 @@ export class Userscript {
 		for (let file of files) {
 			if (!file.isFile()) continue;
 
-			if (/\.user\.(ts|js|sass|scss|css)$/.test(file.name)) {
+			if (/\.user\.(ts|js|css)$/.test(file.name)) {
 				output.push(new this(
 					path.join(path.relative(sourcePath, file.parentPath), file.name),
 					sourcePath
@@ -64,21 +63,7 @@ export class Userscript {
 	}
 
 	async processContent(): Promise<void> {
-		if (['scss', 'sass'].includes(this.#fileExtension)) {
-			const result = await sass.compileStringAsync(this.fileContent, {
-				loadPaths: [
-					path.basename(this.#sourcePath)
-				],
-				quietDeps: true,
-				sourceMap: true,
-				sourceMapIncludeSources: true,
-				style: "expanded",
-				syntax: this.#fileExtension === 'sass' ? 'indented' : 'scss',
-				verbose: false,
-			});
-			this.#fileExtension = 'css';
-			this.#fileContent = result.css.toString();
-		} else if (this.#fileExtension === 'ts') {
+		if (this.#fileExtension === 'ts') {
 			const ts = (await import('typescript')),
 				result = ts.transpileModule(this.fileContent, this.#lazyLoadTypescriptOptions(ts));
 
