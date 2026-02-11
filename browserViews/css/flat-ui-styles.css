@@ -386,10 +386,16 @@ hr {
 		}
 	}
 
+	&:not(.md-list_no-pointer) {
+		& > li,
+		& > .md-list-item {
+			cursor: pointer;
+		}
+	}
+
 	& > li,
 	& > .md-list-item {
 		border-bottom: 1px solid #ddd;
-		cursor: pointer;
 
 		&:last-child {
 			border-bottom: none;
