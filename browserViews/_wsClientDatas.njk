@@ -1,11 +1,10 @@
-<section class="ws-client-datas grid no-r-gap">
+<section class="ws-client-datas fui-list fui-list_no-shadow">
 	{% if wsClientDatas -%}
 	<h1 class="grid-12">Web extensions</h1>
 	{%- for id, client in wsClientDatas %}
-	<div class="grid-4">
 		{% set pageRatings = client.tabData.pageRating | default([]) %}
 		{% set isMature = pageRatings.includes('mature') or pageRatings.includes('RTA-5042-1996-1400-1577-RTA') %}
-		<article id="{{ id }}" title="{{ client.browserName }}" class="button buttonItem wsClientDatasItem{% if isMature %} isMature{% endif %}" {% if client.tabData and client.tabData.url %} data-tab-data-url="{{ client.tabData.url }}" draggable="true"{% endif %}>
+		<article id="{{ id }}" title="{{ client.browserName }}" class="fui-list-item wsClientDatasItem{% if isMature %} isMature{% endif %}" {% if client.tabData and client.tabData.url %} data-tab-data-url="{{ client.tabData.url }}" draggable="true"{% endif %}>
 			{%- if client.tabData.faviconUrl -%}
 			<picture>
 				<img class="icon" src="{{ client.tabData.faviconUrl }}" width="32" height="32" alt="" crossorigin="anonymous" />
@@ -27,6 +26,6 @@
 				{%- endif -%}
 			</div>
 		</article>
-	</div>{% endfor %}
+	{% endfor %}
 	{%- endif %}
 </section>

@@ -1,4 +1,4 @@
-<section class="websites-data grid no-r-gap">
+<section class="websites-data fui-list fui-list_no-shadow">
 	<h1 class="grid-12">
 		Websites data
 		{% if lastUpdate -%}
@@ -10,8 +10,7 @@
 	{% for item in websitesData %}
 		{%- set website = item.websiteName -%}
 		{%- set data = item.websiteData -%}
-	<div class="grid-4">
-		<a class="button buttonItem websiteItem cursor" href="{{ data.href }}" target="_blank"
+		<a class="fui-list-item websiteItem cursor" href="{{ data.href }}" target="_blank"
 		   data-logged="{{ data.logged }}" data-website="{{ website }}">
 
 			<img class="icon" src="{{ data.websiteIcon }}" alt="" />
@@ -48,7 +47,7 @@
 				{%- endif %}
 			</div>
 		</a>
-	</div>{% endfor %}
+	{% endfor %}
 	<div>
 		<button class="buttonItem cursor only-icon" {% if disableRefreshButton %} disabled{% endif %} data-refresh-websites>
 			<i class="material-symbols-outlined">refresh</i>
