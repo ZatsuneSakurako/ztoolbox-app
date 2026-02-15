@@ -5,7 +5,6 @@ export interface INotificationState {
 export interface IFolderItem {
 	folderCount: number
 	folderName: string
-	folderUrl?: string
 }
 export interface IJsonWebsiteData {
 	websiteIcon: string

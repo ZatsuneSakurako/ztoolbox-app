@@ -23,18 +23,8 @@
 					{%- if data.logged %}logout{% else %}login{% endif -%}
 				</span>
 			</button>
-			<div class="websiteData">
-				{% if data.logged and folder.folderUrl and folder.folderCount -%}
-					{%- for folderData in data.folders -%}
-						{% set folderTitle = folderData[0] %}
-						{% set folder = folderData[1] %}
-						<a class="folder" href="{{ folder.folderCount }}" target="_blank"
-						   data-folder-count="{{ folder.folderCount }}"
-						   data-folder-url="{{ folder.folderUrl }}">{{folderTitle}}</a>
-					{%- endfor -%}
-				{%- endif %}
-
-				{% if data.logged and not folder.folderUrl -%}
+			<div class="data websiteData">
+				{% if data.logged -%}
 					{%- for folderData in data.folders -%}
 						{% set folderTitle = folderData[0] %}
 						{% set folder = folderData[1] %}
@@ -49,7 +39,7 @@
 		</a>
 	{% endfor %}
 	<div>
-		<button class="buttonItem cursor only-icon" {% if disableRefreshButton %} disabled{% endif %} data-refresh-websites>
+		<button{% if disableRefreshButton %} disabled{% endif %} data-refresh-websites>
 			<i class="material-symbols-outlined">refresh</i>
 		</button>
 	</div>

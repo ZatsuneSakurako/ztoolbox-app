@@ -16,7 +16,7 @@
 			<div class="title">
 				{%- if client.tabData.name -%}{{ client.tabData.name }}{% else %}{{ client.browserName }}{% endif -%}
 			</div>
-			<div class="wsClientDatas">
+			<div class="data wsClientDatas">
 				{%- if client.tabData and client.tabData.ip -%}
 					{%- if client.tabData.ipMore -%}
 						{{ client.tabData.ipMore }} ({{ client.tabData.ip }})
