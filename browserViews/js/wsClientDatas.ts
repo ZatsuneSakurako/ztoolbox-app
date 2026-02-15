@@ -240,19 +240,19 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 }
 
 document.body.addEventListener('dragstart', function (e) {
-	const target = (<Element> e.target).closest<HTMLElement>('.buttonItem.wsClientDatasItem[data-tab-data-url]');
+	const target = (<Element> e.target).closest<HTMLElement>('.wsClientDatasItem[data-tab-data-url]');
 	if (target) {
 		dragstartHandler(target, e);
 	}
 });
 document.body.addEventListener('dragover', function (e) {
-	const target = (<Element> e.target).closest<HTMLElement>('.buttonItem.wsClientDatasItem');
+	const target = (<Element> e.target).closest<HTMLElement>('.wsClientDatasItem');
 	if (target) {
 		dragoverHandler(target, e);
 	}
 });
 document.body.addEventListener('drop', function (e) {
-	const target = (<Element> e.target).closest<HTMLElement>('.buttonItem.wsClientDatasItem');
+	const target = (<Element> e.target).closest<HTMLElement>('.wsClientDatasItem');
 	if (target) {
 		dropHandler(target, e);
 	}

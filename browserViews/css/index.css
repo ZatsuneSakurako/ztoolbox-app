@@ -44,10 +44,6 @@ section:empty {
 	list-style-position: inside;
 }
 
-.list-style-auto {
-	list-style-type: auto;
-}
-
 .list-style-disc {
 	list-style-type: disc;
 }
@@ -200,33 +196,35 @@ section .buttonItem {
 	}
 }
 
-section .buttonItem .ellipse {
-	-webkit-line-clamp: 3;
-	overflow: hidden;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-}
+section .websiteItem,
+section .wsClientDatasItem {
+	.ellipse {
+		-webkit-line-clamp: 3;
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+	}
+	&.tabPageServerIp .title {
+		-webkit-line-clamp: 1;
+	}
 
-section .buttonItem.tabPageServerIp .title {
-	-webkit-line-clamp: 1;
-}
-
-section .buttonItem picture,
-section .buttonItem .icon[class*="material-symbols-"] {
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	height: 100%;
-}
+	picture,
+	.icon[class*="material-symbols-"] {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		height: 100%;
+	}
 
 
-section .buttonItem .title {
-	font-size: 1.1em;
-	font-weight: 700;
-}
+	.title {
+		font-size: 1.1em;
+		font-weight: 700;
 
-section .buttonItem .title[data-count]::after {
-	content: " (" attr(data-count) ")";
+		&[data-count]::after {
+			content: " (" attr(data-count) ")";
+		}
+	}
 }
 
 section a.websiteItem,
