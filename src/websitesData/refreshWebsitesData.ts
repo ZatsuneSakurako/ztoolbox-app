@@ -1,8 +1,7 @@
 import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData.js";
 import {ZAlarm} from "../../classes/ZAlarm.js";
-import {app, BrowserWindow, ipcMain, session} from "electron";
+import electron, {app, BrowserWindow, ipcMain, session} from "electron";
 import {i18n} from "../i18next.js";
-import electron from "electron";
 import {websitesData, websitesDataLastRefresh} from "../../classes/Settings.js";
 import {JsonSerialize} from "../../classes/JsonSerialize.js";
 import {WebsiteData} from "../../browserViews/js/websiteData.js";
@@ -13,7 +12,6 @@ import {websiteApis} from "./platforms/index.js";
 import {appIcon} from "../../classes/constants.js";
 import {sendNotification} from "../../classes/notify.js";
 import {settings} from "../init.js";
-
 
 
 export let zAlarm_refreshWebsites : ZAlarm|null = null;
@@ -60,14 +58,27 @@ ipcMain.handle('openLoginUrl', function (event, website) {
 
 ipcMain.handle('refreshWebsitesData', function () {
 	refreshWebsitesData()
-		.catch(console.error)
-	;
+		.catch(console.error);
 });
 app.whenReady()
 	.then(() => {
 		refreshWebsitesInterval();
-	})
-;
+	});
+export async function getWebsitesData() {
+	return settings.getObject<Dict<IJsonWebsiteData>>(websitesData);
+}
+export async function getWebsitesCount() {
+	console.debug('[refreshWebsites] Reading websites count');
+	const websitesData = await getWebsitesData();
+
+	let count : number = 0;
+	if (websitesData) {
+		for (let [_, websiteData] of Object.entries(websitesData)) {
+			count += websiteData?.count ?? 0;
+		}
+	}
+	return count;
+}
 export async function refreshWebsitesData() {
 	if (!settings.getBoolean('check_enabled')) {
 		return;
@@ -181,8 +192,9 @@ export async function refreshWebsitesData() {
 		;
 	}
 
-	setBadge(count);
-	settings.set<IJsonWebsiteData>(websitesData, websiteData);
+	setBadge(count)
+		.catch(console.error);
+	settings.setDict<IJsonWebsiteData>(websitesData, websiteData);
 
 	for (let browserWindow of BrowserWindow.getAllWindows()) {
 		browserWindow.webContents.send('websiteDataUpdate', websiteData, currentRefresh);

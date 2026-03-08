@@ -1,5 +1,5 @@
 import {IChromeExtensionData, IWsMoveSourceData} from "../../classes/bo/chromeNative.js";
-import {nunjuckRender} from "./nunjuckRenderHelper.js";
+import {nunjucksRender} from "./nunjucksRenderHelper.js";
 import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {Dict} from "./bo/Dict.js";
 
@@ -38,8 +38,6 @@ async function _wsClientDatasDisplay() {
 		.catch(console.error)
 	;
 	if (tabPageServerIp_alias && 'tabPageServerIp_alias' in tabPageServerIp_alias && tabPageServerIp_alias.tabPageServerIp_alias && typeof tabPageServerIp_alias.tabPageServerIp_alias === 'object') {
-		tabPageServerIp_alias.tabPageServerIp_alias;
-
 		const tagIpAlias  = <Dict<string>>(tabPageServerIp_alias.tabPageServerIp_alias);
 		for (let [, wsClientData] of wsClientDatas) {
 			if (wsClientData.tabData?.ip && wsClientData.tabData.ip in tagIpAlias) {
@@ -48,7 +46,7 @@ async function _wsClientDatasDisplay() {
 		}
 	}
 
-	const elements = await nunjuckRender('_wsClientDatas', {
+	const elements = await nunjucksRender('_wsClientDatas', {
 		wsClientDatas
 	});
 

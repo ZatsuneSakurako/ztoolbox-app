@@ -5,7 +5,7 @@ import {SettingConfig, SettingsConfig} from "../../classes/bo/settings.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import {Dict} from "./bo/Dict.js";
 import {reloadClassesFor} from "./labelChecked.js";
-import {nunjuckRender} from "./nunjuckRenderHelper.js";
+import {nunjucksRender} from "./nunjucksRenderHelper.js";
 
 declare var window : BridgedWindow;
 
@@ -44,7 +44,7 @@ async function init() {
 		throw new Error('CONTAINER_NOT_FOUND');
 	}
 
-	const elements = await nunjuckRender('settings', data);
+	const elements = await nunjucksRender('settings', data);
 
 	const $loader = $container.querySelector('.loader-container');
 	if ($loader) {

@@ -3,10 +3,17 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import debounce from "lodash.debounce";
 
-import {ISettings, PrimitivesValues, RandomJsonData, SettingConfig, SettingsConfig, SettingValues} from "./bo/settings.js";
+import {
+	ISettings,
+	PrimitivesValues,
+	RandomJsonData,
+	SettingConfig,
+	SettingsConfig,
+	SettingValues
+} from "./bo/settings.js";
 import {app} from "electron";
 import {JsonSerialize} from "./JsonSerialize.js";
-import Dict = NodeJS.Dict;
+import {Dict} from "../browserViews/js/bo/Dict.js";
 
 const settings : SettingsConfig = (await import("../browserViews/js/settings/settings.js")).default;
 
@@ -294,6 +301,10 @@ export class Settings extends EventEmitter implements ISettings {
 		this.#save();
 
 		return this;
+	}
+
+	setDict<T extends object>(key:string, value:Dict<JsonSerialize<T>>):this {
+		return this.set(key, value);
 	}
 
 	delete(key:string):boolean {

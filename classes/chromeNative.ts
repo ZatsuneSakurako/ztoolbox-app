@@ -1,11 +1,15 @@
 import {
-	ClientToServerEvents, IChromeExtensionData,
-	InterServerEvents, IWsMoveSourceData, preferenceData, ResponseCallback,
+	ClientToServerEvents,
+	IChromeExtensionData,
+	InterServerEvents,
+	IWsMoveSourceData,
+	preferenceData,
+	ResponseCallback,
 	ServerToClientEvents,
 	SocketData,
 } from "./bo/chromeNative.js";
 import {showSection} from "./windowManager.js";
-import {Server, Socket, RemoteSocket} from "socket.io";
+import {RemoteSocket, Server, Socket} from "socket.io";
 import "../src/websitesData/refreshWebsitesData.js";
 import electron, {BrowserWindow} from "electron";
 import {settings} from "../src/init.js";
@@ -17,7 +21,6 @@ import {IUserscriptJson} from "./bo/userscript.js";
 import {Userscript} from "../src/userScript/Userscript.js";
 import {appExtensionTemplatesPath} from "./constants.js";
 import {nunjucksEnv} from "../src/nunjucksEnv.js";
-
 
 
 export type socket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
@@ -280,36 +283,36 @@ io.on("connection", (socket: socket) => {
 		}
 	});
 
-	socket.on('nunjuckRender', async function (templateName, context, async, cb) {
+	socket.on('nunjucksRender', async function (templateName, context, async, cb) {
 		const absolutePath = path.normalize(`${appExtensionTemplatesPath}/${templateName}${templateName.endsWith('.njk') ? '' : '.njk'}`);
 		if (!fs.existsSync(absolutePath)) {
-			cb({ error: `FILE_NOT_FOUND ${JSON.stringify(absolutePath)}` });
+			cb({error: `FILE_NOT_FOUND ${JSON.stringify(absolutePath)}`});
 			return;
 		}
 		if (appExtensionTemplatesPath.startsWith(absolutePath)) {
-			cb({ error: `FILE_NOT_WELL_PLACED ${JSON.stringify(absolutePath)}` });
+			cb({error: `FILE_NOT_WELL_PLACED ${JSON.stringify(absolutePath)}`});
 			return;
 		}
 		try {
 			if (!async) {
-				let	result = nunjucksEnv.render(templateName + '.njk', context);
-				cb({ error: false, result });
+				let result = nunjucksEnv.render(templateName + '.njk', context);
+				cb({error: false, result});
 				return;
 			}
 
 			nunjucksEnv.render(templateName + '.njk', context, function (err, result) {
 				if (err || !result) {
-					cb({ error: errorToString(err) })
+					cb({error: errorToString(err)})
 					return;
 				}
-				cb({ error: false, result });
+				cb({error: false, result});
 			});
 		} catch (e) {
 			console.error(e);
-			cb({ error: errorToString(e) });
+			cb({error: errorToString(e)});
 			return;
 		}
-	})
+	});
 });
 
 export function ping(socket: socket): Promise<'pong'> {

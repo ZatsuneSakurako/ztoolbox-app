@@ -2,7 +2,7 @@ import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import {VersionState} from "../../classes/bo/versionState.js";
 import {Dict} from "./bo/Dict.js";
-import {nunjuckRender} from "./nunjuckRenderHelper.js";
+import {nunjucksRender} from "./nunjucksRenderHelper.js";
 import {getNetworkIps} from "../../src/getNetConnectionAddress.js";
 
 declare var window : BridgedWindow;
@@ -23,7 +23,7 @@ async function refreshData() {
 		console.info('wsClientNames update');
 		const $wsClientNames = document.querySelector<HTMLUListElement>('ul#wsClientNames');
 		if ($wsClientNames) {
-			const elements = await nunjuckRender('_wsClientNames', {
+			const elements = await nunjucksRender('_wsClientNames', {
 				wsClientNames: await window.znmApi.getWsClientDatas()
 			});
 			$wsClientNames.replaceWith(...elements);
@@ -64,7 +64,7 @@ async function refreshData() {
 	);
 	await Promise.allSettled(promises);
 
-	const elements = await nunjuckRender('variousInfos', infosData)
+	const elements = await nunjucksRender('variousInfos', infosData)
 	const $loader = $variousInfos.querySelector('.loader-container');
 	if ($loader) {
 		$loader.remove();

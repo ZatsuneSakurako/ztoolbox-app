@@ -36,7 +36,7 @@ export interface IZnmApi {
 
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse>
 
-	nunjuckRender(templateName: string, context: any): Promise<string>
+	nunjucksRender(templateName: string, context: any): Promise<string>
 
 	getNetworkIps(): Promise<Dict<MapValueType<ReturnType<typeof getNetworkIps>>>>
 

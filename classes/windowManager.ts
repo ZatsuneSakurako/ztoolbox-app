@@ -2,37 +2,67 @@ import {app, BrowserWindow, nativeImage} from "electron";
 import {appIcon, appIconPath, browserViewPath} from "./constants.js";
 import path from "node:path";
 import {addBadgeToImage} from "../src/addBadgeToImage.js";
+import {getTray} from "../src/tray.js";
+import {getWebsitesCount} from "../src/websitesData/refreshWebsitesData.js";
 
 const __dirname = import.meta.dirname;
 
 
 
+let currentBadgeCount:number|undefined = undefined;
 /**
  * @see https://github.com/electron/electron/pull/27067#discussion_r555466735
- * @param count
+ * @param [count] If undefined, it will refresh the current badge count
  */
-export function setBadge(count: number) {
+export async function setBadge(count?: number) {
+	console.debug('[setBadge] Call with :', count ?? 'undefined');
+
+	if (count !== undefined) {
+		currentBadgeCount = count;
+	} else {
+		try {
+			// If no count, take the existing badge count, or read websites data directly
+			count ??= currentBadgeCount ?? await getWebsitesCount();
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
 	if (process.platform === 'linux') {
-		const mainWindow = getMainWindow();
-		if (mainWindow) {
-			if (count === 0) {
-				mainWindow.setIcon(appIconPath);
-				return;
-			}
-			addBadgeToImage(appIconPath, count)
-				.then(buffer => {
-					mainWindow.setIcon(nativeImage.createFromBuffer(buffer))
-				})
-				.catch(console.error);
+		const tray = getTray(),
+			mainWindow = getMainWindow();
+
+		if (count === undefined || count === 0) {
+			mainWindow?.setIcon(appIconPath);
+			tray?.setImage(appIcon);
+			return;
+		}
+
+		try {
+			const buffer = await addBadgeToImage(appIconPath, count),
+				badgeIcon = nativeImage.createFromBuffer(buffer);
+
+			mainWindow?.setIcon(badgeIcon);
+			tray?.setImage(mainWindow ? appIcon : badgeIcon);
+
+		} catch (e) {
+			console.error(e);
 		}
 		return;
 	}
 
-	if (count < 100) {
+	if (count !== undefined && count < 100) {
 		app.setBadgeCount(count);
 	} else {
 		app.setBadgeCount();
 	}
+}
+
+if (process.platform === 'linux') {
+	app.whenReady().then(() => {
+		setBadge()
+			.catch(console.error);
+	});
 }
 
 export function createWindow(showSection?: string) {
@@ -72,13 +102,22 @@ export function createWindow(showSection?: string) {
 		mainWindow.webContents.send('onFocus');
 	});
 
+	mainWindow.on('show', () => {
+		/**
+		 * Refresh the badge (so the badge goes to the browser window icon)
+		 */
+		setBadge()
+			.catch(console.error);
+	});
+
 	// Emitted when the window is closed.
-	/*mainWindow.on('closed', function () {
-		// Dereference the window object, usually you would store windows
-		// in an array if your app supports multi windows, this is the time
-		// when you should delete the corresponding element.
-		mainWindow = null;
-	});*/
+	mainWindow.on('closed', function () {
+		/**
+		 * When the window is closed, refresh the badge to it can go to the tray
+		 */
+		setBadge()
+			.catch(console.error);
+	});
 }
 
 export function getMainWindow(): Electron.BrowserWindow | null {

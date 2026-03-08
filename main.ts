@@ -17,11 +17,11 @@ import {appRootPath, resourcePath} from "./classes/constants.js";
 import {getNetworkIps} from "./src/getNetConnectionAddress.js";
 import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 import {settings} from "./src/init.js";
-import Dict = NodeJS.Dict;
 import ini from "ini";
 import * as update from './src/update.js';
 import fs from "node:fs";
 import {nunjucksEnv} from "./src/nunjucksEnv.js";
+import Dict = NodeJS.Dict;
 
 
 fastifyApp.register(fastifyStatic, {
@@ -235,7 +235,7 @@ ipcMain.handle('sendNotification', async (e, message: string, title?: string, so
 	});
 });
 
-ipcMain.handle('nunjuckRender', async (e, templateName:string, context:any) => {
+ipcMain.handle('nunjucksRender', async (e, templateName:string, context:any) => {
 	return nunjucksEnv.render(`${templateName}.njk`, context);
 });
 

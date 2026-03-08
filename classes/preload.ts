@@ -1,9 +1,9 @@
 import {contextBridge, ipcRenderer} from "electron";
 import {IZnmApi, PreferenceTypes} from "../browserViews/js/bo/bridgedWindow.js";
 import {NotificationResponse} from "./bo/notify.js";
-import Dict = NodeJS.Dict;
 import {IJsonWebsiteData} from "../browserViews/js/bo/websiteData.js";
 import {IChromeExtensionData} from "./bo/chromeNative.js";
+import Dict = NodeJS.Dict;
 
 const isFileProtocol = self.location.protocol === 'file:';
 
@@ -131,8 +131,8 @@ const znmApi:IZnmApi = {
 		return ipcRendererInvoke('sendNotification', message, title, sound);
 	},
 
-	nunjuckRender(templateName:string, context:any) {
-		return ipcRendererInvoke('nunjuckRender', templateName, context)
+	nunjucksRender(templateName:string, context:any) {
+		return ipcRendererInvoke('nunjucksRender', templateName, context)
 	},
 
 	getNetworkIps() {

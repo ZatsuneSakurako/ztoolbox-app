@@ -1,14 +1,14 @@
 import './index-main.js';
 import './settings.js';
 import {loadTranslations} from "./translation-api.js";
-import {themeOnLoad, themeCacheUpdate} from "./theme/theme.js";
+import {themeCacheUpdate, themeOnLoad} from "./theme/theme.js";
 import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
 import {IJsonWebsiteData} from "./bo/websiteData.js";
 import {WebsiteData} from "./websiteData.js";
 import {Dict} from "./bo/Dict.js";
 import {updateClassesFor} from "./labelChecked.js";
-import {nunjuckRender} from "./nunjuckRenderHelper.js";
+import {nunjucksRender} from "./nunjucksRenderHelper.js";
 import {wsClientDatasDisplay, wsClientDatasUpdate} from "./wsClientDatas.js";
 
 declare var window : BridgedWindow;
@@ -65,7 +65,7 @@ async function loadWebsitesData(rawWebsitesData:Dict<IJsonWebsiteData>, lastUpda
 		clearTimeout(enableButtonTimer);
 		enableButtonTimer = null;
 	}
-	const elements = await nunjuckRender('websitesData', {
+	const elements = await nunjucksRender('websitesData', {
 		websitesData,
 		lastUpdate: !isNaN(lastUpdate.getTime()) ? lastUpdate : undefined,
 		disableRefreshButton

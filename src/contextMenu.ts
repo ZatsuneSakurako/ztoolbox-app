@@ -1,4 +1,4 @@
-import {app, BrowserWindow, Menu, Tray} from "electron";
+import {app, BrowserWindow, Menu} from "electron";
 import {showSection, showWindow, toggleWindow} from "../classes/windowManager.js";
 import {appIcon} from "../classes/constants.js";
 import {clipboard} from "./clipboard.js";
@@ -6,7 +6,8 @@ import {onSettingUpdate} from "../classes/chromeNative.js";
 import {onOpen, updateAutoStart} from "./manageProtocolAndAutostart.js";
 import {websitesData} from "../classes/Settings.js";
 import {settings} from "./init.js";
-
+import {newTray} from "./tray.js";
+import {refreshWebsitesData} from "./websitesData/refreshWebsitesData.js";
 
 
 function triggerBrowserWindowPreferenceUpdate(preferenceId: string, newValue: any) {
@@ -17,9 +18,7 @@ function triggerBrowserWindowPreferenceUpdate(preferenceId: string, newValue: an
 
 
 
-let tray:Tray|null = null,
-	contextMenu:Menu|null = null
-;
+let contextMenu:Menu|null = null;
 function onReady() {
 	contextMenu = Menu.buildFromTemplate([
 		{
@@ -27,6 +26,14 @@ function onReady() {
 			type: 'normal',
 			click() {
 				showWindow();
+			}
+		},
+		{
+			label: 'Rafraichir les données des sites',
+			type: 'normal',
+			click() {
+				refreshWebsitesData()
+					.catch(console.error);
 			}
 		},
 		{
@@ -61,7 +68,7 @@ function onReady() {
 
 
 
-	tray = new Tray(appIcon);
+	const tray = newTray(appIcon);
 	tray.setToolTip(app.getName());
 	tray.setContextMenu(contextMenu);
 
