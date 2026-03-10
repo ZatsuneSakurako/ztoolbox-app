@@ -15,8 +15,7 @@
 		"types": [
 			"node",
 			"del",
-			"gulp-pug",
-			"sass-embedded"
+			"gulp-pug"
 		],
 		"noImplicitAny": true,
 		"noImplicitReturns": true,

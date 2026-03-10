@@ -1,25 +1,14 @@
 import child_process from "child_process";
 import gulp from "gulp";
 import {deleteAsync as del} from "del";
-import _gulpSass from "gulp-sass";
-import * as sass from "sass-embedded";
 import gulpPug from "gulp-pug";
-
-const gulpSass = _gulpSass(sass);
 
 const paths = {
 	html: {
 		src: 'browserViews/*.pug',
 		dest: 'browserViews/'
 	},
-	vue: {
-		src: 'browserViews/*.vue',
-		dest: 'browserViews/'
-	},
-	styles: {
-		src: 'browserViews/css/**/*.scss',
-		dest: 'browserViews/css/'
-	},
+
 	js: {
 		src: 'browserViews/js/**/*.ts',
 		dest: 'browserViews/js/'
@@ -36,25 +25,6 @@ const paths = {
 
 
 
-
-
-export function css() {
-	return gulp.src([paths.styles.src])
-		.pipe(
-			gulpSass.sync({
-				silenceDeprecations: [
-					'global-builtin',
-					'import',
-				],
-				sourceMapIncludeSources: true,
-				sourceMap: true,
-			}).on('error', gulpSass.logError)
-		)
-		.pipe(gulp.dest(paths.styles.dest))
-}
-
-
-
 function clearHtml() {
 	return del([
 		'browserViews/*.html',
@@ -68,6 +38,7 @@ function _html() {
 		}))
 		.pipe(gulp.dest(paths.html.dest))
 }
+// noinspection JSUnusedGlobalSymbols
 export const html = gulp.series(clearHtml, _html);
 
 
@@ -104,10 +75,9 @@ export const js = gulp.series(clearJs, _js);
 
 export const clear = gulp.series(clearHtml, clearJs);
 
-export const build = gulp.series(clear, gulp.parallel(css, _html, _js));
+export const build = gulp.series(clear, gulp.parallel(_html, _js));
 
 function _watch() {
-	gulp.watch(paths.styles.src, css);
 	gulp.watch(paths.html.src, _html);
 	gulp.watch([
 		paths.js.src,
@@ -115,6 +85,7 @@ function _watch() {
 		paths.mainClassJs.src
 	], _js);
 }
+// noinspection JSUnusedGlobalSymbols
 export const watch = gulp.series(clear, build, _watch);
 
 // noinspection JSUnusedGlobalSymbols
