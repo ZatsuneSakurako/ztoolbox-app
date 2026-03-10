@@ -164,7 +164,7 @@ window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 
 
 
-document.addEventListener('change', function onGroupChange(e: SubmitEvent) {
+document.addEventListener('change', function onGroupChange(e: Event) {
 	if (!e.target) return;
 	const target = (<Element> e.target).closest(`#${settingFormId} [data-on-group-change]`);
 	if (!target) return;

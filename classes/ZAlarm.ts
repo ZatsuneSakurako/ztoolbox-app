@@ -4,7 +4,7 @@ import {CronExpressionParser} from "cron-parser";
 export type Callback = (date:Date) => void;
 
 export class ZAlarm {
-	private _cronOrDate: Date | string;
+	private _cronOrDate: Date | string | null = null;
 	private timer: NodeJS.Timeout | null = null;
 
 	private constructor(cronOrDate: Date, callback:Callback)
@@ -23,6 +23,7 @@ export class ZAlarm {
 		}
 	}
 	get cronOrDate(): Date | string {
+		if (this._cronOrDate === null) throw new Error("cronOrDate is null");
 		return this._cronOrDate;
 	}
 	set cronOrDate(newValue: Date | string) {
@@ -36,7 +37,7 @@ export class ZAlarm {
 		}
 		this._cronOrDate = newValue;
 
-		// Restart existing timer
+		// Restart the existing timer
 		if (this.timer) {
 			this.clear();
 			this.start()

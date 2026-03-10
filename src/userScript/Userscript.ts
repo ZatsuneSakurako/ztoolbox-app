@@ -13,7 +13,7 @@ export class Userscript {
 	readonly #sourcePath: string
 	readonly #fileName: string
 	#fileExtension: string
-	#fileContent: string
+	#fileContent: string|null = null;
 
 	constructor(fileName: string, sourcePath: string) {
 		this.#sourcePath = sourcePath;

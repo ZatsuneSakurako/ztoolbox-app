@@ -17,6 +17,8 @@ import {Dict} from "../browserViews/js/bo/Dict.js";
 
 const settings : SettingsConfig = (await import("../browserViews/js/settings/settings.js")).default;
 
+type DebouncedFunc<T extends (...args: any) => any> = ReturnType<typeof debounce<T>>;
+
 
 
 export const defaultStorageFilename = '/settings.json';
@@ -28,7 +30,7 @@ export class Settings extends EventEmitter implements ISettings {
 	readonly #defaultStorageDir: string;
 	storageDir:string;
 	#cache:Map<string,RandomJsonData>|undefined;
-	readonly #debouncedSaved:(storagePath:string, data:RandomJsonData) => void;
+	readonly #debouncedSaved: DebouncedFunc<(storageDir: string, data: Dict<RandomJsonData>) => void>;
 
 	/**
 	 * @inheritDoc
@@ -67,13 +69,11 @@ export class Settings extends EventEmitter implements ISettings {
 				const dataInApp:RandomJsonData = {};
 
 				if (clonedData) {
-					let dataFound:boolean = false;
 					for (let key of keysStoredInApp) {
 						const value = clonedData[key];
 						if (!!value) {
 							dataInApp[key] = value;
 							delete clonedData[key];
-							dataFound = true;
 						}
 					}
 				}
@@ -155,7 +155,7 @@ export class Settings extends EventEmitter implements ISettings {
 		;
 
 		if (this.storagePath !== this.#defaultStoragePath) {
-			// Settings to store in the app data, if another storage path specified
+			// Settings to store in the app data if another storage path specified
 			const data = Settings.#loadFile(this.#defaultStoragePath);
 			for (let [key, value] of data ?? new Map()) {
 				if (output.has(key)) continue; // avoid overriding data in output map
@@ -334,10 +334,10 @@ export class Settings extends EventEmitter implements ISettings {
 		cache.forEach(callbackFn, thisArg);
 	}
 
-	toJSON():RandomJsonData {
-		const json:RandomJsonData = {};
+	toJSON():Dict<RandomJsonData> {
+		const json:Dict<RandomJsonData> = {};
 
-		this.forEach((value:PrimitivesValues, key:string) => {
+		this.forEach((value:RandomJsonData, key:string) => {
 			json[key] = value;
 		});
 
@@ -367,5 +367,21 @@ export class Settings extends EventEmitter implements ISettings {
 	values(): MapIterator<RandomJsonData> {
 		const cache = this.#load();
 		return cache.values();
+	}
+	getOrInsert(key: string, value: RandomJsonData): RandomJsonData {
+		let result = this.get(key);
+		if (result === undefined) {
+			result = value;
+			this.set(key, value);
+		}
+		return result;
+	}
+	getOrInsertComputed(key: string, factory: (key: string) => RandomJsonData): RandomJsonData {
+		let result = this.get(key);
+		if (result === undefined) {
+			result = factory(key);
+			this.set(key, result);
+		}
+		return result;
 	}
 }

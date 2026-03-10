@@ -2,13 +2,11 @@
 	"compilerOptions": {
 		"alwaysStrict": true,
 		"declaration": false,
-		"downlevelIteration": true,
-		"esModuleInterop": false,
 		"experimentalDecorators": false,
 		"forceConsistentCasingInFileNames": true,
 		"newLine": "LF",
-		"module": "none",
-		"moduleResolution": "node",
+		"module": "Preserve",
+		"moduleResolution": "bundler",
 		"pretty": true,
 		"resolveJsonModule": false,
 		"types": [

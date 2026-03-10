@@ -7,6 +7,7 @@ import {IChromeExtensionData, IWsMoveSourceData} from "../../../classes/bo/chrom
 import {IUpdateStatus} from "./update.js";
 import {getNetworkIps} from "../../../src/getNetConnectionAddress.js";
 import {MapValueType} from "./MapValueType.js";
+import {ShowSectionEvent} from "./showSectionEvent.js";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
 
@@ -54,3 +55,24 @@ export interface IZnmApi {
 export type BridgedWindow = Window & typeof globalThis & {
 	znmApi: IZnmApi
 };
+
+declare global {
+	interface Window {
+		// Define the event name as a property that accepts the listener
+		// We use the generic Event type here, but you can create a custom event class if needed
+
+		addEventListener(
+			type: 'showSection',
+			listener: (this: Window, ev: ShowSectionEvent) => void,
+			options?: boolean | AddEventListenerOptions
+		): void;
+
+		removeEventListener(
+			type: 'showSection',
+			listener: (this: Window, ev: ShowSectionEvent) => void,
+			options?: boolean | EventListenerOptions
+		): void;
+
+		dispatchEvent(ev: ShowSectionEvent): boolean;
+	}
+}

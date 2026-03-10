@@ -4,12 +4,13 @@ export class Color {
 	B:number;
 	constructor(hexColorCode:string) {
 		const getCodes =  /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})$/,
-			result = getCodes.exec(hexColorCode)
-		;
+			result = getCodes.exec(hexColorCode);
 		if (result) {
-			this.R= parseInt(result[1],16);
-			this.G= parseInt(result[2],16);
-			this.B= parseInt(result[3],16);
+			this.R = parseInt(result[1],16);
+			this.G = parseInt(result[2],16);
+			this.B = parseInt(result[3],16);
+		} else {
+			throw new Error(`Unknown hexColorCode ${hexColorCode}`);
 		}
 	}
 
