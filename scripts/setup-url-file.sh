@@ -37,6 +37,7 @@ StartupNotify=true
 MimeType=application/x-mswinurl;
 DESKTOP_EOF
 chmod +x "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME"
+xdg-mime install "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME"
 
 # 5. Update the MIME database
 echo "Updating MIME database..."
