@@ -33,7 +33,7 @@ Name[en]=Z-Toolbox
 Exec="${PROJECT_DIR}/scripts/start-ztoolbox.sh" %F
 Icon=${PROJECT_DIR}/icon.png
 Terminal=false
-Categories=Utility;
+Categories=Development;Utility;
 StartupNotify=true
 MimeType=application/x-mswinurl;
 DESKTOP_EOF
