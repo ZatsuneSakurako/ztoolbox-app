@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit on error
+set -e
+
 PROJECT_PATH=$(dirname "$(dirname "$(readlink -f "$0")")")
 
 echo "profile ztoolbox-app \"$PROJECT_PATH/node_modules/electron/dist/electron\" flags=(unconfined) {
@@ -8,3 +11,5 @@ echo "profile ztoolbox-app \"$PROJECT_PATH/node_modules/electron/dist/electron\"
 sudo apparmor_parser -r /etc/apparmor.d/ztoolbox-app && \
 sudo systemctl reload apparmor && \
 echo "Reload apparmor completed !"
+
+"$PROJECT_PATH/scripts/setup-url-file.sh"
