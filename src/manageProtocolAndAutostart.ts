@@ -11,12 +11,13 @@ import {
 	linuxAutoStartAppPath,
 	appName
 } from "../classes/constants.js";
-import {app} from "electron";
+import electron, {app} from "electron";
 import * as path from "node:path";
 import {showSection} from "../classes/windowManager.js";
 import {sendNotification} from "../classes/notify.js";
 import {settings} from "./init.js";
 import fs from "node:fs";
+import ini from "ini";
 
 
 
@@ -92,47 +93,74 @@ export function onOpen(commandLine:string[]) {
 	];
 	const args = commandLine
 		.filter(arg => {
-			return !arg.startsWith('--') || zToolboxAllowedParams.includes(arg)
+			return !arg.startsWith('--') || zToolboxAllowedParams.includes(arg) || path.isAbsolute(arg);
 		})
-		.slice(!app.isPackaged ? 2 : 1, commandLine.length)
-	;
+		.slice(!app.isPackaged ? 2 : 1, commandLine.length);
 	if (args.length === 0) {
 		showSection('default');
 		return;
 	}
 
-	const isAutoStarted = args.includes(autoStartArgument),
-		requests = args.filter(value => {
-			return value.indexOf(zToolbox_protocol + '://') !== -1
-		})
-	;
+	const isAutoStarted = args.includes(autoStartArgument);
 	let unsupported:boolean = false;
-
 	if (isAutoStarted) {
 		console.info('launch from autostart');
 	}
 
-	for (const value of requests) {
-		let url:URL|null = null;
-		try {
-			url = new URL(value)
-		} catch (e) {
-			console.error(e);
-			continue;
-		}
+	for (const value of args) {
+		if (path.isAbsolute(value)) {
+			switch (path.extname(value).replace(/^\./, '').toLowerCase()) {
+				case 'url':
+					try {
+						console.info('opening .url file');
+						const fileContent = fs.readFileSync(value, 'utf-8'),
+							iniData = ini.parse(fileContent);
+						if (!!iniData?.InternetShortcut && !iniData?.InternetShortcut?.url) {
+							iniData.InternetShortcut.url = iniData?.InternetShortcut?.URL;
+						}
 
-		switch (url.host) {
-			case 'settings':
-				showSection('settings');
-				break;
-			case 'start':
-				console.info('start link');
-				showSection('default');
-				break;
-			default:
-				console.error('unsupported link : ', value);
-				unsupported = true;
-				break;
+						if (typeof iniData.InternetShortcut.url !== 'string') {
+							// noinspection ExceptionCaughtLocallyJS
+							throw new Error('URL is not a string');
+						}
+
+						electron.shell.openExternal(iniData.InternetShortcut.url);
+					} catch (e) {
+						console.error(e);
+
+						sendNotification({
+							title: 'Erreur',
+							message: 'Le fichier URL n\'a pu être lue'
+						})
+							.catch(console.error);
+					}
+					break;
+				default:
+					console.error('unsupported link : ', value);
+					unsupported = true;
+			}
+		} else if (value.startsWith(zToolbox_protocol + '://')) {
+			let url:URL|null = null;
+			try {
+				url = new URL(value);
+			} catch (e) {
+				console.error(e);
+				continue;
+			}
+
+			switch (url.host) {
+				case 'settings':
+					showSection('settings');
+					break;
+				case 'start':
+					console.info('start link');
+					showSection('default');
+					break;
+				default:
+					console.error('unsupported link : ', value);
+					unsupported = true;
+					break;
+			}
 		}
 	}
 
@@ -142,8 +170,7 @@ export function onOpen(commandLine:string[]) {
 			title: 'Erreur',
 			message: 'Lien non supporté'
 		})
-			.catch(console.error)
-		;
+			.catch(console.error);
 	}
 }
 

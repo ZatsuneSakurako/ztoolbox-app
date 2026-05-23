@@ -43,5 +43,5 @@ fs.writeFileSync(path.resolve(libPath, './material-symbols/material-symbols.css'
 );
 
 if (process.platform === 'linux') {
-	console.error('Launch ./scripts/addAppArmor.sh !')
+	console.error('Launch ./scripts/setup.sh !')
 }
