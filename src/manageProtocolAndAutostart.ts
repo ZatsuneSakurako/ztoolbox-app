@@ -136,7 +136,7 @@ export function onOpen(commandLine:string[]) {
 					}
 					break;
 				default:
-					console.error('unsupported link : ', value);
+					console.error('unsupported file : ', value);
 					unsupported = true;
 			}
 		} else if (value.startsWith(zToolbox_protocol + '://')) {
