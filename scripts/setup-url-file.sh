@@ -5,8 +5,7 @@ set -e
 
 # 1. Determine the absolute path of the script's directory
 # This ensures the .desktop file points to the correct location even if moved
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_PATH=$(dirname "$(dirname "$(readlink -f "$0")")")
 
 # 2. Define paths
 LOCAL_APP_DIR="$HOME/.local/share/applications"
@@ -18,7 +17,7 @@ DESKTOP_FILE_NAME="Z-Toolbox.desktop"
 mkdir -p "$LOCAL_APP_DIR"
 
 # 4. Create the .desktop file
-# We use the PROJECT_DIR variable to set the Exec path dynamically
+# We use the PROJECT_PATH variable to set the Exec path dynamically
 if [ -f "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME" ]; then
 	echo "Re-creating desktop entry..."
 	rm "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME"
@@ -30,8 +29,8 @@ tee "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME" > /dev/null << DESKTOP_EOF
 Type=Application
 Name=Z-Toolbox
 Name[en]=Z-Toolbox
-Exec="${PROJECT_DIR}/scripts/start-ztoolbox.sh" %F
-Icon=${PROJECT_DIR}/icon.png
+Exec="${PROJECT_PATH}/scripts/start-ztoolbox.sh" %F
+Icon=${PROJECT_PATH}/icon.png
 Terminal=false
 Categories=Development;Utility;
 StartupNotify=true
