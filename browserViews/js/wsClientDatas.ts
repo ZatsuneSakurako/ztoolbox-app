@@ -83,8 +83,7 @@ function dragstartHandler(target:HTMLElement, e:DragEvent) {
 		throw new Error('NO_DATA_TRANSFERT');
 	}
 	const tabDataUrl = target.dataset.tabDataUrl,
-		id = target.id
-	;
+		id = target.id;
 
 	// Add the target element's id to the data transfer object
 	e.dataTransfer.setData(appDataType, JSON.stringify({
@@ -109,10 +108,12 @@ function extractUriData(e:DragEvent) : IWsMoveSourceData|IWsMoveSourceData[]|Fil
 
 	const transferredData = e.dataTransfer.getData(appDataType);
 	let data : IWsMoveSourceData|undefined = undefined;
-	try {
-		data = JSON.parse(transferredData);
-	} catch (e) {
-		console.error(e);
+	if (transferredData.length) {
+		try {
+			data = JSON.parse(transferredData);
+		} catch (e) {
+			console.error(e);
+		}
 	}
 
 	if (!data) {
@@ -124,15 +125,13 @@ function extractUriData(e:DragEvent) : IWsMoveSourceData|IWsMoveSourceData[]|Fil
 				if (rawUrl === undefined) return;
 				return JSON.parse(rawUrl);
 			});
-
 		}
 
 		if (!uriList) {
 			raw = e.dataTransfer.getData("text/uri-list");
 			if (raw) {
-				uriList = [...raw.split(/\w+:\/\//)]
-					.filter(item => !!item)
-				;
+				uriList = [...raw.split(/\r?\n/)]
+					.filter(item => !!item && /https?:\/\//i.test(item));
 			}
 		}
 
@@ -180,6 +179,8 @@ function dropHandler(target:HTMLElement, e:DragEvent) {
 
 	const data = extractUriData(e);
 	if (Array.isArray(data)) {
+		if (!data.length) throw new Error('DATA_TRANSFERT_EMPTY_ARRAY');
+
 		console.debug('Opening ', data, 'into', target.id);
 		for (let url of data) {
 			if (!url) continue;
