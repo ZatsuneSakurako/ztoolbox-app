@@ -34,7 +34,7 @@ Icon=${PROJECT_PATH}/icon.png
 Terminal=false
 Categories=Development;Utility;
 StartupNotify=true
-MimeType=application/x-mswinurl;
+MimeType=application/x-mswinurl;text/markdown;
 DESKTOP_EOF
 chmod +x "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME"
 xdg-mime install "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME"
@@ -49,7 +49,7 @@ update-desktop-database "$LOCAL_APP_DIR"
 
 echo ""
 echo "✅ Setup complete!"
-echo "   - Registered application (with mime application/x-mswinurl) : Z-Toolbox"
+echo "   - Registered application (with mime application/x-mswinurl and text/markdown;) : Z-Toolbox"
 echo "   - To test, right-click a .url file -> Open With -> Z-Toolbox"
 echo ""
 echo "Note: If you move this project folder, you must re-run this script (script only tested with XFCE)."

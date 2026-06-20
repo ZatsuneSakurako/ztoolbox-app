@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{{ title }}</title>
+	<link rel="stylesheet" href="css/markdown.css">
+</head>
+<body>
+<div class="container">
+	{#- This renders the converted Markdown HTML -#}
+	{{- content | safe -}}
+</div>
+</body>
+</html>

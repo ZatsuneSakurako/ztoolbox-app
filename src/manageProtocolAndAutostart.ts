@@ -18,6 +18,7 @@ import {sendNotification} from "../classes/notify.js";
 import {settings} from "./init.js";
 import fs from "node:fs";
 import ini from "ini";
+import {createMarkdownWindow} from "./markdown.js";
 
 
 
@@ -134,6 +135,11 @@ export function onOpen(commandLine:string[]) {
 						})
 							.catch(console.error);
 					}
+					break;
+				case 'md':
+					console.info('opening .md file');
+					createMarkdownWindow(value)
+						.catch(console.error);
 					break;
 				default:
 					console.error('unsupported file : ', value);

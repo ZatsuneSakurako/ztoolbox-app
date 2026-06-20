@@ -1,0 +1,175 @@
+/* Monokai Theme for Markdown Previews */
+/* Based on the classic Monokai colors used in VS Code and PhpStorm */
+
+:root {
+	--bg-color: #272822;
+	--text-color: #f8f8f2;
+	--keyword-color: #f92672;       /* Pink/Red */
+	--function-color: #a6e22e;      /* Green */
+	--class-color: #66d9ef;         /* Cyan */
+	--string-color: #e6db74;        /* Yellow */
+	--comment-color: #75715e;       /* Grey/Brown */
+	--number-color: #ae81ff;        /* Purple */
+	--variable-color: #fd971f;      /* Orange */
+	--operator-color: #f8f8f2;
+	--link-color: #66d9ef;
+	--border-color: #3e3d32;
+	--quote-bg: #3e3d32;
+	--code-inline-bg: #3e3d32;
+	--table-header-bg: #3e3d32;
+}
+
+body {
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	line-height: 1.6;
+	padding: 20px;
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+	color: var(--text-color);
+	margin-top: 1.5em;
+	margin-bottom: 0.5em;
+	border-bottom: 1px solid var(--border-color);
+	padding-bottom: 0.3em;
+}
+
+h1 { font-size: 2.2em; }
+h2 { font-size: 1.8em; }
+h3 { font-size: 1.5em; }
+h4 { font-size: 1.2em; }
+
+/* Links */
+a {
+	color: var(--link-color);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+/* Paragraphs & Lists */
+p, ul, ol, dl {
+	margin-bottom: 1rem;
+}
+
+ul, ol {
+	padding-left: 2rem;
+}
+
+li {
+	margin-bottom: 0.25rem;
+}
+
+/* Blockquotes */
+blockquote {
+	margin: 0 0 1rem 0;
+	padding: 0.5rem 1rem;
+	border-left: 4px solid var(--variable-color);
+	background-color: var(--quote-bg);
+	color: var(--comment-color);
+	font-style: italic;
+}
+
+/* Tables */
+table {
+	border-collapse: collapse;
+	width: 100%;
+	margin-bottom: 1rem;
+	display: block;
+	overflow-x: auto; /* Scroll on small screens */
+}
+
+th, td {
+	border: 1px solid var(--border-color);
+	padding: 8px 12px;
+	text-align: left;
+}
+
+thead tr {
+	background-color: var(--table-header-bg);
+}
+
+tr:nth-child(even) {
+	background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Inline Code */
+code:not([class]) {
+	font-family: "SF Mono", Monaco, "Cascadia Code", "Consolas", "Courier New", monospace;
+	background-color: var(--code-inline-bg);
+	color: var(--string-color);
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 0.9em;
+}
+
+/* Code Blocks */
+pre {
+	background-color: var(--code-inline-bg);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	padding: 1rem;
+	overflow-x: auto;
+	font-family: "SF Mono", Monaco, "Cascadia Code", "Consolas", "Courier New", monospace;
+	font-size: 0.9rem;
+	line-height: 1.4;
+}
+
+pre code {
+	background-color: transparent;
+	padding: 0;
+	border: none;
+	color: var(--text-color);
+}
+
+/* Syntax Highlighting Classes (Common for highlight.js / prism.js) */
+/* If your renderer adds these classes automatically */
+.hljs-keyword, .hljs-attribute, .selector-tag, .keyword, .doctag {
+	color: var(--keyword-color);
+}
+
+.hljs-string, .hljs-title, .hljs-name, .hljs-type, .attr-string, .section {
+	color: var(--string-color);
+}
+
+.hljs-function .hljs-title, .hljs-title.class_, .class_ .hljs-title, .type.name {
+	color: var(--function-color);
+}
+
+.hljs-built_in, .hljs-class .hljs-title {
+	color: var(--class-color);
+}
+
+.hljs-comment, .hljs-quote, .hljs-meta {
+	color: var(--comment-color);
+}
+
+.hljs-number, .hljs-literal, .hljs-symbol, .hljs-bullet {
+	color: var(--number-color);
+}
+
+.hljs-variable, .hljs-template-variable, .hljs-link, .hljs-selector-id, .hljs-selector-class {
+	color: var(--variable-color);
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+
+/* Horizontal Rule */
+hr {
+	border: 0;
+	height: 1px;
+	background: var(--border-color);
+	margin: 2rem 0;
+}
