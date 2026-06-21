@@ -8,7 +8,7 @@
 <body>
 <div class="container">
 	{#- This renders the converted Markdown HTML -#}
-	{{- content | safe -}}
+	{{- queryParams.htmlContent | safe -}}
 </div>
 </body>
 </html>

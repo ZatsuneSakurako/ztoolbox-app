@@ -1,15 +1,13 @@
-import { app, BrowserWindow } from 'electron';
+import {BrowserWindow} from 'electron';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { marked } from 'marked';
-import {nunjucksEnv} from "./nunjucksEnv.js";
 import sanitizeHtml from 'sanitize-html';
-import {browserViewPath} from "../classes/constants.js";
+import {SCHEME} from "./internalProtocol.js";
 
 export const browserWindows = new Set<BrowserWindow>();
 
 export async function createMarkdownWindow(filePath: string) {
-	const baseUrl = new URL('file://' + browserViewPath);
 	const browserWindow = new BrowserWindow({
 		width: 1000,
 		height: 800,
@@ -24,28 +22,19 @@ export async function createMarkdownWindow(filePath: string) {
 	browserWindow.on('closed', () => {
 		browserWindows.delete(browserWindow);
 	});
+	browserWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' })); // Security
 
 
 	let _error:unknown|null = null;
 	try {
-		// 1. Read the file synchronously (or async with await)
 		const absolutePath = path.resolve(filePath),
 			markdownContent = fs.readFileSync(absolutePath, 'utf-8');
 
-		// 2. Parse Markdown to HTML using Marked
-		// You can pass options if needed
-		const htmlContent = sanitizeHtml(await marked(markdownContent));
-		console.dir(htmlContent)
+		const _url = new URL(`${SCHEME}://bundle/markdown`);
+		_url.searchParams.set('title', `${path.basename(filePath)} (${path.dirname(filePath)})`);
+		_url.searchParams.set('htmlContent', sanitizeHtml(await marked(markdownContent)));
 
-		// const env = nunjucks.configure([], { autoescape: false });
-		const finalHtml = nunjucksEnv.render('markdown.njk', {
-			title: `${path.basename(filePath)} (${path.dirname(filePath)})`,
-			content: htmlContent,
-		});
-
-		await browserWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(finalHtml)}`, {
-			baseURLForDataURL: baseUrl.toString(),
-		});
+		await browserWindow.loadURL(_url.toString());
 	} catch (e) {
 		console.error('Failed to render:', e);
 		_error = e;
@@ -53,14 +42,12 @@ export async function createMarkdownWindow(filePath: string) {
 
 	if (_error) {
 		try {
-			const errorHtml = nunjucksEnv.renderString('markdown', {
-				title: `Error: ${path.basename(filePath)} (${path.dirname(filePath)})`,
-				content: `<p>Could not render file&nbsp;: ${filePath}</p>
-<pre style="background:#333; padding:10px;">${(_error as Error).message}</pre>`,
-			});
-			await browserWindow?.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(errorHtml), {
-				baseURLForDataURL: baseUrl.toString(),
-			});
+			const _url = new URL(`${SCHEME}://bundle/markdown`);
+			_url.searchParams.set('title', `Error: ${path.basename(filePath)} (${path.dirname(filePath)})`);
+			_url.searchParams.set('htmlContent', `<p>Could not render file&nbsp;: ${filePath}</p>
+<pre style="background:#333; padding:10px;">${(_error as Error).message}</pre>`);
+
+			await browserWindow.loadURL(_url.toString());
 		} catch (e) {
 			console.error(e);
 		}
