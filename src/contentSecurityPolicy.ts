@@ -22,12 +22,16 @@ app.whenReady()
 				return;
 			}
 
+			let contentSecurityPolicy = `default-src 'none'; script-src 'self' https://unpkg.com 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; media-src 'self'; frame-src http://localhost:42080; font-src 'self'; connect-src https://api.duckduckgo.com https://unpkg.com`;
+
+			if (url?.pathname.endsWith('/monaco-editor.html')) {
+				contentSecurityPolicy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; media-src 'self'; font-src 'self' data:; worker-src 'self' blob:;";
+			}
+
 			callback({
 				responseHeaders: {
 					...details.responseHeaders,
-					'Content-Security-Policy': [
-						`default-src 'none'; script-src 'self' https://unpkg.com 'nonce-${nonce}'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; media-src 'self'; frame-src http://localhost:42080; font-src 'self'; connect-src https://api.duckduckgo.com https://unpkg.com`
-					]
+					'Content-Security-Policy': [ contentSecurityPolicy ],
 				}
 			});
 		});

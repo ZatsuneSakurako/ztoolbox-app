@@ -8,6 +8,7 @@ import {websitesData} from "../classes/Settings.js";
 import {settings} from "./init.js";
 import {newTray} from "./tray.js";
 import {refreshWebsitesData} from "./websitesData/refreshWebsitesData.js";
+import {createZEditorWindow} from "../classes/zEditor.js";
 
 
 function triggerBrowserWindowPreferenceUpdate(preferenceId: string, newValue: any) {
@@ -41,6 +42,14 @@ function onReady() {
 			type: 'normal',
 			click() {
 				showSection('settings');
+			}
+		},
+		{
+			label: 'Ouvrir Z-Editor',
+			type: 'normal',
+			click() {
+				createZEditorWindow()
+					.catch(console.error);
 			}
 		},
 

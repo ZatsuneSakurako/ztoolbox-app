@@ -14,7 +14,8 @@
 		"types": [
 			"node",
 			"del",
-			"gulp-pug"
+			"gulp-pug",
+			"requirejs"
 		],
 		"noImplicitAny": true,
 		"noImplicitReturns": true,

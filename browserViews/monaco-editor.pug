@@ -1,0 +1,11 @@
+html(lang='en')
+	head
+		meta(charset="UTF-8")
+		title Z-Editor
+		link(rel="stylesheet" href="css/zeditor.css")
+		script(src="./lib/requirejs/requirejs.js")
+		script(src="./lib/vscode/vs/editor/editor.main.js")
+	body
+		div#editor-container(is="z-editor")
+		div.status-bar(is="z-editor-status")
+		script(src="./js/zeditor.js" type="module")

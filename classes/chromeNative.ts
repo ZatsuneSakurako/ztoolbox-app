@@ -21,6 +21,7 @@ import {IUserscriptJson} from "./bo/userscript.js";
 import {Userscript} from "../src/userScript/Userscript.js";
 import {appExtensionTemplatesPath} from "./constants.js";
 import {nunjucksEnv} from "../src/nunjucksEnv.js";
+import {sanitizePath} from "../src/sanitizePath.js";
 
 
 export type socket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
@@ -284,15 +285,14 @@ io.on("connection", (socket: socket) => {
 	});
 
 	socket.on('nunjucksRender', async function (templateName, context, async, cb) {
-		const absolutePath = path.normalize(`${appExtensionTemplatesPath}/${templateName}${templateName.endsWith('.njk') ? '' : '.njk'}`);
-		if (!fs.existsSync(absolutePath)) {
-			cb({error: `FILE_NOT_FOUND ${JSON.stringify(absolutePath)}`});
+		try {
+			sanitizePath(path.normalize(`/${templateName.replace(/\.njk$/i, '')}.njk`), appExtensionTemplatesPath);
+		} catch (e) {
+			console.error(e);
+			cb({error: e instanceof Error ? e.message : JSON.stringify(e) });
 			return;
 		}
-		if (appExtensionTemplatesPath.startsWith(absolutePath)) {
-			cb({error: `FILE_NOT_WELL_PLACED ${JSON.stringify(absolutePath)}`});
-			return;
-		}
+
 		try {
 			if (!async) {
 				let result = nunjucksEnv.render(templateName + '.njk', context);

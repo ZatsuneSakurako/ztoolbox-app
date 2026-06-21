@@ -12,7 +12,8 @@
     "build": "yarn pre-build && yarn gulp",
     "pack": "yarn pre-build && yarn gulp build && DO_PACK=1 yarn node scripts/build.js",
     "dist": "yarn pre-build && yarn gulp build && yarn node scripts/build.js",
-    "postinstall": "tsc --project tsconfig-scripts.json && node scripts/postinstall.js"
+    "postinstall": "tsc --project tsconfig-scripts.json && node scripts/postinstall.js",
+    "ts-watch": "tsc --watch"
   },
   "repository": "git@github.com:ZatsuneSakurako/ztoolbox-app.git",
   "keywords": [
@@ -35,6 +36,7 @@
     "@types/node": "^24.12.4",
     "@types/nunjucks": "^3.2.6",
     "@types/pug": "^2.0.10",
+    "@types/requirejs": "^2.1.37",
     "@types/sanitize-html": "^2",
     "@types/sass": "^1.45.0",
     "@types/shelljs": "^0.10.0",
@@ -63,8 +65,10 @@
     "lodash.debounce": "^4.0.8",
     "marked": "^18.0.5",
     "material-symbols": "^0.44.8",
+    "monaco-editor": "^0.55.1",
     "nunjucks": "^3.2.4",
     "protocol-registry": "^2.0.0",
+    "requirejs": "^2.3.8",
     "sanitize-html": "^2.17.5",
     "shelljs": "^0.10.0",
     "simple-git": "^3.36.0",

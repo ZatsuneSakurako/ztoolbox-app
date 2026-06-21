@@ -899,6 +899,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/requirejs@npm:^2.1.37":
+  version: 2.1.37
+  resolution: "@types/requirejs@npm:2.1.37"
+  checksum: 10/78a90ebf7bda884b190509bfb9ce2244a46413b2a1f293b38596a078e9d1de970a9b4dddd90bf2bd6de749187dfbac1a94aa6830ff20764108feb05e625e69ac
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -933,6 +940,13 @@ __metadata:
     "@types/node": "npm:*"
     fast-glob: "npm:^3.3.2"
   checksum: 10/d7c24375eaec7dd3bca71e15dc7be0d8912a3bb37b4ed5df73e54216aedd675b326b66c8baa70a7097731ccd12b45395e4d633626d0c3105e676794524bc09d1
+  languageName: node
+  linkType: hard
+
+"@types/trusted-types@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@types/trusted-types@npm:2.0.7"
+  checksum: 10/8e4202766a65877efcf5d5a41b7dd458480b36195e580a3b1085ad21e948bc417d55d6f8af1fd2a7ad008015d4117d5fdfe432731157da3c68678487174e4ba3
   languageName: node
   linkType: hard
 
@@ -2399,6 +2413,18 @@ __metadata:
   dependencies:
     domelementtype: "npm:^2.3.0"
   checksum: 10/809b805a50a9c6884a29f38aec0a4e1b4537f40e1c861950ed47d10b049febe6b79ab72adaeeebb3cc8fc1cd33f34e97048a72a9265103426d93efafa78d3e96
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:3.2.7":
+  version: 3.2.7
+  resolution: "dompurify@npm:3.2.7"
+  dependencies:
+    "@types/trusted-types": "npm:^2.0.7"
+  dependenciesMeta:
+    "@types/trusted-types":
+      optional: true
+  checksum: 10/51b7866fb834ee62d6c415f41ece5ce11db7b463f60a822932a1f832573a40b98be7715550298690e7647988fbe086db1098bda9b10548b3166fc975eb9bd849
   languageName: node
   linkType: hard
 
@@ -4483,6 +4509,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"marked@npm:14.0.0":
+  version: 14.0.0
+  resolution: "marked@npm:14.0.0"
+  bin:
+    marked: bin/marked.js
+  checksum: 10/5f69e58e177bde75fb6145127c939c096d05494c5dff92d73af8a550097d6631c82e919f8a375e3743379a2623418151086b925a902a2be123590b887716f2bb
+  languageName: node
+  linkType: hard
+
 "marked@npm:^18.0.5":
   version: 18.0.5
   resolution: "marked@npm:18.0.5"
@@ -4786,6 +4821,16 @@ __metadata:
   bin:
     mkdirp: bin/cmd.js
   checksum: 10/d71b8dcd4b5af2fe13ecf3bd24070263489404fe216488c5ba7e38ece1f54daf219e72a833a3a2dc404331e870e9f44963a33399589490956bff003a3404d3b2
+  languageName: node
+  linkType: hard
+
+"monaco-editor@npm:^0.55.1":
+  version: 0.55.1
+  resolution: "monaco-editor@npm:0.55.1"
+  dependencies:
+    dompurify: "npm:3.2.7"
+    marked: "npm:14.0.0"
+  checksum: 10/73836b612a923342001b8cbb459aad0de486c94672fb7cf9d28bdafed9f3b7523d5aba510d9f8e7d24476a5aacf0d3a5c0cdc520ed4764f6f89f8cf5ba8d9329
   languageName: node
   linkType: hard
 
@@ -5793,6 +5838,16 @@ __metadata:
   version: 2.0.2
   resolution: "require-from-string@npm:2.0.2"
   checksum: 10/839a3a890102a658f4cb3e7b2aa13a1f80a3a976b512020c3d1efc418491c48a886b6e481ea56afc6c4cb5eef678f23b2a4e70575e7534eccadf5e30ed2e56eb
+  languageName: node
+  linkType: hard
+
+"requirejs@npm:^2.3.8":
+  version: 2.3.8
+  resolution: "requirejs@npm:2.3.8"
+  bin:
+    r.js: bin/r.js
+    r_js: bin/r.js
+  checksum: 10/7ac26361aecd819abab6a88d0a09beb2e1bb402050bce2ae1c6d5826bfa932c1cc7ab523a8e9bb2cc60c961da4df4ffdaba7e46bae10b12147368f7957a8f280
   languageName: node
   linkType: hard
 
@@ -7355,6 +7410,7 @@ __metadata:
     "@types/node": "npm:^24.12.4"
     "@types/nunjucks": "npm:^3.2.6"
     "@types/pug": "npm:^2.0.10"
+    "@types/requirejs": "npm:^2.1.37"
     "@types/sanitize-html": "npm:^2"
     "@types/sass": "npm:^1.45.0"
     "@types/shelljs": "npm:^0.10.0"
@@ -7373,9 +7429,11 @@ __metadata:
     lodash.debounce: "npm:^4.0.8"
     marked: "npm:^18.0.5"
     material-symbols: "npm:^0.44.8"
+    monaco-editor: "npm:^0.55.1"
     nunjucks: "npm:^3.2.4"
     protocol-registry: "npm:^2.0.0"
     pug: "npm:^3.0.4"
+    requirejs: "npm:^2.3.8"
     sanitize-html: "npm:^2.17.5"
     shelljs: "npm:^0.10.0"
     simple-git: "npm:^3.36.0"
