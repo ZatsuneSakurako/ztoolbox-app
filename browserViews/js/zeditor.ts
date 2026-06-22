@@ -149,11 +149,17 @@ class ZEditor extends HTMLDivElement {
 
 	#onKey(e:KeyboardEvent) {
 		if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-			this.#currentFilePath = '';
-			document.title = `Z-Editor`;
-			this.editor.setValue(defaultValues.value);
-			this.status = '';
-			monaco.editor.setModelLanguage(this.model, defaultValues.language);
+			this.#pauseAutoSave = true;
+			try {
+				this.#currentFilePath = '';
+				document.title = `Z-Editor`;
+				this.editor.setValue(defaultValues.value);
+				this.status = '';
+				monaco.editor.setModelLanguage(this.model, defaultValues.language);
+			} catch (e) {
+				console.error(e);
+			}
+			this.#pauseAutoSave = false;
 		}
 		if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
 			e.preventDefault();
