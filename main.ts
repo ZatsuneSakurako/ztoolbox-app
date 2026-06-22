@@ -7,7 +7,6 @@ import {versionState} from "./classes/versionState.js";
 import {fastifyApp, getWsClientDatas, moveWsClientUrl} from "./classes/chromeNative.js";
 import {createWindow, getMainWindow} from "./classes/windowManager.js";
 import {SettingConfig} from "./classes/bo/settings.js";
-import './src/clipboard.js';
 import './src/contentSecurityPolicy.js';
 import './src/contextMenu.js';
 import './src/hourlyAlarm.js';

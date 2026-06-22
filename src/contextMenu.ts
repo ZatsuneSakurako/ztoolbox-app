@@ -1,7 +1,6 @@
 import {app, BrowserWindow, Menu} from "electron";
 import {showSection, showWindow, toggleWindow} from "../classes/windowManager.js";
 import {appIcon} from "../classes/constants.js";
-import {clipboard} from "./clipboard.js";
 import {onSettingUpdate} from "../classes/chromeNative.js";
 import {onOpen, updateAutoStart} from "./manageProtocolAndAutostart.js";
 import {websitesData} from "../classes/Settings.js";
@@ -9,15 +8,6 @@ import {settings} from "./init.js";
 import {newTray} from "./tray.js";
 import {refreshWebsitesData} from "./websitesData/refreshWebsitesData.js";
 import {createZEditorWindow} from "../classes/zEditor.js";
-
-
-function triggerBrowserWindowPreferenceUpdate(preferenceId: string, newValue: any) {
-	for (let browserWindow of BrowserWindow.getAllWindows()) {
-		browserWindow.webContents.send('updatePreference', preferenceId, newValue);
-	}
-}
-
-
 
 let contextMenu:Menu|null = null;
 function onReady() {
@@ -55,19 +45,6 @@ function onReady() {
 
 		{type: 'separator'},
 
-		{
-			id: 'clipboardWatch',
-			label: 'Observer presse-papier',
-			type: 'checkbox',
-			checked: settings.getBoolean('clipboardWatch'),
-			click() {
-				settings.set('clipboardWatch', !settings.get('clipboardWatch'));
-				triggerBrowserWindowPreferenceUpdate('clipboardWatch', settings.get('clipboardWatch'));
-			}
-		},
-
-		{type: 'separator'},
-
 		{label: 'Exit', type: 'normal', role: 'quit'}
 	]);
 
@@ -88,8 +65,6 @@ function onReady() {
 	});
 	// tray.addListener('double-click', toggleWindow);
 
-	clipboard.toggle(settings.getBoolean('clipboardWatch') ?? false);
-
 	if (settings.has('quality')) {
 		settings.delete('quality');
 	}
@@ -107,13 +82,6 @@ function onReady() {
 				updateAutoStart()
 					.catch(console.error)
 				;
-				break;
-			case 'clipboardWatch':
-				let menu = contextMenu?.getMenuItemById('clipboardWatch') ?? null;
-				if (menu) {
-					menu.checked = settings.getBoolean('clipboardWatch') ?? false;
-				}
-				clipboard.toggle(settings.getBoolean('clipboardWatch') ?? false);
 				break;
 			case 'theme':
 			case 'background_color':
