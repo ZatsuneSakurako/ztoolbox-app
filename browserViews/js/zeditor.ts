@@ -36,6 +36,10 @@ monaco.editor.defineTheme('zeditor-monokai', {
 	}
 });
 
+const defaultValues = {
+	value: '# Welcome to Z-Editor\n=> Open a file to start editing...',
+	language: 'markdown',
+}
 
 class ZEditor extends HTMLDivElement {
 	readonly #editor: monacoNamespace.editor.IStandaloneCodeEditor;
@@ -47,8 +51,8 @@ class ZEditor extends HTMLDivElement {
 		super();
 
 		this.#editor = monaco.editor.create(this, {
-			value: '# Welcome to Z-Editor\n=> Open a file to start editing...',
-			language: 'markdown',
+			value: defaultValues.value,
+			language: defaultValues.language,
 			theme: 'zeditor-monokai', // Our custom theme below
 			automaticLayout: true,
 			fontSize: 16,
@@ -147,9 +151,9 @@ class ZEditor extends HTMLDivElement {
 		if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
 			this.#currentFilePath = '';
 			document.title = `Z-Editor`;
-			this.editor.setValue('');
+			this.editor.setValue(defaultValues.value);
 			this.status = '';
-			monaco.editor.setModelLanguage(this.model, 'plaintext');
+			monaco.editor.setModelLanguage(this.model, defaultValues.language);
 		}
 		if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
 			e.preventDefault();
