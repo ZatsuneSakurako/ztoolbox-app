@@ -1,7 +1,9 @@
 import {ipcMain, BrowserWindow, dialog} from "electron";
 import path from "node:path";
 import * as fs from 'node:fs';
+import mime from 'mime-types';
 import {browserViewDirPath} from "./constants.js";
+import {ZEditorAPI} from "../browserViews/js/bo/bridgedWindowMonacoEditor.js";
 
 const __dirname = import.meta.dirname;
 
@@ -81,6 +83,67 @@ ipcMain.handle('file:read-path', async (event, filePath:string) => {
 		return filePath;
 	} catch (error) {
 		console.error('Read failed:', error);
+		return null;
+	}
+});
+
+/**
+ * Generic MIME type to Monaco Language ID converter
+ */
+function getMonacoLanguage(filePath: string): Awaited<ReturnType<ZEditorAPI['resolveMonacoLanguage']>> {
+	// Get MIME type from the path
+	const mimeType = mime.lookup(filePath),
+		ext = path.extname(filePath).replace(/^\./, '').toLowerCase();
+
+	/**
+	 * Generic extraction :
+	 * - remove the prefix
+	 * - some vendor "x-" (e.g., 'text/x-python' -> 'python', 'text/x-sh' -> 'sh')
+	 * - use file extension as a fallback
+	 */
+	let langId = !mimeType ? ext :
+		mimeType.split('/').pop()?.toLowerCase().replace(/^x-/, '');
+	if (!langId || langId === 'plain') {
+		langId = 'plaintext';
+	}
+
+	console.dir(langId)
+
+	if (langId === 'plaintext') {
+		const PLAIN_OVERRIDES : Set<string> = new Set([
+			'conf',
+		]);
+		if (PLAIN_OVERRIDES.has(ext)) {
+			langId = ext;
+		}
+	}
+
+	const OVERRIDE_MAP: Record<string, string> = {
+		'json5': 'json', // JSON variants all map to monaco 'json'
+
+		'sh': 'shell',        // Note: Monaco uses 'shell', 'bash', or 'shellscript' depending on config
+		'bash': 'shell',
+		'shellscript': 'shell',
+
+		'conf': 'ini',
+		'cfg': 'ini',
+
+		'njk': 'twig', // Use Twig for njk
+		'stylus': 'styl', // Monaco may not support stylus out-of-box
+		'toml': 'ini', // Monaco doesn't have 'toml', 'ini' is closest
+		'cpp': 'c++', // Monaco uses 'cpp'
+	};
+
+	return {
+		mimeType,
+		langId: OVERRIDE_MAP[langId] ?? langId,
+	};
+}
+ipcMain.handle('file:resolve-monaco-language', async (event, filePath:string) => {
+	try {
+		return getMonacoLanguage(filePath);
+	} catch (error) {
+		console.error(error);
 		return null;
 	}
 });

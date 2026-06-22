@@ -98,7 +98,7 @@ class ZEditor extends HTMLDivElement {
 		});
 	}
 
-	#detectLanguageForExtension(path:string) {
+	async #detectLanguageForExtension(path:string) {
 		if (!path) return;
 		const ext = path.split('.').pop()?.toLowerCase();
 		if (ext === undefined) console.warn(`Unexpected extension with ${JSON.stringify(path)}`);
@@ -106,30 +106,16 @@ class ZEditor extends HTMLDivElement {
 		const model = this.#editor.getModel();
 		if (!model) throw new Error('EDITOR_NO_MODEL');
 
-		switch (ext) {
-			case 'html':
-				monaco.editor.setModelLanguage(model, 'html');
-				break;
-			case 'json':
-			case 'json5':
-				monaco.editor.setModelLanguage(model, 'json');
-				break;
-			case 'md':
-				monaco.editor.setModelLanguage(model, 'markdown');
-				break;
-			case 'ts':
-			case 'cts':
-			case 'mts':
-				monaco.editor.setModelLanguage(model, 'typescript');
-				break;
-			case 'js':
-			case 'cjs':
-			case 'mjs':
-				monaco.editor.setModelLanguage(model, 'javascript');
-				break;
-			default:
-				monaco.editor.setModelLanguage(model, 'plaintext');
+		let langType = 'plaintext';
+		try {
+			const _langType = (await win.ZEditor.resolveMonacoLanguage(path));
+			console.log('File type resolving:', _langType);
+			langType = _langType?.langId ?? langType;
+		} catch (e) {
+			console.error(e);
 		}
+		console.debug('Setting language to :', langType);
+		monaco.editor.setModelLanguage(model, langType);
 	}
 
 	#onDidChangeModelContent() {
@@ -176,7 +162,8 @@ class ZEditor extends HTMLDivElement {
 	#onUpdateFile(path: string, content: string) {
 		this.#editor.setValue(content);
 		this.#currentFilePath = path;
-		this.#detectLanguageForExtension(path);
+		this.#detectLanguageForExtension(path)
+			.catch(console.error);
 		this.status = 'File opened';
 	}
 
@@ -187,7 +174,8 @@ class ZEditor extends HTMLDivElement {
 		const finalPath = await win.ZEditor.readPath(file);
 		if (finalPath) {
 			this.#currentFilePath = finalPath;
-			this.#detectLanguageForExtension(finalPath);
+			this.#detectLanguageForExtension(finalPath)
+				.catch(console.error);
 			this.status = `Editing: ${finalPath}`;
 		}
 	}
