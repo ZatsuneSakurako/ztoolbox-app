@@ -1,5 +1,5 @@
 import {contextBridge, ipcRenderer, webUtils} from "electron";
-import {ZEditorAPI, onUpdateFileCallback} from "../browserViews/js/bo/bridgedWindowMonacoEditor.js";
+import {ZEditorAPI} from "../browserViews/js/bo/bridgedWindowMonacoEditor.js";
 
 const zEditorApi: ZEditorAPI = {
 	// Open a dialog to select a file, then read and send content back
@@ -23,10 +23,6 @@ const zEditorApi: ZEditorAPI = {
 
 	resolveMonacoLanguage(filePath:string) {
 		return ipcRenderer.invoke('file:resolve-monaco-language', filePath);
-	},
-
-	onUpdateFile(callback: onUpdateFileCallback) {
-		return ipcRenderer.on('editor:update-file', (event, path:string, content:string) => callback(path, content));
 	},
 };
 contextBridge.exposeInMainWorld('ZEditor', zEditorApi);

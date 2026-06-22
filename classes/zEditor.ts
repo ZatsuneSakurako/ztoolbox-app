@@ -59,10 +59,11 @@ ipcMain.handle('dialog:open', async () => {
 
 	if (result.canceled || result.filePaths.length === 0) return null;
 
-	const filePath = result.filePaths[0],
-		content = fs.readFileSync(filePath, 'utf-8');
-	mainWindow!.webContents.send('editor:update-file', filePath, content);
-	return filePath;
+	const filePath = result.filePaths[0];
+	return <Awaited<ReturnType<ZEditorAPI['openFileDialog']>>>{
+		filePath,
+		content: fs.readFileSync(filePath, 'utf-8'),
+	};
 });
 
 ipcMain.handle('file:save', async (event, filePath:string, content:string) => {
@@ -106,8 +107,6 @@ function getMonacoLanguage(filePath: string): Awaited<ReturnType<ZEditorAPI['res
 	if (!langId || langId === 'plain') {
 		langId = 'plaintext';
 	}
-
-	console.dir(langId)
 
 	if (langId === 'plaintext') {
 		const PLAIN_OVERRIDES : Set<string> = new Set([

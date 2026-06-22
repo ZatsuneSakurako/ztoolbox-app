@@ -42,6 +42,7 @@ class ZEditor extends HTMLDivElement {
 
 	#currentFilePath:string|null = null;
 	#autoSaveTimeout: ReturnType<typeof setTimeout>|undefined = undefined;
+	#pauseAutoSave = false;
 	constructor() {
 		super();
 
@@ -78,9 +79,6 @@ class ZEditor extends HTMLDivElement {
 		// Keyboard Shortcuts
 		document.addEventListener('keydown', this.#onKey.bind(this));
 
-		// Listen for incoming data from the main Process
-		win.ZEditor.onUpdateFile(this.#onUpdateFile.bind(this));
-
 		// Drag-and-Drop Handling
 		document.body.addEventListener('drop', (e) => {
 			e.preventDefault();
@@ -98,13 +96,18 @@ class ZEditor extends HTMLDivElement {
 		});
 	}
 
+	get model() {
+		const model = this.#editor.getModel();
+		if (!model) throw new Error('EDITOR_NO_MODEL');
+		return model;
+	}
+
 	async #detectLanguageForExtension(path:string) {
 		if (!path) return;
 		const ext = path.split('.').pop()?.toLowerCase();
 		if (ext === undefined) console.warn(`Unexpected extension with ${JSON.stringify(path)}`);
 
-		const model = this.#editor.getModel();
-		if (!model) throw new Error('EDITOR_NO_MODEL');
+		const model = this.model;
 
 		let langType = 'plaintext';
 		try {
@@ -125,24 +128,39 @@ class ZEditor extends HTMLDivElement {
 
 		clearTimeout(this.#autoSaveTimeout);
 		this.#autoSaveTimeout = setTimeout(async () => {
+			if (!this.#pauseAutoSave) {
+				console.warn('Auto-save paused!');
+				return;
+			}
 			if (!this.currentFilePath) {
 				console.warn('No filed selected !');
 				return;
 			}
 
-			const content = this.#editor.getValue();
-			const success = await win.ZEditor.autoSaveTrigger(this.currentFilePath, content);
+			const content = this.#editor.getValue(),
+				success = await win.ZEditor.autoSaveTrigger(this.currentFilePath, content);
 			this.status = success ? `Saved at ${new Date().toLocaleTimeString()}` : 'Save failed!';
 		}, 2000);
 	}
 
 	#onKey(e:KeyboardEvent) {
+		if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+			this.#currentFilePath = '';
+			document.title = `Z-Editor`;
+			this.editor.setValue('');
+			this.status = '';
+			monaco.editor.setModelLanguage(this.model, 'plaintext');
+		}
 		if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
 			e.preventDefault();
 
+			// Will trigger
 			win.ZEditor.openFileDialog()
-				.then(filePath => {
-					if (filePath) this.#currentFilePath = filePath;
+				.then(dialogResult => {
+					if (dialogResult) {
+						this.#onUpdateFile(dialogResult)
+							.catch(console.error);
+					}
 				})
 				.catch(console.error);
 		}
@@ -159,25 +177,27 @@ class ZEditor extends HTMLDivElement {
 		}
 	}
 
-	#onUpdateFile(path: string, content: string) {
-		this.#editor.setValue(content);
-		this.#currentFilePath = path;
-		this.#detectLanguageForExtension(path)
-			.catch(console.error);
-		this.status = 'File opened';
+	async #onUpdateFile(opts:Exclude<Awaited<ReturnType<ZEditorAPI['openFileDialog']>>, null>) {
+		this.#pauseAutoSave = true;
+		try {
+			this.#editor.setValue(opts.content);
+			this.#currentFilePath = opts.filePath;
+			await this.#detectLanguageForExtension(opts.filePath);
+			document.title = `Z-Editor - ${opts.filePath}`;
+			this.status = 'File opened';
+		} catch (e) {
+			console.error(e);
+		}
+		this.#pauseAutoSave = false;
 	}
 
 	async #onDrop(file:File) {
 		// Read file via main process
-		this.#editor.setValue(await file.text());
-
-		const finalPath = await win.ZEditor.readPath(file);
-		if (finalPath) {
-			this.#currentFilePath = finalPath;
-			this.#detectLanguageForExtension(finalPath)
-				.catch(console.error);
-			this.status = `Editing: ${finalPath}`;
-		}
+		const content = await file.text(),
+			finalPath = win.ZEditor.readPath(file);
+		if (!finalPath) throw new Error('COULD_NOT_READ_FILE_PATH');
+		this.#onUpdateFile({content, filePath: finalPath})
+			.catch(console.error);
 	}
 }
 customElements.define('z-editor', ZEditor, {
