@@ -4,15 +4,14 @@ import * as fs from 'node:fs';
 import mime from 'mime-types';
 import {browserViewDirPath} from "./constants.js";
 import {ZEditorAPI} from "../browserViews/js/bo/bridgedWindowMonacoEditor.js";
+import {sendNotification} from "./notify.js";
 
 const __dirname = import.meta.dirname;
 
-let mainWindow:BrowserWindow|null = null;
+export const browserWindows = new Set<BrowserWindow>();
 
-export async function createZEditorWindow() {
-	if (mainWindow) return;
-
-	mainWindow = new BrowserWindow({
+export async function createZEditorWindow(filePath?:string) {
+	const browserWindow = new BrowserWindow({
 		width: 1000,
 		height: 800,
 		backgroundColor: '#272822',
@@ -21,20 +20,49 @@ export async function createZEditorWindow() {
 			preload: path.resolve(__dirname, '../classes/preload-zeditor.mjs'),
 		},
 	});
-	mainWindow.on('closed', () => {
-		mainWindow = null;
+	browserWindows.add(browserWindow);
+	browserWindow.on('closed', () => {
+		browserWindows.delete(browserWindow);
 	});
-	mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' })); // Security
+	browserWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' })); // Security
+
+	const query: Electron.LoadFileOptions['query'] = {};
+	if (filePath) {
+		try {
+			query.filePath = filePath;
+			query.fileContent = fs.readFileSync(filePath, 'utf-8');
+
+			const langId = getMonacoLanguage(filePath)?.langId;
+			if (langId) {
+				query.fileLangId = langId;
+			}
+		} catch (e) {
+			console.error(e);
+
+			sendNotification({
+				title: 'Erreur',
+				message: 'Erreur lors de la lecture du fichier',
+			})
+				.catch(console.error);
+		}
+	}
 
 	try {
-		await mainWindow.loadFile(browserViewDirPath + '/monaco-editor.html');
+		await browserWindow.loadFile(browserViewDirPath + '/monaco-editor.html', {
+			query,
+		});
 	} catch (e) {
 		console.error('Failed to render:', e);
 	}
 }
 
-ipcMain.handle('dialog:open', async () => {
-	const result = await dialog.showOpenDialog(mainWindow!, {
+ipcMain.handle('dialog:open', async (event) => {
+	const win = BrowserWindow.fromWebContents(event.sender);
+	if (!win) {
+		throw new Error('No window associated with this IPC request');
+	}
+
+	const result = await dialog.showOpenDialog(win, {
 		properties: ['openFile'],
 		filters: [
 			{ name: 'Text/Markdown', extensions: ['txt', 'conf', 'log', 'md'] },
@@ -61,30 +89,18 @@ ipcMain.handle('dialog:open', async () => {
 
 	const filePath = result.filePaths[0];
 	return <Awaited<ReturnType<ZEditorAPI['openFileDialog']>>>{
-		filePath,
+		path: filePath,
 		content: fs.readFileSync(filePath, 'utf-8'),
 	};
 });
 
-ipcMain.handle('file:save', async (event, filePath:string, content:string) => {
+ipcMain.handle('file:save', async (_, filePath:string, content:string) => {
 	try {
 		fs.writeFileSync(filePath, content, 'utf-8');
 		return true;
 	} catch (error) {
 		console.error('Save failed:', error);
 		return false;
-	}
-});
-
-ipcMain.handle('file:read-path', async (event, filePath:string) => {
-	try {
-		const content = fs.readFileSync(filePath, 'utf-8');
-		mainWindow!.webContents.send('editor:update-content', content);
-		mainWindow!.webContents.send('editor:filepath', filePath);
-		return filePath;
-	} catch (error) {
-		console.error('Read failed:', error);
-		return null;
 	}
 });
 
@@ -138,7 +154,7 @@ function getMonacoLanguage(filePath: string): Awaited<ReturnType<ZEditorAPI['res
 		langId: OVERRIDE_MAP[langId] ?? langId,
 	};
 }
-ipcMain.handle('file:resolve-monaco-language', async (event, filePath:string) => {
+ipcMain.handle('file:resolve-monaco-language', async (_, filePath:string) => {
 	try {
 		return getMonacoLanguage(filePath);
 	} catch (error) {

@@ -18,7 +18,7 @@ import {sendNotification} from "../classes/notify.js";
 import {settings} from "./init.js";
 import fs from "node:fs";
 import ini from "ini";
-import {createMarkdownWindow} from "./markdown.js";
+import {createZEditorWindow} from "../classes/zEditor.js";
 
 
 
@@ -138,7 +138,7 @@ export function onOpen(commandLine:string[]) {
 					break;
 				case 'md':
 					console.info('opening .md file');
-					createMarkdownWindow(value)
+					createZEditorWindow(value)
 						.catch(console.error);
 					break;
 				default:

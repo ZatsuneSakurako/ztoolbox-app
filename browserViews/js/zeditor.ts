@@ -1,5 +1,5 @@
 import * as monacoNamespace from 'monaco-editor';
-import {ZEditorAPI} from "./bo/bridgedWindowMonacoEditor.js";
+import {ZEditorAPI, ZFile} from "./bo/bridgedWindowMonacoEditor.js";
 
 declare var monaco:typeof monacoNamespace;
 const win = <typeof window & { ZEditor:ZEditorAPI }>window;
@@ -36,10 +36,63 @@ monaco.editor.defineTheme('zeditor-monokai', {
 	}
 });
 
+class ZEditorStatus extends HTMLDivElement {
+	static #statusList = new Set<ZEditorStatus>();
+
+	constructor() {
+		super();
+		ZEditorStatus.#statusList.add(this);
+	}
+
+	static get statusList() {
+		return ZEditorStatus.#statusList.values();
+	}
+}
+customElements.define('z-editor-status', ZEditorStatus, {
+	extends: 'div',
+});
+
+class ZEditorPreview extends HTMLElement {
+	static #previewList = new Set<ZEditorPreview>();
+
+	constructor() {
+		super();
+		ZEditorPreview.#previewList.add(this);
+	}
+
+	updatePreview(contentType:string, value:string) {
+		if (contentType !== 'markdown') {
+			this.#clear();
+			return;
+		}
+
+		document.body.classList.add('show-preview');
+		win.ZEditor.markdownRender(value)
+			.then(renderedMarkdown => {
+				this.innerHTML = renderedMarkdown;
+			})
+			.catch(console.error)
+	}
+
+	#clear() {
+		document.body.classList.remove('show-preview');
+		for (let child of this.children) {
+			child.remove();
+		}
+	}
+
+	static get previewList() {
+		return ZEditorPreview.#previewList.values();
+	}
+}
+customElements.define('z-preview-pane', ZEditorPreview);
+
+
+
 const defaultValues = {
 	value: '# Welcome to Z-Editor\n=> Open a file to start editing...',
 	language: 'markdown',
-}
+};
 
 class ZEditor extends HTMLDivElement {
 	readonly #editor: monacoNamespace.editor.IStandaloneCodeEditor;
@@ -50,9 +103,23 @@ class ZEditor extends HTMLDivElement {
 	constructor() {
 		super();
 
+		const query = new URLSearchParams(location.search),
+			queryFilePath = query.get('filePath'),
+			queryFileContent = query.get('fileContent'),
+			queryFileLangId = query.get('fileLangId');
+		if (queryFilePath !== null) {
+			if (queryFileContent !== null) {
+				this.#currentFilePath = queryFilePath;
+				document.title = `Z-Editor - ${queryFilePath}`;
+				this.status = 'File opened';
+			} else {
+				this.status = 'File opening error !';
+			}
+		}
+
 		this.#editor = monaco.editor.create(this, {
-			value: defaultValues.value,
-			language: defaultValues.language,
+			value: queryFileContent ?? defaultValues.value,
+			language: queryFileLangId ?? defaultValues.language,
 			theme: 'zeditor-monokai', // Our custom theme below
 			fontSize: 16,
 
@@ -89,6 +156,8 @@ class ZEditor extends HTMLDivElement {
 		setTimeout(() => {
 			this.#updatePreview();
 		});
+
+		win.ZEditor.onUpdateFile(this.#onUpdateFile.bind(this));
 
 		// Keyboard Shortcuts
 		document.addEventListener('keydown', this.#onKey.bind(this));
@@ -212,13 +281,13 @@ class ZEditor extends HTMLDivElement {
 		}
 	}
 
-	async #onUpdateFile(opts:Exclude<Awaited<ReturnType<ZEditorAPI['openFileDialog']>>, null>) {
+	async #onUpdateFile(opts:ZFile) {
 		this.#pauseAutoSave = true;
 		try {
 			this.#editor.setValue(opts.content);
-			this.#currentFilePath = opts.filePath;
-			await this.#detectLanguageForExtension(opts.filePath);
-			document.title = `Z-Editor - ${opts.filePath}`;
+			this.#currentFilePath = opts.path;
+			await this.#detectLanguageForExtension(opts.path);
+			document.title = `Z-Editor - ${opts.path}`;
 			this.status = 'File opened';
 		} catch (e) {
 			console.error(e);
@@ -231,61 +300,10 @@ class ZEditor extends HTMLDivElement {
 		const content = await file.text(),
 			finalPath = win.ZEditor.readPath(file);
 		if (!finalPath) throw new Error('COULD_NOT_READ_FILE_PATH');
-		this.#onUpdateFile({content, filePath: finalPath})
+		this.#onUpdateFile({content, path: finalPath})
 			.catch(console.error);
 	}
 }
 customElements.define('z-editor', ZEditor, {
 	extends: 'div',
 });
-
-class ZEditorStatus extends HTMLDivElement {
-	static #statusList = new Set<ZEditorStatus>();
-
-	constructor() {
-		super();
-		ZEditorStatus.#statusList.add(this);
-	}
-
-	static get statusList() {
-		return ZEditorStatus.#statusList.values();
-	}
-}
-customElements.define('z-editor-status', ZEditorStatus, {
-	extends: 'div',
-});
-
-class ZEditorPreview extends HTMLElement {
-	static #previewList = new Set<ZEditorPreview>();
-
-	constructor() {
-		super();
-		ZEditorPreview.#previewList.add(this);
-	}
-
-	updatePreview(contentType:string, value:string) {
-		if (contentType !== 'markdown') {
-			this.#clear();
-			return;
-		}
-
-		document.body.classList.add('show-preview');
-		win.ZEditor.markdownRender(value)
-			.then(renderedMarkdown => {
-				this.innerHTML = renderedMarkdown;
-			})
-			.catch(console.error)
-	}
-
-	#clear() {
-		document.body.classList.remove('show-preview');
-		for (let child of this.children) {
-			child.remove();
-		}
-	}
-
-	static get previewList() {
-		return ZEditorPreview.#previewList.values();
-	}
-}
-customElements.define('z-preview-pane', ZEditorPreview);
