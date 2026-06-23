@@ -21,6 +21,10 @@ const zEditorApi: ZEditorAPI = {
 		return webUtils.getPathForFile(file);
 	},
 
+	markdownRender(markdownContent:string) {
+		return ipcRenderer.invoke('markdownRender', markdownContent);
+	},
+
 	resolveMonacoLanguage(filePath:string) {
 		return ipcRenderer.invoke('file:resolve-monaco-language', filePath);
 	},

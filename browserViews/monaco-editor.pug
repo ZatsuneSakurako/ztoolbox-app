@@ -2,10 +2,16 @@ html(lang='en')
 	head
 		meta(charset="UTF-8")
 		title Z-Editor
+		link(rel="preload" as="style" href="css/zeditor.css")
+		link(rel="preload" as="script" href="./lib/requirejs/requirejs.js")
+		link(rel="preload" as="script" href="./lib/vscode/vs/editor/editor.main.js")
+		link(rel="preload" as="script" href="./js/zeditor.js" crossorigin="anonymous")
+
 		link(rel="stylesheet" href="css/zeditor.css")
 		script(src="./lib/requirejs/requirejs.js")
 		script(src="./lib/vscode/vs/editor/editor.main.js")
 	body
 		div#editor-container(is="z-editor")
+		z-preview-pane
 		div.status-bar(is="z-editor-status")
 		script(src="./js/zeditor.js" type="module")

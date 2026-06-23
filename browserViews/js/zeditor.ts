@@ -54,13 +54,20 @@ class ZEditor extends HTMLDivElement {
 			value: defaultValues.value,
 			language: defaultValues.language,
 			theme: 'zeditor-monokai', // Our custom theme below
-			automaticLayout: true,
 			fontSize: 16,
-			minimap: { enabled: true },
-			scrollBeyondLastLine: false,
-			suggestOnTriggerCharacters: true,
+
+			automaticLayout: true,
+			glyphMargin: true,
 			folding: true,
+			lineNumbersMinChars: 4,
+
+			minimap: { enabled: false },
+			renderWhitespace: 'none',
+			scrollBeyondLastLine: false,
+
+			suggestOnTriggerCharacters: false,
 			wordWrap: 'on',
+			lineNumbers: 'on',
 		});
 		this.#init();
 	}
@@ -79,6 +86,9 @@ class ZEditor extends HTMLDivElement {
 
 	#init() {
 		this.#editor.onDidChangeModelContent(this.#onDidChangeModelContent.bind(this));
+		setTimeout(() => {
+			this.#updatePreview();
+		});
 
 		// Keyboard Shortcuts
 		document.addEventListener('keydown', this.#onKey.bind(this));
@@ -126,16 +136,17 @@ class ZEditor extends HTMLDivElement {
 	}
 
 	#onDidChangeModelContent() {
-		if (!this.currentFilePath) return;
-
 		this.status = 'Unsaved changes...';
 
 		clearTimeout(this.#autoSaveTimeout);
 		this.#autoSaveTimeout = setTimeout(async () => {
-			if (!this.#pauseAutoSave) {
+			if (this.#pauseAutoSave) {
 				console.warn('Auto-save paused!');
 				return;
 			}
+
+			this.#updatePreview();
+
 			if (!this.currentFilePath) {
 				console.warn('No filed selected !');
 				return;
@@ -145,6 +156,20 @@ class ZEditor extends HTMLDivElement {
 				success = await win.ZEditor.autoSaveTrigger(this.currentFilePath, content);
 			this.status = success ? `Saved at ${new Date().toLocaleTimeString()}` : 'Save failed!';
 		}, 2000);
+	}
+
+	#updatePreview() {
+		const langId = this.#editor.getModel()?.getLanguageId(),
+			value = this.#editor.getValue();
+
+		if (!langId) {
+			console.error('EDITOR_MODEL_NO_LANGUAGE');
+			return;
+		}
+
+		for (let zEditorPreview of ZEditorPreview.previewList) {
+			zEditorPreview.updatePreview(langId, value);
+		}
 	}
 
 	#onKey(e:KeyboardEvent) {
@@ -229,3 +254,38 @@ class ZEditorStatus extends HTMLDivElement {
 customElements.define('z-editor-status', ZEditorStatus, {
 	extends: 'div',
 });
+
+class ZEditorPreview extends HTMLElement {
+	static #previewList = new Set<ZEditorPreview>();
+
+	constructor() {
+		super();
+		ZEditorPreview.#previewList.add(this);
+	}
+
+	updatePreview(contentType:string, value:string) {
+		if (contentType !== 'markdown') {
+			this.#clear();
+			return;
+		}
+
+		document.body.classList.add('show-preview');
+		win.ZEditor.markdownRender(value)
+			.then(renderedMarkdown => {
+				this.innerHTML = renderedMarkdown;
+			})
+			.catch(console.error)
+	}
+
+	#clear() {
+		document.body.classList.remove('show-preview');
+		for (let child of this.children) {
+			child.remove();
+		}
+	}
+
+	static get previewList() {
+		return ZEditorPreview.#previewList.values();
+	}
+}
+customElements.define('z-preview-pane', ZEditorPreview);
