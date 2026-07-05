@@ -11,6 +11,7 @@
 /chrome_messaging/*
 /classes/**/*.js
 /src/**/*.js
+!/browserViews/css.d.ts
 
 ### Linux template
 *~

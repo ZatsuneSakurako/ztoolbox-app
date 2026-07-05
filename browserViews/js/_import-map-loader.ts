@@ -6,7 +6,9 @@ const baseDir = self.parent.location.href.replace(/[^/]+$/, '');
 (async () => {
 	const importMap = {
 		"imports": {
-			"yaml": baseDir + "/lib/yaml/index.js"
+			"lib/": baseDir + "/lib/",
+			"@highlightjs/cdn-assets/": baseDir + "/lib/@highlightjs/cdn-assets/",
+			"yaml": baseDir + "/lib/yaml/index.js",
 		}
 	}
 	const im = document.createElement('script');

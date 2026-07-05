@@ -342,6 +342,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@highlightjs/cdn-assets@npm:^11.11.1":
+  version: 11.11.1
+  resolution: "@highlightjs/cdn-assets@npm:11.11.1"
+  checksum: 10/45126fa641551d55880503f6f75b8c15a130d57723ae81701d59395cb63c8908d8441ee1fdfa9bda9bf8c1377892c8c57785c2790f424c61f10146de8d756a71
+  languageName: node
+  linkType: hard
+
 "@isaacs/balanced-match@npm:^4.0.1":
   version: 4.0.1
   resolution: "@isaacs/balanced-match@npm:4.0.1"
@@ -7370,6 +7377,7 @@ __metadata:
   dependencies:
     "@fastify/static": "npm:^9.1.3"
     "@fontsource/ubuntu": "npm:^5.2.8"
+    "@highlightjs/cdn-assets": "npm:^11.11.1"
     "@jimp/core": "npm:^1.6.1"
     "@jimp/js-png": "npm:^1.6.1"
     "@jimp/plugin-print": "npm:^1.6.1"

@@ -48,6 +48,8 @@ function clearJs() {
 		'./*.js',
 		'./*.d.ts',
 		'./*.map',
+		'!browserViews/css.js',
+		'!browserViews/css.d.ts',
 		'browserViews/js/**/*.js',
 		'browserViews/js/**/*.d.ts',
 		'browserViews/js/**/*.map',

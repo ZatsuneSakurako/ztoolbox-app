@@ -52,12 +52,56 @@ customElements.define('z-editor-status', ZEditorStatus, {
 	extends: 'div',
 });
 
+import "../css.js";
+declare var hljs: any;
+
+const languages = (() => {
+	const languageBlacklist = new Set<string>([
+		'c',
+		'cpp',
+		'java',
+		'objectivec',
+		'swift',
+		'vbnet',
+	]);
+
+	return (<string[]>hljs.listLanguages()).filter(language => {
+		return !languageBlacklist.has(language);
+	});
+})();
+
+hljs.configure({
+	noHighlightRe: /^do-not-highlightme$/i,
+	languages,
+	classPrefix: ''
+});
+
 class ZEditorPreview extends HTMLElement {
 	static #previewList = new Set<ZEditorPreview>();
+	#shadow: ShadowRoot;
 
 	constructor() {
 		super();
+		this.#shadow = this.attachShadow({ mode: "open" });
+		this.#init()
+			.catch(console.error);
 		ZEditorPreview.#previewList.add(this);
+	}
+
+	async #init() {
+		const cssList = [
+			'../css/_reset.css',
+			'../css/markdown.css',
+			'../css/scrollbar.css',
+			'../lib/@highlightjs/cdn-assets/styles/monokai.css',
+		];
+		for (let path of cssList) {
+			this.#shadow.adoptedStyleSheets.push((await import(path, {
+				with: {
+					type: 'css',
+				},
+			})).default);
+		}
 	}
 
 	updatePreview(contentType:string, value:string) {
@@ -69,7 +113,25 @@ class ZEditorPreview extends HTMLElement {
 		document.body.classList.add('show-preview');
 		win.ZEditor.markdownRender(value)
 			.then(renderedMarkdown => {
-				this.innerHTML = renderedMarkdown;
+				this.#shadow.innerHTML = renderedMarkdown;
+
+				setTimeout(() => {
+					for (const codeElement of this.#shadow.querySelectorAll('pre code')) {
+						if (!(codeElement instanceof HTMLElement)) throw new Error('"pre code" should be HTMLElement');
+
+						console.dir(codeElement.parentElement)
+						if (codeElement.dataset.language) {
+							codeElement.classList.add(
+								'language-' + (languages.includes(codeElement.dataset.language) ?
+									codeElement.dataset.language
+									:
+									'plaintext'
+								)
+							);
+						}
+						hljs.highlightElement(codeElement);
+					}
+				});
 			})
 			.catch(console.error)
 	}

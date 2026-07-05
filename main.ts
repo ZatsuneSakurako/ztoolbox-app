@@ -21,8 +21,7 @@ import * as update from './src/update.js';
 import fs from "node:fs";
 import {nunjucksEnv} from "./src/nunjucksEnv.js";
 import Dict = NodeJS.Dict;
-import sanitizeHtml from "sanitize-html";
-import {marked} from "marked";
+import {markdownRender} from "./src/markdownRendering.js";
 
 
 fastifyApp.register(fastifyStatic, {
@@ -241,7 +240,7 @@ ipcMain.handle('nunjucksRender', async (e, templateName:string, context:any) => 
 });
 
 ipcMain.handle('markdownRender', async (e, markdownContent:string) => {
-	return sanitizeHtml(await marked(markdownContent));
+	return markdownRender(markdownContent);
 });
 
 ipcMain.handle('getNetworkIps', async (e) => {

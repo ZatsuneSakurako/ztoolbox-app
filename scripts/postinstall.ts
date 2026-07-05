@@ -49,6 +49,10 @@ fs.cpSync(path.resolve(currentPath, './node_modules/requirejs/require.js'), path
 	recursive: true,
 });
 
+fs.cpSync(path.resolve(currentPath, './node_modules/@highlightjs/cdn-assets'), path.resolve(libPath, './@highlightjs/cdn-assets'), {
+	recursive: true,
+});
+
 if (process.platform === 'linux') {
 	console.error('Launch ./scripts/setup.sh !')
 }

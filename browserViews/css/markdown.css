@@ -1,7 +1,8 @@
 /* Monokai Theme for Markdown Previews */
 /* Based on the classic Monokai colors used in VS Code and PhpStorm */
 
-:root {
+:root,
+:host {
 	--bg-color: #272822;
 	--text-color: #f8f8f2;
 	--keyword-color: #f92672;       /* Pink/Red */
@@ -19,13 +20,14 @@
 	--table-header-bg: #3e3d32;
 }
 
-body {
+body,
+:host {
 	background-color: var(--bg-color);
 	color: var(--text-color);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	line-height: 1.6;
 	padding: 20px;
-	max-width: 900px;
+	/*max-width: 900px;*/
 	margin: 0 auto;
 }
 
