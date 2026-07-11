@@ -1,4 +1,4 @@
-export type ZFile = { path: string, content: string };
+export type ZFile = { path: string, content: string } | { partialPath: string, content: string };
 export type onUpdateFileCallback = (newFile:ZFile) => void;
 export interface ZEditorAPI {
 	openFileDialog: () => Promise<ZFile | null>;
@@ -6,6 +6,5 @@ export interface ZEditorAPI {
 	autoSaveTrigger: (filePath: string, content: string) => Promise<boolean>;
 	readPath: (file: File) => string | null;
 	markdownRender: (markdownContent: string) => Promise<string>;
-	resolveMonacoLanguage: (filePath: string) => Promise<{ mimeType:string|false, langId:string } | null>;
 	onUpdateFile: (callback: onUpdateFileCallback) => void;
 }

@@ -25,12 +25,8 @@ const zEditorApi: ZEditorAPI = {
 		return ipcRenderer.invoke('markdownRender', markdownContent);
 	},
 
-	resolveMonacoLanguage(filePath:string) {
-		return ipcRenderer.invoke('file:resolve-monaco-language', filePath);
-	},
-
 	onUpdateFile(callback: onUpdateFileCallback) {
 		return ipcRenderer.on('editor:update-file', (event, newFile:ZFile) => callback(newFile));
 	},
 };
-contextBridge.exposeInMainWorld('ZEditor', zEditorApi);
+contextBridge.exposeInMainWorld('zEditorApi', zEditorApi);

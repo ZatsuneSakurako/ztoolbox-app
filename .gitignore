@@ -4,6 +4,7 @@
 /browserViews/lib
 /browserViews/*.html
 /browserViews/js/**/*.js
+/browserViews/js/mime-db_extensions.json
 **/*.map
 **/*.d.ts
 /*.js
@@ -11,7 +12,7 @@
 /chrome_messaging/*
 /classes/**/*.js
 /src/**/*.js
-!/browserViews/css.d.ts
+!/browserViews/js/css.d.ts
 
 ### Linux template
 *~

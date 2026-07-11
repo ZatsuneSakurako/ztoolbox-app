@@ -1,8 +1,9 @@
 import * as monacoNamespace from 'monaco-editor';
+import {getMonacoLanguage} from "./getMonacoLanguage.js";
 import {ZEditorAPI, ZFile} from "./bo/bridgedWindowMonacoEditor.js";
 
 declare var monaco:typeof monacoNamespace;
-const win = <typeof window & { ZEditor:ZEditorAPI }>window;
+const win = <typeof window & { zEditorApi:ZEditorAPI }>window;
 
 require.config({ paths: { vs: './lib/vscode/vs' } });
 
@@ -52,7 +53,7 @@ customElements.define('z-editor-status', ZEditorStatus, {
 	extends: 'div',
 });
 
-import "../css.js";
+import "./css.js";
 declare var hljs: any;
 
 const languages = (() => {
@@ -105,13 +106,13 @@ class ZEditorPreview extends HTMLElement {
 	}
 
 	updatePreview(contentType:string, value:string) {
-		if (contentType !== 'markdown') {
+		if (contentType !== 'markdown' || !('zEditorApi' in win)) {
 			this.#clear();
 			return;
 		}
 
 		document.body.classList.add('show-preview');
-		win.ZEditor.markdownRender(value)
+		win.zEditorApi.markdownRender(value)
 			.then(renderedMarkdown => {
 				this.#shadow.innerHTML = renderedMarkdown;
 
@@ -219,7 +220,9 @@ class ZEditor extends HTMLDivElement {
 			this.#updatePreview();
 		});
 
-		win.ZEditor.onUpdateFile(this.#onUpdateFile.bind(this));
+		if ('zEditorApi' in win) {
+			win.zEditorApi.onUpdateFile(this.#onUpdateFile.bind(this));
+		}
 
 		// Keyboard Shortcuts
 		document.addEventListener('keydown', this.#onKey.bind(this));
@@ -256,7 +259,7 @@ class ZEditor extends HTMLDivElement {
 
 		let langType = 'plaintext';
 		try {
-			const _langType = (await win.ZEditor.resolveMonacoLanguage(path));
+			const _langType = getMonacoLanguage(path);
 			console.log('File type resolving:', _langType);
 			langType = _langType?.langId ?? langType;
 		} catch (e) {
@@ -284,7 +287,7 @@ class ZEditor extends HTMLDivElement {
 			}
 
 			const content = this.#editor.getValue(),
-				success = await win.ZEditor.autoSaveTrigger(this.currentFilePath, content);
+				success = await win.zEditorApi.autoSaveTrigger(this.currentFilePath, content);
 			this.status = success ? `Saved at ${new Date().toLocaleTimeString()}` : 'Save failed!';
 		}, 2000);
 	}
@@ -317,11 +320,11 @@ class ZEditor extends HTMLDivElement {
 			}
 			this.#pauseAutoSave = false;
 		}
-		if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+		if ('zEditorApi' in win && (e.ctrlKey || e.metaKey) && e.key === 'o') {
 			e.preventDefault();
 
 			// Will trigger
-			win.ZEditor.openFileDialog()
+			win.zEditorApi.openFileDialog()
 				.then(dialogResult => {
 					if (dialogResult) {
 						this.#onUpdateFile(dialogResult)
@@ -330,11 +333,11 @@ class ZEditor extends HTMLDivElement {
 				})
 				.catch(console.error);
 		}
-		if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+		if ('zEditorApi' in win && (e.ctrlKey || e.metaKey) && e.key === 's') {
 			e.preventDefault();
 			if (this.#currentFilePath) {
 				const content = this.#editor.getValue();
-				win.ZEditor.saveFile(this.#currentFilePath, content)
+				win.zEditorApi.saveFile(this.#currentFilePath, content)
 					.then(success => {
 						if (success) this.status = `Saved at ${new Date().toLocaleTimeString()}`;
 					})
@@ -347,9 +350,17 @@ class ZEditor extends HTMLDivElement {
 		this.#pauseAutoSave = true;
 		try {
 			this.#editor.setValue(opts.content);
-			this.#currentFilePath = opts.path;
-			await this.#detectLanguageForExtension(opts.path);
-			document.title = `Z-Editor - ${opts.path}`;
+
+			let path:string
+			if ('path' in opts) {
+				this.#currentFilePath = opts.path;
+				path = opts.path;
+			} else {
+				this.#currentFilePath = null;
+				path = opts.partialPath;
+			}
+			await this.#detectLanguageForExtension(path);
+			document.title = `Z-Editor - ${path}${'partialPath' in opts ? ' (readonly)' : ''}`;
 			this.status = 'File opened';
 		} catch (e) {
 			console.error(e);
@@ -359,10 +370,24 @@ class ZEditor extends HTMLDivElement {
 
 	async #onDrop(file:File) {
 		// Read file via main process
-		const content = await file.text(),
-			finalPath = win.ZEditor.readPath(file);
-		if (!finalPath) throw new Error('COULD_NOT_READ_FILE_PATH');
-		this.#onUpdateFile({content, path: finalPath})
+		const content = await file.text();
+		let finalPath:string|null = null;
+
+		if ('zEditorApi' in win) {
+			try {
+				finalPath = win.zEditorApi.readPath(file);
+			} catch (e) {
+				console.error(e);
+			}
+			if (finalPath) {
+				this.#onUpdateFile({content, path: finalPath })
+					.catch(console.error);
+				return;
+			}
+		}
+
+		this.status = 'Error reading file path';
+		this.#onUpdateFile({content, partialPath: file.name })
 			.catch(console.error);
 	}
 }

@@ -36,11 +36,25 @@ fastifyApp.register(fastifyStatic, {
 	root: path.join(resourcePath, 'browserViews/js'),
 	prefix: '/js/',
 	decorateReply: false,
+	allowedPath(pathName) {
+		return /\.(js|json|map)$/.test(pathName);
+	},
+});
+fastifyApp.register(fastifyStatic, {
+	root: path.join(resourcePath, 'browserViews/css'),
+	prefix: '/css/',
+	decorateReply: false,
+	allowedPath(pathName) {
+		return /\.(css|map)$/.test(pathName);
+	},
 });
 fastifyApp.register(fastifyStatic, {
 	root: path.join(resourcePath, 'browserViews/lib'),
 	prefix: '/lib/',
 	decorateReply: false,
+	allowedPath(pathName) {
+		return /\.(css|js|json|map|woff2?)$/.test(pathName);
+	},
 });
 fastifyApp.register(fastifyStatic, {
 	root: path.join(resourcePath, 'browserViews/local-assets'),

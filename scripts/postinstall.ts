@@ -53,6 +53,18 @@ fs.cpSync(path.resolve(currentPath, './node_modules/@highlightjs/cdn-assets'), p
 	recursive: true,
 });
 
+
+import mimeDb from 'mime-db/db.json' with {type: 'json'}
+import {Dict} from "../browserViews/js/bo/Dict.js";
+const outputMimes: Dict<string[]> = {};
+for (const [mime, data] of Object.entries(mimeDb)) {
+	if ('extensions' in data && Array.isArray(data.extensions) && data.extensions.length > 0) {
+		outputMimes[mime] = Array.from(new Set(data.extensions));
+	}
+}
+fs.writeFileSync(path.normalize(currentPath + '/browserViews/js/mime-db_extensions.json'), JSON.stringify(outputMimes));
+
+
 if (process.platform === 'linux') {
 	console.error('Launch ./scripts/setup.sh !')
 }

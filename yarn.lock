@@ -843,6 +843,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mime-db@npm:^1":
+  version: 1.43.6
+  resolution: "@types/mime-db@npm:1.43.6"
+  checksum: 10/e2327553a5a1580dbb524c4d7c1d73f1f1364967919f4a06929f69e152935c2c2dfbe9891f2a7a1f4d7598078e5f2a078c3d2dfe5c57e78b94c227c9183e4374
+  languageName: node
+  linkType: hard
+
 "@types/mime-types@npm:^3":
   version: 3.0.1
   resolution: "@types/mime-types@npm:3.0.1"
@@ -7386,6 +7393,7 @@ __metadata:
     "@types/gulp-sass": "npm:^6.0.0"
     "@types/ini": "npm:^4.1.1"
     "@types/lodash.debounce": "npm:^4.0.9"
+    "@types/mime-db": "npm:^1"
     "@types/mime-types": "npm:^3"
     "@types/node": "npm:^24.12.4"
     "@types/nunjucks": "npm:^3.2.6"
@@ -7409,6 +7417,7 @@ __metadata:
     lodash.debounce: "npm:^4.0.8"
     marked: "npm:^18.0.5"
     material-symbols: "npm:^0.44.8"
+    mime-db: "npm:^1.54.0"
     mime-types: "npm:^3.0.2"
     monaco-editor: "npm:^0.55.1"
     nunjucks: "npm:^3.2.4"
