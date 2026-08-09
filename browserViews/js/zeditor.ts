@@ -120,7 +120,6 @@ class ZEditorPreview extends HTMLElement {
 					for (const codeElement of this.#shadow.querySelectorAll('pre code')) {
 						if (!(codeElement instanceof HTMLElement)) throw new Error('"pre code" should be HTMLElement');
 
-						console.dir(codeElement.parentElement)
 						if (codeElement.dataset.language) {
 							codeElement.classList.add(
 								'language-' + (languages.includes(codeElement.dataset.language) ?

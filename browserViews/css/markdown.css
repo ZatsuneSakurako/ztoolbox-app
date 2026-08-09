@@ -1,10 +1,12 @@
-/* Monokai Theme for Markdown Previews */
-/* Based on the classic Monokai colors used in VS Code and PhpStorm */
+/* Monokai Theme for Markdown Previews - Enhanced Version */
+/* Based on the classic Monokai colors used in VS Code and PhpStorm (with modern refinements) */
 
 :root,
 :host {
 	--bg-color: #272822;
+	--bg-elevated: #2d2e27;
 	--text-color: #f8f8f2;
+	--text-muted: #b0b0a8;
 	--keyword-color: #f92672;       /* Pink/Red */
 	--function-color: #a6e22e;      /* Green */
 	--class-color: #66d9ef;         /* Cyan */
@@ -15,9 +17,14 @@
 	--operator-color: #f8f8f2;
 	--link-color: #66d9ef;
 	--border-color: #3e3d32;
+	--accent-glow: rgba(102, 217, 239, 0.15);
 	--quote-bg: #3e3d32;
 	--code-inline-bg: #3e3d32;
 	--table-header-bg: #3e3d32;
+	--shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.3);
+	--shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4);
+	--radius-sm: 4px;
+	--radius-md: 8px;
 }
 
 body,
@@ -25,102 +32,207 @@ body,
 	background-color: var(--bg-color);
 	color: var(--text-color);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-	line-height: 1.6;
-	padding: 20px;
-	/*max-width: 900px;*/
+	line-height: 1.7;
+	padding: 24px;
+	max-width: 920px;
 	margin: 0 auto;
+	min-height: 100vh;
 }
 
-/* Headings */
+/* Smooth scrolling */
+html {
+	scroll-behavior: smooth;
+}
+
+/* Headings with accent underlines */
 h1, h2, h3, h4, h5, h6 {
 	color: var(--text-color);
-	margin-top: 1.5em;
-	margin-bottom: 0.5em;
-	border-bottom: 1px solid var(--border-color);
-	padding-bottom: 0.3em;
+	margin-top: 2em;
+	margin-bottom: 0.6em;
+	padding-bottom: 0.4em;
+	position: relative;
 }
 
-h1 { font-size: 2.2em; }
-h2 { font-size: 1.8em; }
-h3 { font-size: 1.5em; }
-h4 { font-size: 1.2em; }
+h1::after,
+h2::after,
+h3::after {
+	border-radius: 2px;
+	bottom: 0;
+	content: '';
+	height: 2px;
+	left: 0;
+	position: absolute;
+}
+h1::after {
+	height: 3px;
+	right: 0;
+	background: linear-gradient(90deg, var(--keyword-color) 0%, var(--class-color) 100%);
+}
 
-/* Links */
+h2::after {
+	background: linear-gradient(90deg, var(--function-color) 0%, var(--string-color) 100%);
+	width: 60px;
+}
+
+h3::after {
+	background: var(--number-color);
+	width: 40px;
+}
+
+h1 { font-size: 2.4em; letter-spacing: -0.5px; }
+h2 { font-size: 1.9em; letter-spacing: -0.3px; }
+h3 { font-size: 1.5em; }
+h4 { font-size: 1.25em; }
+
+/* Links with glow effect */
 a {
 	color: var(--link-color);
 	text-decoration: none;
+	border-bottom: 1px dashed transparent;
+	transition: all 0.2s ease;
 }
 
 a:hover {
-	text-decoration: underline;
+	color: var(--class-color);
+	border-bottom-color: var(--class-color);
+	text-shadow: 0 0 8px var(--accent-glow);
+}
+
+a:focus {
+	outline: 2px solid var(--link-color);
+	outline-offset: 2px;
 }
 
 /* Paragraphs & Lists */
 p, ul, ol, dl {
-	margin-bottom: 1rem;
+	margin-bottom: 1.2rem;
 }
 
 ul, ol {
-	padding-left: 2rem;
+	padding-left: 2.5rem;
 }
+
+ol {
+	list-style-type: decimal;
+}
+ul {
+	list-style-type: disc;
+}
+
 
 li {
-	margin-bottom: 0.25rem;
+	margin-bottom: 0.4rem;
+	line-height: 1.6;
 }
 
-/* Blockquotes */
+/* Custom bullet styles */
+ul li::marker {
+	color: var(--variable-color);
+}
+
+ol li::marker {
+	color: var(--number-color);
+}
+
+/* Blockquotes with elevated styling */
 blockquote {
-	margin: 0 0 1rem 0;
-	padding: 0.5rem 1rem;
-	border-left: 4px solid var(--variable-color);
-	background-color: var(--quote-bg);
+	margin: 1.5rem 0;
+	padding: 1rem 1.5rem;
+	border-left: 5px solid var(--variable-color);
+	background: linear-gradient(to right, var(--quote-bg) 0%, rgba(62, 61, 50, 0.5) 100%);
 	color: var(--comment-color);
 	font-style: italic;
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
+	box-shadow: var(--shadow-subtle);
+	position: relative;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Tables */
+blockquote:hover {
+	transform: translateX(4px);
+	box-shadow: var(--shadow-card);
+}
+
+blockquote::before {
+	content: '"';
+	position: absolute;
+	top: -10px;
+	left: 12px;
+	font-size: 3em;
+	color: var(--variable-color);
+	font-family: Georgia, serif;
+	opacity: 0.3;
+}
+
+/* Tables with improved styling */
 table {
 	border-collapse: collapse;
-	width: 100%;
-	margin-bottom: 1rem;
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-subtle);
+	margin-bottom: 1.5rem;
 	display: block;
-	overflow-x: auto; /* Scroll on small screens */
+	overflow: auto hidden;
+	width: 100%;
 }
 
 th, td {
 	border: 1px solid var(--border-color);
-	padding: 8px 12px;
+	padding: 12px 16px;
 	text-align: left;
+	transition: background-color 0.2s ease;
 }
 
-thead tr {
+th {
 	background-color: var(--table-header-bg);
+	color: var(--text-color);
+	font-weight: 600;
+	border-bottom: 2px solid var(--keyword-color);
+}
+
+td:hover {
+	background-color: rgba(255, 255, 255, 0.03);
 }
 
 tr:nth-child(even) {
 	background-color: rgba(255, 255, 255, 0.02);
 }
 
-/* Inline Code */
+/* Inline Code with pill styling */
 code:not([class]) {
 	font-family: "SF Mono", Monaco, "Cascadia Code", "Consolas", "Courier New", monospace;
 	background-color: var(--code-inline-bg);
 	color: var(--string-color);
-	padding: 0.2em 0.4em;
-	border-radius: 3px;
-	font-size: 0.9em;
+	padding: 0.3em 0.5em;
+	border-radius: var(--radius-sm);
+	font-size: 0.88em;
+	border: 1px solid var(--border-color);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
-/* Code Blocks */
+/* Code Blocks with elevated card look */
 pre {
 	background-color: var(--code-inline-bg);
 	border: 1px solid var(--border-color);
-	border-radius: 4px;
-	padding: 1rem;
+	border-radius: var(--radius-md);
+	padding: 1.2rem;
 	overflow-x: auto;
 	font-family: "SF Mono", Monaco, "Cascadia Code", "Consolas", "Courier New", monospace;
-	font-size: 0.9rem;
-	line-height: 1.4;
+	font-size: 0.88rem;
+	line-height: 1.5;
+	box-shadow: var(--shadow-subtle);
+	position: relative;
+	margin: 1.5rem 0;
+}
+
+pre::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 2px;
+	background: linear-gradient(90deg, var(--keyword-color), var(--function-color), var(--class-color));
+	border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 pre code {
@@ -128,12 +240,13 @@ pre code {
 	padding: 0;
 	border: none;
 	color: var(--text-color);
+	font-size: inherit;
 }
 
-/* Syntax Highlighting Classes (Common for highlight.js / prism.js) */
-/* If your renderer adds these classes automatically */
+/* Syntax Highlighting Classes */
 .hljs-keyword, .hljs-attribute, .selector-tag, .keyword, .doctag {
 	color: var(--keyword-color);
+	font-weight: 500;
 }
 
 .hljs-string, .hljs-title, .hljs-name, .hljs-type, .attr-string, .section {
@@ -150,6 +263,7 @@ pre code {
 
 .hljs-comment, .hljs-quote, .hljs-meta {
 	color: var(--comment-color);
+	font-style: italic;
 }
 
 .hljs-number, .hljs-literal, .hljs-symbol, .hljs-bullet {
@@ -165,13 +279,54 @@ pre code {
 }
 
 .hljs-strong {
-	font-weight: bold;
+	font-weight: 700;
+	color: var(--text-color);
 }
 
-/* Horizontal Rule */
+/* Horizontal Rule with accent */
 hr {
 	border: 0;
-	height: 1px;
-	background: var(--border-color);
-	margin: 2rem 0;
+	height: 2px;
+	background: linear-gradient(90deg, transparent 0%, var(--border-color) 20%, var(--border-color) 80%, transparent 100%);
+	margin: 2.5rem 0;
+	position: relative;
+}
+
+hr::after {
+	content: '◆';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	background: var(--bg-color);
+	padding: 0 8px;
+	color: var(--keyword-color);
+	font-size: 1em;
+}
+
+/* Selection styling */
+::selection {
+	background-color: rgba(102, 217, 239, 0.3);
+	color: var(--text-color);
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+	outline: 2px solid var(--link-color);
+	outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	body, :host {
+		padding: 16px;
+	}
+
+	h1 { font-size: 2em; }
+	h2 { font-size: 1.6em; }
+
+	pre {
+		padding: 1rem;
+		font-size: 0.82rem;
+	}
 }
