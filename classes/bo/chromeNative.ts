@@ -1,4 +1,4 @@
-import {Notification} from "electron";
+import type electron from "electron";
 import {RandomJsonData, SettingsConfig} from "./settings.js";
 import {Dict} from "../../browserViews/js/bo/Dict.js";
 import {IUserscriptJson} from "./userscript.js";
@@ -36,7 +36,7 @@ export interface ClientToServerEvents {
 	getUserscripts(cb: ResponseCallback<IUserscriptJson[]>): void
 	getUserscriptData(fileName:string, cb: ResponseCallback<Dict<any>>): void
 	setUserscriptData(fileName:string, newData:Dict<any>|null, cb: ResponseCallback<boolean>): void
-	writeClipboard(data: Electron.Data, cb: ResponseCallback<boolean>): void
+	writeClipboard(data: Record<string, string>, cb: ResponseCallback<boolean>): void
 	nunjucksRender(templateName:string, context: object, async:boolean, cb: ResponseCallback<string>): void
 }
 export interface InterServerEvents {}
@@ -81,5 +81,5 @@ export interface ISendNotificationOptions {
 	 * This url must be available from the browser
 	 */
 	iconURL?: string
-	timeoutType?: Notification['timeoutType']
+	timeoutType?: electron.Notification['timeoutType']
 }

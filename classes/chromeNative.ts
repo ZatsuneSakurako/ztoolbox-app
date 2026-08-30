@@ -188,7 +188,8 @@ io.on("connection", (socket: socket) => {
 
 	socket.on('writeClipboard', async function (data, cb) {
 		try {
-			electron.clipboard.write(data);
+			const clipboard = new Electron.ClipboardItem(data);
+			await electron.clipboard.write([clipboard]);
 			cb({
 				error: false,
 				result: true
