@@ -71,6 +71,34 @@ const languages = (() => {
 	});
 })();
 
+export interface HighlightResult {
+	code?: string
+	relevance : number
+	value : string
+	language? : string
+	illegal : boolean
+	errorRaised? : Error
+	// * for auto-highlight
+	secondBest? : Omit<HighlightResult, 'second_best'>
+}
+hljs.addPlugin({
+	'after:highlightElement': (data:{ el:HTMLElement, result: HighlightResult }) => {
+		const {el, result} = data,
+			resultLines = result.value.split('\n');
+
+		const ol = document.createElement('ol');
+		for (let code of resultLines) {
+			const li = document.createElement('li');
+			li.innerHTML = code;
+			ol.append(li);
+		}
+
+		for (let childNode of [...el.childNodes.values()]) {
+			childNode.remove();
+		}
+		el.append(ol);
+	}
+});
 hljs.configure({
 	noHighlightRe: /^do-not-highlightme$/i,
 	languages,

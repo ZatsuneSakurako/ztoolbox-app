@@ -222,25 +222,26 @@ pre {
 	box-shadow: var(--shadow-subtle);
 	position: relative;
 	margin: 1.5rem 0;
-}
 
-pre::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 2px;
-	background: linear-gradient(90deg, var(--keyword-color), var(--function-color), var(--class-color));
-	border-radius: var(--radius-md) var(--radius-md) 0 0;
-}
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 2px;
+		background: linear-gradient(90deg, var(--keyword-color), var(--function-color), var(--class-color));
+		border-radius: var(--radius-md) var(--radius-md) 0 0;
+	}
 
-pre code {
-	background-color: transparent;
-	padding: 0;
-	border: none;
-	color: var(--text-color);
-	font-size: inherit;
+	code {
+		background-color: transparent;
+		border: none;
+		color: var(--text-color);
+		font-size: inherit;
+		padding: 0;
+		text-wrap: auto;
+	}
 }
 
 /* Syntax Highlighting Classes */
