@@ -82,22 +82,9 @@ const settings:SettingsConfig = {
 		"value": {},
 		"group": "web_extension"
 	},
-	"newTabStylesheet": {
-		"type": "string",
-		"value": '',
-		"group": "web_extension",
-		"options": {
-			displayAs: "textarea",
-		}
-	},
 	"panelAlwaysShowMoveInNewWindow": {
 		"type": "bool",
 		"value": false,
-		"group": "web_extension"
-	},
-	"newTab_folders": {
-		"type": "yaml",
-		"value": '',
 		"group": "web_extension"
 	},
 };
