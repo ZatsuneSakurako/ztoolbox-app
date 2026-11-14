@@ -82,11 +82,6 @@ const settings:SettingsConfig = {
 		"value": {},
 		"group": "web_extension"
 	},
-	"panelAlwaysShowMoveInNewWindow": {
-		"type": "bool",
-		"value": false,
-		"group": "web_extension"
-	},
 };
 
 export default settings;
