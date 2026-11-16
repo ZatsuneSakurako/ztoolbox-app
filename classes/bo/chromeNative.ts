@@ -37,7 +37,6 @@ export interface ClientToServerEvents {
 	getUserscriptData(fileName:string, cb: ResponseCallback<Dict<any>>): void
 	setUserscriptData(fileName:string, newData:Dict<any>|null, cb: ResponseCallback<boolean>): void
 	writeClipboard(data: Record<string, string>, cb: ResponseCallback<boolean>): void
-	nunjucksRender(templateName:string, context: object, async:boolean, cb: ResponseCallback<string>): void
 }
 export interface InterServerEvents {}
 

@@ -19,9 +19,6 @@ import * as fs from "node:fs";
 import {errorToString} from "../src/errorToString.js";
 import {IUserscriptJson} from "./bo/userscript.js";
 import {Userscript} from "../src/userScript/Userscript.js";
-import {appExtensionTemplatesPath} from "./constants.js";
-import {nunjucksEnv} from "../src/nunjucksEnv.js";
-import {sanitizePath} from "../src/sanitizePath.js";
 
 
 export type socket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
@@ -284,36 +281,6 @@ io.on("connection", (socket: socket) => {
 			return;
 		}
 	});
-
-	socket.on('nunjucksRender', async function (templateName, context, async, cb) {
-		try {
-			sanitizePath(path.normalize(`/${templateName.replace(/\.njk$/i, '')}.njk`), appExtensionTemplatesPath);
-		} catch (e) {
-			console.error(e);
-			cb({error: e instanceof Error ? e.message : JSON.stringify(e) });
-			return;
-		}
-
-		try {
-			if (!async) {
-				let result = nunjucksEnv.render(templateName + '.njk', context);
-				cb({error: false, result});
-				return;
-			}
-
-			nunjucksEnv.render(templateName + '.njk', context, function (err, result) {
-				if (err || !result) {
-					cb({error: errorToString(err)})
-					return;
-				}
-				cb({error: false, result});
-			});
-		} catch (e) {
-			console.error(e);
-			cb({error: errorToString(e)});
-			return;
-		}
-	});
 });
 
 export function ping(socket: socket): Promise<'pong'> {
@@ -331,7 +298,7 @@ export function ping(socket: socket): Promise<'pong'> {
 export const webExtensionSettingsGroups = new Set<string>(['theme', 'web_extension']);
 export async function onSettingUpdate(id: string, oldValue: preferenceData['value'], newValue: preferenceData['value']): Promise<void> {
 	const settingConfig = settings.getSettingConfig(id);
-	if (settingConfig && (!settingConfig.group || webExtensionSettingsGroups.has(settingConfig.group))) {
+	if (settingConfig && (!settingConfig.group || !webExtensionSettingsGroups.has(settingConfig.group))) {
 		/**
 		 * Not web extension settings,
 		 * not sending it to sockets
