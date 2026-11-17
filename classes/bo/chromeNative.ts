@@ -31,7 +31,6 @@ export interface ClientToServerEvents {
 	getDefaultValues(cb: ResponseCallback<SettingsConfig>): void
 	ping(cb: ResponseCallback<'pong'>): void
 	openUrl(browserName:string, url: string, cb: ResponseCallback<boolean>): void
-	showSection(sectionName: string, cb: ResponseCallback<'success'>): void
 	updateSocketData(data: Partial<IChromeExtensionData>): void
 	getUserscripts(cb: ResponseCallback<IUserscriptJson[]>): void
 	getUserscriptData(fileName:string, cb: ResponseCallback<Dict<any>>): void

@@ -8,7 +8,6 @@ import {
 	ServerToClientEvents,
 	SocketData,
 } from "./bo/chromeNative.js";
-import {showSection} from "./windowManager.js";
 import {RemoteSocket, Server, Socket} from "socket.io";
 import "../src/websitesData/refreshWebsitesData.js";
 import electron, {BrowserWindow} from "electron";
@@ -97,11 +96,6 @@ io.on("connection", (socket: socket) => {
 
 	socket.on('ping', function (cb) {
 		cb({ error: false, result: 'pong' });
-	});
-
-	socket.on('showSection', function (sectionName, cb) {
-		showSection(sectionName);
-		cb({ error: false, result: 'success' });
 	});
 
 	socket.on('updateSocketData', function (data) {
