@@ -64,15 +64,12 @@ fastifyApp.route<{ Params: { fileName: string } }>({
 		}
 
 		const localAssetPath = path.normalize(`${settings.storageDir}/local-assets`);
-		let matchedFilePath:string|null = null;
 
 		const filePath = path.normalize(`${localAssetPath}/${fileName}`);
 		if (fs.existsSync(filePath)) {
-			matchedFilePath = filePath;
+			return reply.send(fs.readFileSync(filePath, null));
 		}
-
-		if (!matchedFilePath) return reply.status(404).send('Not found');
-		return reply.sendFile(fileName, path.dirname(matchedFilePath));
+		return reply.status(404).send('Not found');
 	}
 });
 fastifyApp.listen({
