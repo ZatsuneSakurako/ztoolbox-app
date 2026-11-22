@@ -34,18 +34,6 @@ async function _wsClientDatasDisplay() {
 		throw new Error('#wsClientDatas not found');
 	}
 
-	const tabPageServerIp_alias = await window.znmApi.getPreferences('tabPageServerIp_alias')
-		.catch(console.error)
-	;
-	if (tabPageServerIp_alias && 'tabPageServerIp_alias' in tabPageServerIp_alias && tabPageServerIp_alias.tabPageServerIp_alias && typeof tabPageServerIp_alias.tabPageServerIp_alias === 'object') {
-		const tagIpAlias  = <Dict<string>>(tabPageServerIp_alias.tabPageServerIp_alias);
-		for (let [, wsClientData] of wsClientDatas) {
-			if (wsClientData.tabData?.ip && wsClientData.tabData.ip in tagIpAlias) {
-				wsClientData.tabData.ipMore = tagIpAlias[wsClientData.tabData.ip] ?? false;
-			}
-		}
-	}
-
 	const elements = await nunjucksRender('_wsClientDatas', {
 		wsClientDatas
 	});

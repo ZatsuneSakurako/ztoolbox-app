@@ -289,7 +289,7 @@ export function ping(socket: socket): Promise<'pong'> {
 	});
 }
 
-export const webExtensionSettingsGroups = new Set<string>(['theme', 'web_extension']);
+export const webExtensionSettingsGroups = new Set<string>(['theme']);
 export async function onSettingUpdate(id: string, oldValue: preferenceData['value'], newValue: preferenceData['value']): Promise<void> {
 	const settingConfig = settings.getSettingConfig(id);
 	if (settingConfig && (!settingConfig.group || !webExtensionSettingsGroups.has(settingConfig.group))) {

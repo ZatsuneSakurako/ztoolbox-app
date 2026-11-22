@@ -18,11 +18,7 @@
 			</div>
 			<div class="data wsClientDatas">
 				{%- if client.tabData and client.tabData.ip -%}
-					{%- if client.tabData.ipMore -%}
-						{{ client.tabData.ipMore }} ({{ client.tabData.ip }})
-					{%- else -%}
-						{{ client.tabData.ip }}
-					{%- endif -%}
+					{{ client.tabData.ip }}
 				{%- endif -%}
 			</div>
 		</article>

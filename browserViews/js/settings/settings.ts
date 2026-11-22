@@ -77,11 +77,6 @@ const settings:SettingsConfig = {
 		"value": false,
 		"group": "website_data"
 	},
-	"tabPageServerIp_alias": {
-		"type": "yaml",
-		"value": {},
-		"group": "web_extension"
-	},
 };
 
 export default settings;

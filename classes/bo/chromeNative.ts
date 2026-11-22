@@ -54,7 +54,6 @@ export interface IChromeExtensionData {
 		url?: string
 		domain?: string
 		ip?: string
-		ipMore: string|false
 		pageRating: string[]
 	} | null
 }
