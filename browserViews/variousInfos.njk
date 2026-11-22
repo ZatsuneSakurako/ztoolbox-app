@@ -1,7 +1,0 @@
-{%- if versions -%}
-	<p>Node.js {{versions.node}}, Chromium {{versions.chrome}}, Electron {{versions.electron}} (current i18next language :&nbsp;<span data-translate-id='language'></span>)</p>
-{%- endif -%}
-
-{%- if processArgv|length > 0 -%}
-	<p>Arguments : {{processArgv|join(', ')}}</p>
-{%- endif -%}

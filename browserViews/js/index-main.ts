@@ -9,55 +9,22 @@ declare var window : BridgedWindow;
 
 
 
-interface IVariousInfosData {
-	versions?: Dict<string>; // NodeJS.ProcessVersions;
-	processArgv?: string[] // NodeJS.Process.argv
-}
 async function refreshData() {
-	const $variousInfos = document.querySelector('#variousInfos');
-	if (!$variousInfos || $variousInfos.classList.contains('loaded')) {
-		console.info('wsClientNames update');
-		const $wsClientNames = document.querySelector<HTMLUListElement>('ul#wsClientNames');
-		if ($wsClientNames) {
-			const elements = await nunjucksRender('_wsClientNames', {
-				wsClientNames: await window.znmApi.getWsClientDatas()
-			});
-			$wsClientNames.replaceWith(...elements);
-		}
-		return;
+	const data = {
+		versions: window.process.versions,
+		getProcessArgv : <string[]>[],
 	}
-	$variousInfos.classList.add('loaded');
-
-	const infosData : IVariousInfosData = {},
-		promises : Promise<any>[] = []
-	;
-
-	infosData.versions = window.process.versions;
-	promises.push(
-		window.znmApi.getProcessArgv()
-			.then(result => {
-				infosData.processArgv = result;
-			})
-			.catch(console.error)
-	);
-	await Promise.allSettled(promises);
-
-	const elements = await nunjucksRender('variousInfos', infosData)
-	const $loader = $variousInfos.querySelector('.loader-container');
-	if ($loader) {
-		$loader.remove();
+	try {
+		data.getProcessArgv = await window.znmApi.getProcessArgv();
+	} catch (e) {
+		console.error(e);
 	}
-	$variousInfos.append(...elements);
+	console.log(data);
 }
 
-window.addEventListener('focus', function () {
-	const input = document.querySelector<HTMLInputElement>('input[name="menu"][type="radio"]:checked');
-	if (input?.value === 'infos') {
-		refreshData()
-			.catch(console.error)
-		;
-	}
-});
+refreshData()
+	.catch(console.error)
+;
 
 window.addEventListener("showSection", function fn(e:ShowSectionEvent) {
 	if (e.detail.newSection !== 'infos') {
