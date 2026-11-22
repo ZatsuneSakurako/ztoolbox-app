@@ -1,5 +1,4 @@
 import {WebsiteData} from "../../browserViews/js/websiteData.js";
-import {i18n} from "../i18next.js";
 import {settings} from "../init.js";
 
 export interface IDoNotifyWebsiteResult {
@@ -8,15 +7,13 @@ export interface IDoNotifyWebsiteResult {
 	href?: string
 }
 export async function doNotifyWebsite(website: string, websiteData: WebsiteData): Promise<IDoNotifyWebsiteResult|void> {
-	const i18ex = await i18n;
-
 	let message : IDoNotifyWebsiteResult|void = undefined;
 	if (!websiteData.logged) {
 		const oldLoggedState = websiteData.notificationState.logged;
 		if (oldLoggedState || oldLoggedState === undefined) {
 			message = {
 				website,
-				message: i18ex('websitesData.website_not_logged', {'website': website}),
+				message: `No ${website} account logged`,
 				href: websiteData.href
 			};
 		}
@@ -25,7 +22,7 @@ export async function doNotifyWebsite(website: string, websiteData: WebsiteData)
 		if (settings.getBoolean('notify_checkedData')) {
 			message = {
 				website,
-				message: i18ex('websitesData.count_new_notif', {'count': websiteData.count}),
+				message: `${websiteData.count} new notification`,
 				href: websiteData.href
 			};
 		}

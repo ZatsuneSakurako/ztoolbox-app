@@ -1,6 +1,5 @@
 import './index-main.js';
 import './settings.js';
-import {loadTranslations} from "./translation-api.js";
 import {themeCacheUpdate, themeOnLoad} from "./theme/theme.js";
 import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
@@ -16,10 +15,6 @@ declare var window : BridgedWindow;
 
 
 const defaultMenu = 'main';
-
-loadTranslations()
-	.catch(console.error)
-;
 
 document.addEventListener('click', function (evt) {
 	const element = (<HTMLElement>evt.target).closest('[data-refresh-websites]');

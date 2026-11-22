@@ -14,11 +14,13 @@ const settings:SettingsConfig = {
 				"label": "Light"
 			}
 		],
+		"title": "Theme",
 		"group": "theme"
 	},
 	"background_color": {
 		"type": "color",
 		"value": "#000000",
+		"title": "Background color",
 		"group": "theme"
 	},
 
@@ -28,18 +30,24 @@ const settings:SettingsConfig = {
 		"opts": {
 			"asText": true,
 			"asFile": true
-		}
+		},
+		"title": "Settings storage",
 	},
 	"autostart": {
 		"type": "bool",
-		"value": false
+		"value": false,
+		"title": "Launch on login",
+		"description": "Directory to use",
 	},
 	"hourlyNotification": {
 		"type": "bool",
-		"value": false
+		"value": false,
+		"title": "Hourly notification",
 	},
 	"testNotification": {
-		"type": "button"
+		"type": "button",
+		"title": "Notification test",
+		"description": "Send a notification (result in the console)",
 	},
 
 
@@ -47,7 +55,8 @@ const settings:SettingsConfig = {
 	"check_enabled": {
 		"type": "bool",
 		"value": false,
-		"group": "website_data"
+		"group": "website_data",
+		"title": "Automatic deviantArt/freshRss data refresh enabled",
 	},
 	"check_delay": {
 		"type": "integer",
@@ -56,16 +65,19 @@ const settings:SettingsConfig = {
 		"maxValue": 60,
 		"stepValue": 5,
 		"rangeInput": true,
+		"title":  "deviantArt/freshRss verification delay (minutes)",
 		"group": "website_data"
 	},
 	"freshRss_baseUrl": {
 		"type": "string",
 		"value": '',
+		"title": "URL of your FreshRss instance (should end with /i/)",
 		"group": "website_data"
 	},
 	"notify_checkedData": {
 		"type": "bool",
 		"value": true,
+		"title": "Show a notification for deviantArt/freshRss",
 		"group": "website_data"
 	},
 };

@@ -6,10 +6,10 @@ block header
 	header
 		label.tab(for='main')
 			i.material-symbols-rounded home_repair_service
-			span(data-translate-id="main") Main
+			span Main
 		label.tab(for='settings')
 			i.material-symbols-rounded settings
-			span(data-translate-id="settings") Settings
+			span Settings
 
 block head-css
 
@@ -28,7 +28,6 @@ block append head-js
 	script(src="js/_fix_exports.js")
 	script(src="js/_import-map-loader.js")
 	script(src='js/settings/settings.js', type='lazy-module')
-	script(src='js/translation-api.js', type='lazy-module')
 	script(src='js/theme/color.js', type='lazy-module')
 	script(src='js/theme/theme.js', type='lazy-module')
 	script(src='js/index.js', type='lazy-module')

@@ -106,7 +106,6 @@ const znmApi:IZnmApi = {
 	nonce: () => ipcRendererInvoke('nonce-ipc'),
 	openExternal: (url: string) => ipcRendererInvoke('openExternal', url),
 	preferenceFileDialog: (prefId) => ipcRendererInvoke('preferenceFileDialog', prefId),
-	_: (key:string) => ipcRendererInvoke('i18n', key),
 	getWsClientDatas: () => ipcRendererInvoke('getWsClientDatas'),
 	moveWsClientUrl: (data, targetId) => ipcRendererInvoke('moveWsClientUrl', data, targetId),
 	getUpdateStatus: () => ipcRendererInvoke('getUpdateStatus'),

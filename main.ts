@@ -9,9 +9,8 @@ import {SettingConfig} from "./classes/bo/settings.js";
 import './src/contentSecurityPolicy.js';
 import './src/contextMenu.js';
 import './src/hourlyAlarm.js';
-import {i18n} from "./src/i18next.js";
 import './src/manageProtocolAndAutostart.js';
-import {appRootPath, resourcePath} from "./classes/constants.js";
+import {resourcePath} from "./classes/constants.js";
 import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 import {settings} from "./src/init.js";
 import ini from "ini";
@@ -100,27 +99,12 @@ ipcMain.handle('preferenceFileDialog', async function (event, prefId:string): Pr
 	if (!mainWindow) return 'NO_MAIN_WINDOW';
 
 	const conf:SettingConfig|undefined = settings.getSettingConfig(prefId);
-	let title:string|undefined = undefined,
-		buttonLabel:string|undefined = undefined
-	;
 
 	if (!conf || !(conf.type === 'path' || conf.type === 'paths')) {
 		return 'SETTINGS_TYPE';
 	}
 
-	const _ = await i18n;
-	title = _(`preferences.${prefId}_WTitle`, {
-		nsSeparator: '.',
-		defaultValue: ''
-	});
-	buttonLabel = _(`preferences.${prefId}_WButton`, {
-		nsSeparator: '.',
-		defaultValue: ''
-	});
-
 	const opts : Electron.OpenDialogOptions = {
-		title,
-		buttonLabel,
 		properties: [
 			(conf.opts.asFile === true ? 'openDirectory' : 'openFile'),
 			'dontAddToRecent',
@@ -174,13 +158,6 @@ ipcMain.handle('doUpdate', async function (event) {
 
 ipcMain.handle('parseIni', async function (event, rawContent:string) {
 	return ini.parse(rawContent);
-});
-
-ipcMain.handle('i18n', async (event, key) => {
-	const _ = await i18n;
-	return _(key, {
-		defaultValue: ''
-	});
 });
 
 ipcMain.handle('getProcessArgv', () => {

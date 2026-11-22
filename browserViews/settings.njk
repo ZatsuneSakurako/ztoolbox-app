@@ -1,20 +1,21 @@
+{% set labels = {
+	"group_default": "Default",
+	"group_theme": "Theme",
+	"group_website_data": "Website data"
+} %}
+
 <form id="settingsForm">
 	{% for group in groups %}
 		<input class="hidden" type="radio" name="setting-group" value="{{ group }}"
 			   id="setting-group-{{ group }}" data-on-group-change="" {% if group == selected_group %} checked{% endif %}/>
-		<label class="tab setting-group"
-			   for="setting-group-{{ group }}"
-			   data-translate-id="group_{{ group }}"></label>
+		<label class="tab setting-group" for="setting-group-{{ group }}">{{ labels['group_' ~ group] | default(group) }}</label>
 	{% endfor %}
 	{% for group, list in settingsByGroup %}
 		{% for id, conf in list %}
 			<div class="pref-group{% if group != selected_group %} group-hidden{% endif %}" data-group-show="{{ group }}">
 				<div class="pref-container">
 					{% if conf.type in ['color', 'string', 'integer', 'json', 'yaml', 'path', 'paths'] %}
-						<label
-							for="pref-{{ id }}"
-							data-translate-id="preferences.{{ id }}_title"
-							data-translate-title="preferences.{{ id }}_description"></label>
+						<label for="pref-{{ id }}" title="{{ conf.description }}">{{ conf.title }}</label>
 					{% endif %}
 
 					{% if conf.type == 'string' and conf.options.displayAs == 'textarea' %}
@@ -27,8 +28,7 @@
 
 					{% if conf.type in ['button'] %}
 						<button id="pref-{{ id }}" name="{{ id }}" type="button"
-								data-translate-id="preferences.{{ id }}_title"
-								data-translate-title="preferences.{{ id }}_description"  disabled="disabled"></button>
+								title="{{ conf.description }}" disabled="disabled">{{ conf.title }}</button>
 					{% endif %}
 
 					{% if conf.type == 'path' and conf.opts.asText %}
@@ -61,8 +61,7 @@
 							data-on-click-path-setting="{{ id }}" />
 
 						<label class="button" for="pref-{{ id }}_file"
-							role="button"
-							data-translate-id="{% if conf.opts.asFile %}select_file{% else %}select_path{% endif %}"></label>
+							role="button">{% if conf.opts.asFile %}Select file{% else %}Select directory{% endif %}</label>
 					{% endif %}
 
 					{% if conf.type in ['bool'] %}
@@ -71,9 +70,7 @@
 							   name="{{ id }}"
 							   data-on-change=""
 							   disabled="disabled" />
-						<label
-							for="pref-{{ id }}" data-translate-id="preferences.{{ id }}_title"
-							data-translate-title="preferences.{{ id }}_description"></label>
+						<label for="pref-{{ id }}" title="{{ conf.description }}">{{ conf.title }}</label>
 					{% endif %}
 
 					{% if conf.type == 'menulist' %}
@@ -81,20 +78,16 @@
 							{% for choice in conf.options %}
 								<input type="radio" id="pref-{{ id }}-{{ choice.value }}" name="{{ id }}"
 									   value="{{ choice.value }}" data-on-change="" disabled="disabled"/>
-								<label
-									for="pref-{{ id }}-{{ choice.value }}"
-									data-translate-id="preferences.{{ id }}-options-{{ choice.value }}"
-									data-translate-title="preferences.{{ id }}_description"></label>
+								<label for="pref-{{ id }}-{{ choice.value }}" title="{{ conf.description }}">{{ choice.label }}</label>
 							{% endfor %}
 						{% else %}
-							<label for="pref-{{ id }}" data-translate-id="preferences.{{ id }}_title"
-								   data-translate-title="preferences.{{ id }}_description"></label>
+							<label for="pref-{{ id }}" title="{{ conf.description }}">{{ conf.title }}</label>
 							<select
 								id="pref-{{ id }}" name="{{ id }}"
 								data-on-change=""
 								disabled="disabled">
 								{% for choice in conf.options %}
-									<option value="{{ choice.value }}" data-translate-id="preferences.{{ id }}-options-{{ choice.value }}"></option>
+									<option value="{{ choice.value }}">{{ choice.label }}</option>
 								{% endfor %}
 							</select>
 						{% endif %}

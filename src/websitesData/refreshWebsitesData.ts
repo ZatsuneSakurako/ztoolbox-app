@@ -1,7 +1,6 @@
 import {IJsonWebsiteData} from "../../browserViews/js/bo/websiteData.js";
 import {ZAlarm} from "../../classes/ZAlarm.js";
 import electron, {app, BrowserWindow, ipcMain, session} from "electron";
-import {i18n} from "../i18next.js";
 import {websitesData, websitesDataLastRefresh} from "../../classes/Settings.js";
 import {JsonSerialize} from "../../classes/JsonSerialize.js";
 import {WebsiteData} from "../../browserViews/js/websiteData.js";
@@ -166,13 +165,10 @@ export async function refreshWebsitesData() {
 	}
 
 	if (notificationMessage.length) {
-		const i18ex = await i18n;
 		sendNotification({
-			'title': i18ex('websitesData.website_notif', {
-				'websites': notificationMessage
+			'title': "Notification " + notificationMessage
 					.map(value => value.website)
-					.join(', ')
-			}),
+					.join(', '),
 			'message': notificationMessage
 				.map(value => {
 					return notificationMessage.length > 1 ? `${value.website} : ${value.message}` : value.message

@@ -7,12 +7,16 @@ interface Dict<T> {
 
 interface IButtonConfig {
 	type: 'button',
-	group?: string
+	group?: string,
+	title: string
+	description?: string
 }
 
 interface IConfigBase<T extends SettingValues> {
 	value: T,
-	group?: string
+	group?: string,
+	title: string
+	description?: string
 }
 
 interface IStringConfig extends IConfigBase<string> {

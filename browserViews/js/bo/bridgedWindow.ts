@@ -12,7 +12,6 @@ export interface IZnmApi {
 	nonce(): Promise<string>
 	openExternal(url: string): Promise<void>
 	preferenceFileDialog(prefId:string): Promise<{ canceled: boolean, filePaths: string[] }|string>
-	_(key: string): Promise<string>
 	getWsClientDatas(): Promise<Dict<IChromeExtensionData>>
 	moveWsClientUrl(data: IWsMoveSourceData, targetId: string): Promise<void>
 	getUpdateStatus(): Promise<IUpdateStatus>
