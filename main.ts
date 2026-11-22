@@ -54,18 +54,6 @@ fastifyApp.register(fastifyStatic, {
 		return /\.(css|js|json|map|woff2?)$/.test(pathName);
 	},
 });
-fastifyApp.register(fastifyStatic, {
-	root: path.join(resourcePath, 'browserViews/local-assets'),
-	prefix: '/local-assets/',
-	allowedPath(pathName) {
-		const extension = path.extname(pathName);
-		return /^\.(?:png|jpe?g|svg|web[pm])$/i.test(extension) && !pathName.split(/[\/\\]/).some(part => part.startsWith('.'));
-	},
-	cacheControl: true,
-	decorateReply: true,
-	serveDotFiles: false,
-});
-const localAssetDefaultPath = path.join(resourcePath, 'browserViews/local-assets');
 fastifyApp.route<{ Params: { fileName: string } }>({
 	method: ['GET', 'POST'],
 	url: '/local-assets/:fileName',
@@ -76,18 +64,14 @@ fastifyApp.route<{ Params: { fileName: string } }>({
 			return reply.status(404).send('Not found');
 		}
 
-		const localAssetPaths = new Set<string>([
-			localAssetDefaultPath,
-			path.normalize(`${settings.storageDir}/local-assets`),
-		]);
+		const localAssetPath = path.normalize(`${settings.storageDir}/local-assets`);
 		let matchedFilePath:string|null = null;
-		for (let localAssetPath of localAssetPaths) {
-			const filePath = path.normalize(`${localAssetPath}/${fileName}`);
-			if (!fs.existsSync(filePath)) continue;
 
+		const filePath = path.normalize(`${localAssetPath}/${fileName}`);
+		if (fs.existsSync(filePath)) {
 			matchedFilePath = filePath;
-			break;
 		}
+
 		if (!matchedFilePath) return reply.status(404).send('Not found');
 		return reply.sendFile(fileName, path.dirname(matchedFilePath));
 	}

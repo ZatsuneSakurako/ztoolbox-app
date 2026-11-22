@@ -5,6 +5,10 @@
 /browserViews/*.html
 /browserViews/js/**/*.js
 /browserViews/js/mime-db_extensions.json
+
+# TODO remove later
+/browserViews/local-assets
+
 **/*.map
 **/*.d.ts
 /*.js
