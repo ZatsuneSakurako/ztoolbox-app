@@ -1,12 +1,9 @@
-import {VersionState} from "../../../classes/bo/versionState.js";
 import {RandomJsonData} from "../../../classes/bo/settings.js";
 import {NotificationResponse} from "../../../classes/bo/notify.js";
 import {Dict} from "./Dict.js";
 import {IJsonWebsiteData} from "./websiteData.js";
 import {IChromeExtensionData, IWsMoveSourceData} from "../../../classes/bo/chromeNative.js";
 import {IUpdateStatus} from "./update.js";
-import {getNetworkIps} from "../../../src/getNetConnectionAddress.js";
-import {MapValueType} from "./MapValueType.js";
 import {ShowSectionEvent} from "./showSectionEvent.js";
 
 export type PreferenceTypes = 'string' | 'boolean' | 'number' | 'date'
@@ -24,7 +21,6 @@ export interface IZnmApi {
 	parseIni(rawContent: string): Promise<Dict<any>>
 
 	getProcessArgv(): Promise<string[]>
-	getVersionState(): Promise<VersionState|null>
 
 	getPreference(preferenceId: string): Promise<RandomJsonData|undefined>
 	getPreference(preferenceId: string, type?:'string'): Promise<string|undefined>
@@ -38,8 +34,6 @@ export interface IZnmApi {
 	sendNotification(message: string, title?: string, sound?: boolean): Promise<NotificationResponse>
 
 	nunjucksRender(templateName: string, context: any): Promise<string>
-
-	getNetworkIps(): Promise<Dict<MapValueType<ReturnType<typeof getNetworkIps>>>>
 
 	onFocus(cb: () => void): void
 

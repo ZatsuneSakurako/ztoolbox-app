@@ -3,7 +3,6 @@ import fastifyStatic from '@fastify/static';
 import * as path from "node:path";
 import {sendNotification} from "./classes/notify.js";
 import {PreferenceTypes} from "./browserViews/js/bo/bridgedWindow.js";
-import {versionState} from "./classes/versionState.js";
 import {fastifyApp, getWsClientDatas, moveWsClientUrl} from "./classes/chromeNative.js";
 import {createWindow, getMainWindow} from "./classes/windowManager.js";
 import {SettingConfig} from "./classes/bo/settings.js";
@@ -13,7 +12,6 @@ import './src/hourlyAlarm.js';
 import {i18n} from "./src/i18next.js";
 import './src/manageProtocolAndAutostart.js';
 import {appRootPath, resourcePath} from "./classes/constants.js";
-import {getNetworkIps} from "./src/getNetConnectionAddress.js";
 import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
 import {settings} from "./src/init.js";
 import ini from "ini";
@@ -205,10 +203,6 @@ ipcMain.handle('getProcessArgv', () => {
 	return process.argv;
 });
 
-ipcMain.handle('getVersionState', async () => {
-	return versionState(appRootPath);
-});
-
 ipcMain.handle('getPreference', (e, preferenceId:string, type?:PreferenceTypes) => {
 	if (!!type) {
 		switch (type) {
@@ -255,17 +249,6 @@ ipcMain.handle('nunjucksRender', async (e, templateName:string, context:any) => 
 
 ipcMain.handle('markdownRender', async (e, markdownContent:string) => {
 	return markdownRender(markdownContent);
-});
-
-ipcMain.handle('getNetworkIps', async (e) => {
-	try {
-		return Object.fromEntries(
-			getNetworkIps().entries()
-		);
-	} catch (e) {
-		console.error(e);
-		return null;
-	}
 });
 
 

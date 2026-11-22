@@ -115,7 +115,6 @@ const znmApi:IZnmApi = {
 	parseIni: (rawString:string)=> ipcRendererInvoke('parseIni', rawString),
 
 	getProcessArgv: () => ipcRendererInvoke('getProcessArgv'),
-	getVersionState: () => ipcRendererInvoke('getVersionState'),
 
 	getPreference(preferenceId:string, type?:PreferenceTypes) {
 		return ipcRendererInvoke('getPreference', preferenceId, type)
@@ -133,10 +132,6 @@ const znmApi:IZnmApi = {
 
 	nunjucksRender(templateName:string, context:any) {
 		return ipcRendererInvoke('nunjucksRender', templateName, context)
-	},
-
-	getNetworkIps() {
-		return ipcRendererInvoke('getNetworkIps');
 	},
 
 	onFocus(cb: () => void) {

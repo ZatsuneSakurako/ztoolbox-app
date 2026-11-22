@@ -1,9 +1,7 @@
 import {BridgedWindow} from "./bo/bridgedWindow.js";
 import {ShowSectionEvent} from "./bo/showSectionEvent.js";
-import {VersionState} from "../../classes/bo/versionState.js";
 import {Dict} from "./bo/Dict.js";
 import {nunjucksRender} from "./nunjucksRenderHelper.js";
-import {getNetworkIps} from "../../src/getNetConnectionAddress.js";
 
 declare var window : BridgedWindow;
 
@@ -14,8 +12,6 @@ declare var window : BridgedWindow;
 interface IVariousInfosData {
 	versions?: Dict<string>; // NodeJS.ProcessVersions;
 	processArgv?: string[] // NodeJS.Process.argv
-	versionState?: VersionState | null
-	networkIps?: ReturnType<typeof getNetworkIps>
 }
 async function refreshData() {
 	const $variousInfos = document.querySelector('#variousInfos');
@@ -41,24 +37,6 @@ async function refreshData() {
 		window.znmApi.getProcessArgv()
 			.then(result => {
 				infosData.processArgv = result;
-			})
-			.catch(console.error)
-	);
-	promises.push(
-		window.znmApi.getVersionState()
-			.then(result => {
-				infosData.versionState = result;
-			})
-			.catch(console.error)
-	);
-	promises.push(
-		window.znmApi.getNetworkIps()
-			.then(result => {
-				infosData.networkIps = new Map();
-				for (let [name, value] of Object.entries(result)) {
-					if (value === undefined) continue;
-					infosData.networkIps.set(name, value);
-				}
 			})
 			.catch(console.error)
 	);
