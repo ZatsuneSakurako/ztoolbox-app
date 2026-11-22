@@ -29,12 +29,6 @@ export async function doNotifyWebsite(website: string, websiteData: WebsiteData)
 				href: websiteData.href
 			};
 		}
-	} else if (settings.getBoolean('notify_all_viewed') && websiteData.count === 0 && websiteData.notificationState.count > 0) {
-		message = {
-			website,
-			message: i18ex('websitesData.all_viewed'),
-			href: websiteData.href
-		};
 	}
 
 	websiteData.notificationState.count = websiteData.count;

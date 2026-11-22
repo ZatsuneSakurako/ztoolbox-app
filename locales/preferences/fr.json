@@ -3,7 +3,6 @@
 	"storageDir_title": "Stockage des options",
 	"storageDir_description": "Dossier à utiliser",
 	"hourlyNotification_title": "Notification par heure",
-	"clipboardWatch_title": "Observer le presse-papier",
 	"installChromeMessaging_title": "Installation chrome native",
 	"installChromeMessaging_title_off": "Désinstallation chrome native",
 	"installChromeMessaging_description": "Autoriser la connexion de l'app avec les navigateurs",
@@ -28,6 +27,5 @@
 	"check_enabled_title": "Rafraichissement des données deviantArt/freshRss automatiques activé",
 	"check_delay_title":  "Délais de vérification de deviantArt/freshRss (minutes)",
 	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
-	"notify_checkedData_title": "Affiche une notification pour deviantArt/freshRss",
-	"notify_all_viewed_title": "Affiche une notification quand tout est vu pour un/des site(s)"
+	"notify_checkedData_title": "Affiche une notification pour deviantArt/freshRss"
 }

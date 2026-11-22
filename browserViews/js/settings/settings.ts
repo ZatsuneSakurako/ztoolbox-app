@@ -38,10 +38,6 @@ const settings:SettingsConfig = {
 		"type": "bool",
 		"value": false
 	},
-	"clipboardWatch": {
-		"type": "bool",
-		"value": false
-	},
 	"testNotification": {
 		"type": "button"
 	},
@@ -70,11 +66,6 @@ const settings:SettingsConfig = {
 	"notify_checkedData": {
 		"type": "bool",
 		"value": true,
-		"group": "website_data"
-	},
-	"notify_all_viewed": {
-		"type": "bool",
-		"value": false,
 		"group": "website_data"
 	},
 };
