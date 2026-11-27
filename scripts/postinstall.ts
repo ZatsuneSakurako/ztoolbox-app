@@ -41,14 +41,6 @@ fs.writeFileSync(path.resolve(libPath, './material-symbols/material-symbols.css'
 	{ encoding: 'utf-8' }
 );
 
-fs.cpSync(path.resolve(currentPath, './node_modules/monaco-editor/min'), path.resolve(libPath, './vscode'), {
-	recursive: true,
-});
-
-fs.cpSync(path.resolve(currentPath, './node_modules/requirejs/require.js'), path.resolve(libPath, './requirejs/requirejs.js'), {
-	recursive: true,
-});
-
 fs.cpSync(path.resolve(currentPath, './node_modules/@highlightjs/cdn-assets'), path.resolve(libPath, './@highlightjs/cdn-assets'), {
 	recursive: true,
 });

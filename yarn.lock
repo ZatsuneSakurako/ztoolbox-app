@@ -935,13 +935,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/trusted-types@npm:^2.0.7":
-  version: 2.0.7
-  resolution: "@types/trusted-types@npm:2.0.7"
-  checksum: 10/8e4202766a65877efcf5d5a41b7dd458480b36195e580a3b1085ad21e948bc417d55d6f8af1fd2a7ad008015d4117d5fdfe432731157da3c68678487174e4ba3
-  languageName: node
-  linkType: hard
-
 "@types/undertaker-registry@npm:*":
   version: 1.0.1
   resolution: "@types/undertaker-registry@npm:1.0.1"
@@ -2272,18 +2265,6 @@ __metadata:
   dependencies:
     domelementtype: "npm:^3.0.0"
   checksum: 10/370e7c121cf3223a5aa21ce03666189eebac8d5b16af83efc221a93ed4f6c7b9f2cf2cc92ef7d50cbbd05787e1fbad42ec3c4717f6eb578667280443b94ffe10
-  languageName: node
-  linkType: hard
-
-"dompurify@npm:3.4.8":
-  version: 3.4.8
-  resolution: "dompurify@npm:3.4.8"
-  dependencies:
-    "@types/trusted-types": "npm:^2.0.7"
-  dependenciesMeta:
-    "@types/trusted-types":
-      optional: true
-  checksum: 10/d661322889a8938bfb99ee27853e9e78661949398e803f344865fd94f8378a494efadd329faea0b16e8085efae1bfeed5f5df372909c3a2be3e583686a0a48fa
   languageName: node
   linkType: hard
 
@@ -4212,15 +4193,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:14.0.0":
-  version: 14.0.0
-  resolution: "marked@npm:14.0.0"
-  bin:
-    marked: bin/marked.js
-  checksum: 10/5f69e58e177bde75fb6145127c939c096d05494c5dff92d73af8a550097d6631c82e919f8a375e3743379a2623418151086b925a902a2be123590b887716f2bb
-  languageName: node
-  linkType: hard
-
 "marked@npm:^18.0.11":
   version: 18.0.11
   resolution: "marked@npm:18.0.11"
@@ -4516,16 +4488,6 @@ __metadata:
   bin:
     mkdirp: bin/cmd.js
   checksum: 10/d71b8dcd4b5af2fe13ecf3bd24070263489404fe216488c5ba7e38ece1f54daf219e72a833a3a2dc404331e870e9f44963a33399589490956bff003a3404d3b2
-  languageName: node
-  linkType: hard
-
-"monaco-editor@npm:^0.56.0":
-  version: 0.56.0
-  resolution: "monaco-editor@npm:0.56.0"
-  dependencies:
-    dompurify: "npm:3.4.8"
-    marked: "npm:14.0.0"
-  checksum: 10/18a9d532259d758cc4a0740e4b3460a95a4b6b41eba6d29f5247b69e89a6085bd484ed0e95835d3a3155b3f2deb0108e22e94e1c0bf3e72591bb9e1609d4bde0
   languageName: node
   linkType: hard
 
@@ -5503,16 +5465,6 @@ __metadata:
   version: 2.0.2
   resolution: "require-from-string@npm:2.0.2"
   checksum: 10/839a3a890102a658f4cb3e7b2aa13a1f80a3a976b512020c3d1efc418491c48a886b6e481ea56afc6c4cb5eef678f23b2a4e70575e7534eccadf5e30ed2e56eb
-  languageName: node
-  linkType: hard
-
-"requirejs@npm:^2.3.8":
-  version: 2.3.8
-  resolution: "requirejs@npm:2.3.8"
-  bin:
-    r.js: bin/r.js
-    r_js: bin/r.js
-  checksum: 10/7ac26361aecd819abab6a88d0a09beb2e1bb402050bce2ae1c6d5826bfa932c1cc7ab523a8e9bb2cc60c961da4df4ffdaba7e46bae10b12147368f7957a8f280
   languageName: node
   linkType: hard
 
@@ -7006,11 +6958,9 @@ __metadata:
     material-symbols: "npm:^0.47.0"
     mime-db: "npm:^1.54.0"
     mime-types: "npm:^3.0.2"
-    monaco-editor: "npm:^0.56.0"
     nunjucks: "npm:^3.2.4"
     protocol-registry: "npm:^2.0.0"
     pug: "npm:^3.0.4"
-    requirejs: "npm:^2.3.8"
     sanitize-html: "npm:^2.17.7"
     shelljs: "npm:^0.10.0"
     simple-git: "npm:^3.36.0"

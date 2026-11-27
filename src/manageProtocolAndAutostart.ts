@@ -18,7 +18,6 @@ import {sendNotification} from "../classes/notify.js";
 import {settings} from "./init.js";
 import fs from "node:fs";
 import ini from "ini";
-import {createZEditorWindow} from "../classes/zEditor.js";
 
 
 
@@ -135,11 +134,6 @@ export function onOpen(commandLine:string[]) {
 						})
 							.catch(console.error);
 					}
-					break;
-				case 'md':
-					console.info('opening .md file');
-					createZEditorWindow(value)
-						.catch(console.error);
 					break;
 				default:
 					console.error('unsupported file : ', value);

@@ -2,7 +2,6 @@ import {app, Menu} from "electron";
 import {showWindow, toggleWindow} from "../classes/windowManager.js";
 import {appIcon} from "../classes/constants.js";
 import {newTray} from "./tray.js";
-import {createZEditorWindow} from "../classes/zEditor.js";
 
 let contextMenu:Menu|null = null;
 function onReady() {
@@ -12,14 +11,6 @@ function onReady() {
 			type: 'normal',
 			click() {
 				showWindow();
-			}
-		},
-		{
-			label: 'Ouvrir Z-Editor',
-			type: 'normal',
-			click() {
-				createZEditorWindow()
-					.catch(console.error);
 			}
 		},
 
