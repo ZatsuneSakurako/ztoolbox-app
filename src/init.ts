@@ -1,7 +1,8 @@
 import {app, BrowserWindow} from "electron";
-import {Settings, websitesData} from "../classes/Settings.js";
+import {websitesData} from "../classes/Settings.js";
 import {onSettingUpdate} from "../classes/chromeNative.js";
 import {onOpen, updateAutoStart} from "./manageProtocolAndAutostart.js";
+import {settings} from "../classes/Settings.js";
 
 if (app.requestSingleInstanceLock()) {
 	app.whenReady().then(() => {
@@ -14,8 +15,6 @@ if (app.requestSingleInstanceLock()) {
 	app.quit();
 	process.exit();
 }
-
-export const settings = new Settings();
 
 function onReady() {
 	// Check if currently opened for a ztoolbox://*

@@ -4,7 +4,7 @@ import {UserscriptMeta} from "./UserscriptMeta.js";
 import ts from "typescript";
 import {appRootPath} from "../../classes/constants.js";
 import {IUserscriptJson} from "../../classes/bo/userscript.js";
-import {settings} from "../init.js";
+import {settings} from "../../classes/Settings.js";
 import {Dict} from "../../browserViews/js/bo/Dict.js";
 
 

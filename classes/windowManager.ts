@@ -3,7 +3,6 @@ import {appIcon, appIconPath, browserViewPath} from "./constants.js";
 import path from "node:path";
 import {addBadgeToImage} from "../src/addBadgeToImage.js";
 import {getTray} from "../src/tray.js";
-import {getWebsitesCount} from "../src/websitesData/refreshWebsitesData.js";
 
 const __dirname = import.meta.dirname;
 
@@ -21,8 +20,8 @@ export async function setBadge(count?: number) {
 		currentBadgeCount = count;
 	} else {
 		try {
-			// If no count, take the existing badge count, or read websites data directly
-			count ??= currentBadgeCount ?? await getWebsitesCount();
+			// If no count, take the existing badge count
+			count ??= currentBadgeCount;
 		} catch (e) {
 			console.error(e);
 		}
@@ -56,13 +55,6 @@ export async function setBadge(count?: number) {
 	} else {
 		app.setBadgeCount();
 	}
-}
-
-if (process.platform === 'linux') {
-	app.whenReady().then(() => {
-		setBadge()
-			.catch(console.error);
-	});
 }
 
 export function createWindow(showSection?: string) {

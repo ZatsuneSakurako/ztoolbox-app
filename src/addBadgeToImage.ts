@@ -4,7 +4,6 @@ import * as jimpPrint from '@jimp/plugin-print';
 import {SANS_14_BLACK} from '@jimp/plugin-print/fonts';
 import {loadFont} from '@jimp/plugin-print/load-font';
 import * as resize from "@jimp/plugin-resize";
-import * as jimpUtils from '@jimp/utils';
 
 export async function addBadgeToImage(imagePath: string, badgeNumber: number): Promise<Buffer> {
 	try {
@@ -45,7 +44,7 @@ export async function addBadgeToImage(imagePath: string, badgeNumber: number): P
 					dy = y - posY,
 					distance = Math.sqrt(dx * dx + dy * dy);
 				if (distance <= circleRadius) {
-					image.setPixelColor(jimpUtils.cssColorToHex('#FF0000'), x, y);
+					image.setPixelColor(0xFF0000FF, x, y);
 				}
 			}
 		}

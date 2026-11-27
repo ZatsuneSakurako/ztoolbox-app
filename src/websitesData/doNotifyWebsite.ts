@@ -1,5 +1,5 @@
 import {WebsiteData} from "../../browserViews/js/websiteData.js";
-import {settings} from "../init.js";
+import {settings} from "../../classes/Settings.js";
 
 export interface IDoNotifyWebsiteResult {
 	website: string

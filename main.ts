@@ -12,7 +12,7 @@ import './src/hourlyAlarm.js';
 import './src/manageProtocolAndAutostart.js';
 import {resourcePath} from "./classes/constants.js";
 import {IWsMoveSourceData} from "./classes/bo/chromeNative.js";
-import {settings} from "./src/init.js";
+import {settings} from "./classes/Settings.js";
 import ini from "ini";
 import * as update from './src/update.js';
 import fs from "node:fs";

@@ -15,7 +15,7 @@ import {app} from "electron";
 import {JsonSerialize} from "./JsonSerialize.js";
 import {Dict} from "../browserViews/js/bo/Dict.js";
 
-const settings : SettingsConfig = (await import("../browserViews/js/settings/settings.js")).default;
+const settingsConfig : SettingsConfig = (await import("../browserViews/js/settings/settings.js")).default;
 
 type DebouncedFunc<T extends (...args: any) => any> = ReturnType<typeof debounce<T>>;
 
@@ -35,7 +35,7 @@ export class Settings extends EventEmitter implements ISettings {
 	/**
 	 * @inheritDoc
 	 */
-	constructor() {
+	private constructor() {
 		super();
 
 		this.#defaultStorageDir = path.normalize(app.getPath('userData'));
@@ -94,6 +94,12 @@ export class Settings extends EventEmitter implements ISettings {
 	}
 
 
+
+	static #instance:Settings|null = null;
+	static get instance() {
+		this.#instance = this.#instance ?? new Settings();
+		return this.#instance;
+	}
 
 	get #defaultStoragePath(): string {
 		return path.normalize(`${this.#defaultStorageDir}${defaultStorageFilename}`);
@@ -190,7 +196,7 @@ export class Settings extends EventEmitter implements ISettings {
 	getDefaultValues(): SettingsConfig {
 		const output : Dict<SettingValues> = {};
 
-		for (const [name, settingConf] of Object.entries(settings)) {
+		for (const [name, settingConf] of Object.entries(settingsConfig)) {
 			if (!settingConf || settingConf.type === 'button') continue;
 			output[name] = settingConf.value;
 		}
@@ -199,11 +205,11 @@ export class Settings extends EventEmitter implements ISettings {
 	}
 
 	getSettingConfig(key:string):SettingConfig|undefined {
-		return settings[key];
+		return settingsConfig[key];
 	}
 
 	getSettingConfigs():SettingsConfig|undefined {
-		return settings;
+		return settingsConfig;
 	}
 
 	getDefaultValue(key: string): RandomJsonData | undefined {
@@ -385,3 +391,5 @@ export class Settings extends EventEmitter implements ISettings {
 		return result;
 	}
 }
+
+export const settings = Settings.instance;

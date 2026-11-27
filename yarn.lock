@@ -592,13 +592,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sass/types@npm:^1.93":
-  version: 1.93.2
-  resolution: "@sass/types@npm:1.93.2"
-  checksum: 10/debbfaca939ccddf78d4ddaa553e8b20ed6dd61d61068d0dd9620346dcdb4aa1a5fba05048d4c779e31388e9e6692239c8e1dd39b475b0c5d0904edd8c1f67db
-  languageName: node
-  linkType: hard
-
 "@sideway/address@npm:^4.1.5":
   version: 4.1.5
   resolution: "@sideway/address@npm:4.1.5"
@@ -756,16 +749,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/gulp-sass@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@types/gulp-sass@npm:6.0.0"
-  dependencies:
-    "@sass/types": "npm:^1.93"
-    "@types/node": "npm:*"
-  checksum: 10/be3ef4c77626337230a567b77934c76bb05f9ae87bcac76af5ee9dbefcf3e9a501f2bd6561d871385b9ec6a7d0b885ea498049dbc059ab8290c8c8e96900380f
-  languageName: node
-  linkType: hard
-
 "@types/gulp@npm:^4.0.18":
   version: 4.0.18
   resolution: "@types/gulp@npm:4.0.18"
@@ -821,13 +804,6 @@ __metadata:
   version: 1.43.6
   resolution: "@types/mime-db@npm:1.43.6"
   checksum: 10/e2327553a5a1580dbb524c4d7c1d73f1f1364967919f4a06929f69e152935c2c2dfbe9891f2a7a1f4d7598078e5f2a078c3d2dfe5c57e78b94c227c9183e4374
-  languageName: node
-  linkType: hard
-
-"@types/mime-types@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@types/mime-types@npm:3.0.1"
-  checksum: 10/96534e23b2180e5396a1e6a44f51ec59e349bd43daed4b5cb4548493126e9641cdc65f8292477e80c5e6063cf625330dae8edaf31357553b60baa23c32a8bafd
   languageName: node
   linkType: hard
 
@@ -4282,15 +4258,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "mime-types@npm:3.0.2"
-  dependencies:
-    mime-db: "npm:^1.54.0"
-  checksum: 10/9db0ad31f5eff10ee8f848130779b7f2d056ddfdb6bda696cb69be68d486d33a3457b4f3f9bdeb60d0736edb471bd5a7c0a384375c011c51c889fd0d5c3b893e
-  languageName: node
-  linkType: hard
-
 "mime@npm:3, mime@npm:^3":
   version: 3.0.0
   resolution: "mime@npm:3.0.0"
@@ -6930,11 +6897,9 @@ __metadata:
     "@jimp/plugin-print": "npm:^1.6.1"
     "@jimp/plugin-resize": "npm:^1.6.1"
     "@types/gulp": "npm:^4.0.18"
-    "@types/gulp-sass": "npm:^6.0.0"
     "@types/ini": "npm:^4.1.1"
     "@types/lodash.debounce": "npm:^4.0.9"
     "@types/mime-db": "npm:^1.43.6"
-    "@types/mime-types": "npm:^3.0.1"
     "@types/node": "npm:^24.13.3"
     "@types/nunjucks": "npm:^3.2.6"
     "@types/pug": "npm:^2.0.10"
@@ -6949,7 +6914,6 @@ __metadata:
     electron-builder: "npm:26.15.7"
     fastify: "npm:^5.12.1"
     gulp: "npm:^5.0.1"
-    gulp-cli: "npm:^3.1.0"
     gulp-pug: "npm:^5.0.0"
     ini: "npm:^7.0.0"
     json5: "npm:^2.2.3"
@@ -6957,7 +6921,6 @@ __metadata:
     marked: "npm:^18.0.11"
     material-symbols: "npm:^0.47.0"
     mime-db: "npm:^1.54.0"
-    mime-types: "npm:^3.0.2"
     nunjucks: "npm:^3.2.4"
     protocol-registry: "npm:^2.0.0"
     pug: "npm:^3.0.4"

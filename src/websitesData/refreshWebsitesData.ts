@@ -10,7 +10,7 @@ import {doNotifyWebsite, IDoNotifyWebsiteResult} from "./doNotifyWebsite.js";
 import {websiteApis} from "./platforms/index.js";
 import {appIcon} from "../../classes/constants.js";
 import {sendNotification} from "../../classes/notify.js";
-import {settings} from "../init.js";
+import {settings} from "../../classes/Settings.js";
 
 
 export let zAlarm_refreshWebsites : ZAlarm|null = null;
@@ -197,4 +197,14 @@ export async function refreshWebsitesData() {
 	}
 
 	return true;
+}
+
+if (process.platform === 'linux') {
+	app.whenReady().then(async () => {
+		try {
+			await setBadge(await getWebsitesCount());
+		} catch (e) {
+			console.error(e);
+		}
+	});
 }

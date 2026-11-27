@@ -15,7 +15,7 @@ import electron, {app} from "electron";
 import * as path from "node:path";
 import {showSection} from "../classes/windowManager.js";
 import {sendNotification} from "../classes/notify.js";
-import {settings} from "./init.js";
+import {settings} from "../classes/Settings.js";
 import fs from "node:fs";
 import ini from "ini";
 

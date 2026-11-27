@@ -1,5 +1,5 @@
 import type electron from "electron";
-import {RandomJsonData, SettingsConfig} from "./settings.js";
+import {RandomJsonData} from "./settings.js";
 import {Dict} from "../../browserViews/js/bo/Dict.js";
 import {IUserscriptJson} from "./userscript.js";
 
@@ -25,17 +25,14 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-	isUpdateAvailable(cb: ResponseCallback<boolean|null>): void
 	getPreference(id: string, cb: ResponseCallback<preferenceData>): void
 	getPreferences(ids: string[], cb: ResponseCallback<preferenceData[]>): void
-	getDefaultValues(cb: ResponseCallback<SettingsConfig>): void
 	ping(cb: ResponseCallback<'pong'>): void
 	openUrl(browserName:string, url: string, cb: ResponseCallback<boolean>): void
 	updateSocketData(data: Partial<IChromeExtensionData>): void
 	getUserscripts(cb: ResponseCallback<IUserscriptJson[]>): void
 	getUserscriptData(fileName:string, cb: ResponseCallback<Dict<any>>): void
 	setUserscriptData(fileName:string, newData:Dict<any>|null, cb: ResponseCallback<boolean>): void
-	writeClipboard(data: Record<string, string>, cb: ResponseCallback<boolean>): void
 }
 export interface InterServerEvents {}
 

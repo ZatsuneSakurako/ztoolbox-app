@@ -1,6 +1,6 @@
 import {WebsiteApi} from "../WebsiteApi.js";
 import {WebsiteData} from "../../../browserViews/js/websiteData.js";
-import {settings} from "../../init.js";
+import {settings} from "../../../classes/Settings.js";
 
 export class FreshRss implements WebsiteApi {
 	get #freshRssBaseUrl() {

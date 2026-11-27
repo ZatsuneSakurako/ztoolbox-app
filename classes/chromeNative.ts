@@ -10,8 +10,8 @@ import {
 } from "./bo/chromeNative.js";
 import {RemoteSocket, Server, Socket} from "socket.io";
 import "../src/websitesData/refreshWebsitesData.js";
-import electron, {BrowserWindow} from "electron";
-import {settings} from "../src/init.js";
+import {BrowserWindow} from "electron";
+import {settings} from "./Settings.js";
 import Fastify, {FastifyInstance} from "fastify";
 import * as path from "node:path";
 import * as fs from "node:fs";
@@ -52,13 +52,6 @@ io.on("connection", (socket: socket) => {
 		}
 	});
 
-	socket.on('isUpdateAvailable', function (cb) {
-		cb({
-			error: false,
-			result: lastStatus_isUpdateAvailable,
-		});
-	});
-
 	socket.on('getPreference', function (id:string, cb) {
 		cb({
 			error: false,
@@ -88,10 +81,6 @@ io.on("connection", (socket: socket) => {
 				}
 			})
 		});
-	});
-
-	socket.on('getDefaultValues', function (cb) {
-		cb({ error: false, result: settings.getDefaultValues() });
 	});
 
 	socket.on('ping', function (cb) {
@@ -175,21 +164,6 @@ io.on("connection", (socket: socket) => {
 				cb({ error: true });
 			}
 		});
-	});
-
-	socket.on('writeClipboard', async function (data, cb) {
-		try {
-			const clipboard = new Electron.ClipboardItem(data);
-			await electron.clipboard.write([clipboard]);
-			cb({
-				error: false,
-				result: true
-			});
-		} catch (e) {
-			socket.emit('log', '[writeClipboard] ' + errorToString(e));
-			console.error(e);
-			cb({ error: true });
-		}
 	});
 
 	socket.on('getUserscripts', async function (cb) {
