@@ -11,13 +11,12 @@ import {
 	linuxAutoStartAppPath,
 	appName
 } from "../classes/constants.js";
-import electron, {app} from "electron";
+import {app} from "electron";
 import * as path from "node:path";
 import {showSection} from "../classes/windowManager.js";
 import {sendNotification} from "../classes/notify.js";
 import {settings} from "../classes/Settings.js";
 import fs from "node:fs";
-import ini from "ini";
 
 
 
@@ -109,36 +108,8 @@ export function onOpen(commandLine:string[]) {
 
 	for (const value of args) {
 		if (path.isAbsolute(value)) {
-			switch (path.extname(value).replace(/^\./, '').toLowerCase()) {
-				case 'url':
-					try {
-						console.info('opening .url file');
-						const fileContent = fs.readFileSync(value, 'utf-8'),
-							iniData = ini.parse(fileContent);
-						if (!!iniData?.InternetShortcut && !iniData?.InternetShortcut?.url) {
-							iniData.InternetShortcut.url = iniData?.InternetShortcut?.URL;
-						}
-
-						if (typeof iniData.InternetShortcut.url !== 'string') {
-							// noinspection ExceptionCaughtLocallyJS
-							throw new Error('URL is not a string');
-						}
-
-						electron.shell.openExternal(iniData.InternetShortcut.url);
-					} catch (e) {
-						console.error(e);
-
-						sendNotification({
-							title: 'Erreur',
-							message: 'Le fichier URL n\'a pu être lue'
-						})
-							.catch(console.error);
-					}
-					break;
-				default:
-					console.error('unsupported file : ', value);
-					unsupported = true;
-			}
+			console.error('unsupported file : ', value);
+			unsupported = true;
 		} else if (value.startsWith(zToolbox_protocol + '://')) {
 			let url:URL|null = null;
 			try {

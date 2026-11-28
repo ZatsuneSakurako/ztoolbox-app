@@ -12,6 +12,7 @@ LOCAL_APP_DIR="$HOME/.local/share/applications"
 MIME_DB_PARENT="$HOME/.local/share/mime"
 
 DESKTOP_FILE_NAME="Z-Toolbox.desktop"
+DESKTOP_FILE_NAME_OPEN_URL="Z-Toolbox_open_url.desktop"
 
 # 3. Create directories if they don't exist
 mkdir -p "$LOCAL_APP_DIR"
@@ -34,10 +35,31 @@ Icon=${PROJECT_PATH}/icon.png
 Terminal=false
 Categories=Development;Utility;
 StartupNotify=true
-MimeType=application/x-mswinurl;
 DESKTOP_EOF
 chmod +x "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME"
 xdg-mime install "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME"
+
+
+if [ -f "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME_OPEN_URL" ]; then
+	echo "Re-creating desktop entry (open url)..."
+	rm "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME_OPEN_URL"
+else
+	echo "Creating desktop entry (open url)..."
+fi
+tee "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME_OPEN_URL" > /dev/null << DESKTOP_EOF
+[Desktop Entry]
+Type=Application
+Name=Z-Toolbox (open .url)
+Name[en]=Z-Toolbox
+Exec="${PROJECT_PATH}/scripts/open-url.sh" %F
+Icon=${PROJECT_PATH}/icon.png
+Terminal=false
+Categories=Development;Utility;
+StartupNotify=true
+MimeType=application/x-mswinurl;
+DESKTOP_EOF
+chmod +x "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME_OPEN_URL"
+xdg-mime install "$LOCAL_APP_DIR/$DESKTOP_FILE_NAME_OPEN_URL"
 
 # 5. Update the MIME database
 echo "Updating MIME database..."
@@ -49,7 +71,7 @@ update-desktop-database "$LOCAL_APP_DIR"
 
 echo ""
 echo "✅ Setup complete!"
-echo "   - Registered application (with mime application/x-mswinurl) : Z-Toolbox"
-echo "   - To test, right-click a .url file -> Open With -> Z-Toolbox"
+echo "   - Registered application (with mime application/x-mswinurl) : Z-Toolbox (open .url)"
+echo "   - To test, right-click a .url file -> Open With -> Z-Toolbox (open .url)"
 echo ""
 echo "Note: If you move this project folder, you must re-run this script (script only tested with XFCE)."
