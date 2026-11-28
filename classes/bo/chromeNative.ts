@@ -31,8 +31,6 @@ export interface ClientToServerEvents {
 	openUrl(browserName:string, url: string, cb: ResponseCallback<boolean>): void
 	updateSocketData(data: Partial<IChromeExtensionData>): void
 	getUserscripts(cb: ResponseCallback<IUserscriptJson[]>): void
-	getUserscriptData(fileName:string, cb: ResponseCallback<Dict<any>>): void
-	setUserscriptData(fileName:string, newData:Dict<any>|null, cb: ResponseCallback<boolean>): void
 }
 export interface InterServerEvents {}
 

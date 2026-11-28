@@ -13,7 +13,6 @@ import "../src/websitesData/refreshWebsitesData.js";
 import {BrowserWindow} from "electron";
 import {settings} from "./Settings.js";
 import Fastify, {FastifyInstance} from "fastify";
-import * as path from "node:path";
 import * as fs from "node:fs";
 import {errorToString} from "../src/errorToString.js";
 import {IUserscriptJson} from "./bo/userscript.js";
@@ -201,52 +200,6 @@ io.on("connection", (socket: socket) => {
 		}
 		if (logs.length) {
 			socket.emit('log', '[UserScripts] ' + logs.join('\n'));
-		}
-	});
-
-	socket.on('setUserscriptData', function (fileName, newData, cb) {
-		if (!fs.existsSync(path.normalize(`${Userscript.userscriptsPath}/${fileName}`))) {
-			cb({
-				error: 'FILE_NOT_FOUND',
-			});
-			return;
-		}
-
-		const sockets = io.fetchSockets()
-			.catch(console.error)
-
-		try {
-			const userScript = new Userscript(fileName, Userscript.userscriptsPath);
-			cb({ error: false, result: userScript.setData(newData) });
-		} catch (e) {
-			console.error(e);
-			cb({ error: errorToString(e) });
-			return;
-		}
-
-		sockets
-			.then(sockets => {
-				if (!sockets) return;
-				for (let _socket of sockets) {
-					if (_socket.id === socket.id) continue;
-					_socket.emit('userScriptDataUpdated', fileName, newData ?? {});
-				}
-			})
-			.catch(console.error);
-	});
-	socket.on('getUserscriptData', function (fileName, cb) {
-		if (!fs.existsSync(path.normalize(`${Userscript.userscriptsPath}/${fileName}`))) {
-			cb({ error: 'FILE_NOT_FOUND' });
-			return;
-		}
-
-		try {
-			const userScript = new Userscript(fileName, Userscript.userscriptsPath);
-			cb({ error: false, result: userScript.getData() });
-		} catch (e) {
-			console.error(e);
-			cb({ error: errorToString(e) });
-			return;
 		}
 	});
 });

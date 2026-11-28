@@ -5,7 +5,6 @@ import ts from "typescript";
 import {appRootPath} from "../../classes/constants.js";
 import {IUserscriptJson} from "../../classes/bo/userscript.js";
 import {settings} from "../../classes/Settings.js";
-import {Dict} from "../../browserViews/js/bo/Dict.js";
 
 
 export class Userscript {
@@ -124,38 +123,6 @@ export class Userscript {
 
 	get userscriptMeta(): UserscriptMeta {
 		return this.#userscriptMeta;
-	}
-
-	get #dataPath(): string {
-		return path.normalize(`${this.filePath}.json`);
-	}
-	getData(): Dict<any> {
-		if (!fs.existsSync(this.#dataPath)) return {};
-		return JSON.parse(fs.readFileSync(this.#dataPath, {
-			encoding: 'utf8',
-		}));
-	}
-	setData(newData:Dict<any>|null):boolean {
-		if (typeof newData !== 'object') {
-			throw new Error('OBJECT_EXPECTED');
-		}
-
-		try {
-			if (newData === null) {
-				// Avoid error if it does not exist (already deleted probably)
-				if (fs.existsSync(this.#dataPath)) {
-					fs.unlinkSync(this.#dataPath);
-				}
-			} else {
-				fs.writeFileSync(this.#dataPath, JSON.stringify(newData, null, '\t'), {
-					encoding: 'utf8',
-				});
-			}
-			return true;
-		} catch (e) {
-			console.error(e);
-			return false;
-		}
 	}
 
 	toJSON(): IUserscriptJson {
